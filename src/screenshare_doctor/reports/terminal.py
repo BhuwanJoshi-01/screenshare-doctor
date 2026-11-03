@@ -7,16 +7,22 @@ name or path containing ``[bold]`` is printed as it is instead of being interpre
 from __future__ import annotations
 
 from rich.console import Console
+from rich.table import Table
 from rich.text import Text
 
 from screenshare_doctor.desktops import DesktopFamily, DesktopIdentity, identify_desktop
 from screenshare_doctor.models import (
     LogindSession,
+    PackageFacts,
+    PackageInfo,
+    PackageState,
     PathState,
+    ServiceFacts,
     SessionEnvironment,
     SessionFacts,
     SessionPaths,
     Snapshot,
+    UserService,
 )
 from screenshare_doctor.session import Location, SessionAssessment, SessionKind, assess_session
 
@@ -152,6 +158,138 @@ def _describe(session: LogindSession) -> str:
     if session.active is not None:
         parts.append("active" if session.active else "inactive")
     return f"session {session.id}: {', '.join(parts)}"
+
+
+COMPONENTS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    ("portal frontend", "xdg-desktop-portal", ("xdg-desktop-portal.service",)),
+    ("GNOME backend", "xdg-desktop-portal-gnome", ("xdg-desktop-portal-gnome.service",)),
+    ("GTK backend", "xdg-desktop-portal-gtk", ("xdg-desktop-portal-gtk.service",)),
+    ("KDE backend", "xdg-desktop-portal-kde", ("plasma-xdg-desktop-portal-kde.service",)),
+    ("wlr backend", "xdg-desktop-portal-wlr", ("xdg-desktop-portal-wlr.service",)),
+    ("Hyprland backend", "xdg-desktop-portal-hyprland", ("xdg-desktop-portal-hyprland.service",)),
+    ("PipeWire", "pipewire", ("pipewire.socket", "pipewire.service")),
+    ("WirePlumber", "wireplumber", ("wireplumber.service",)),
+)
+"""Component, package and user units, in the order a screen-sharing request uses them."""
+
+_ACTIVATION_VARIABLES = (
+    ("XDG_CURRENT_DESKTOP", "current_desktop"),
+    ("XDG_SESSION_TYPE", "session_type"),
+    ("WAYLAND_DISPLAY", "wayland_display"),
+    ("DISPLAY", "display"),
+)
+
+_PACKAGE_SOURCE = {
+    "dpkg": "Packages from dpkg.",
+    "rpm": "Packages from rpm.",
+    "pacman": "Packages from pacman.",
+    "files": (
+        "No package manager answered; packages were judged by their programs only, "
+        "so unknown may mean not installed."
+    ),
+}
+
+
+def render_services(snapshot: Snapshot, console: Console) -> None:
+    """Packages and user services per component, then the user manager's environment."""
+    console.print(Text(f"screenshare-doctor {snapshot.tool_version}: services", style="bold"))
+    console.print()
+    packages = snapshot.packages or PackageFacts()
+    services = snapshot.services or ServiceFacts()
+    table = Table(box=None, show_edge=False, pad_edge=False, header_style="bold")
+    table.add_column("Component")
+    table.add_column("Package")
+    table.add_column("User service")
+    package_by_name = {package.name: package for package in packages.packages}
+    unit_by_name = {service.unit: service for service in services.services or ()}
+    for label, package_name, units in COMPONENTS:
+        table.add_row(
+            Text(label),
+            Text(_package_cell(package_by_name.get(package_name))),
+            Text(_units_cell(units, unit_by_name, known=services.services is not None)),
+        )
+    console.print(table)
+    if packages.source in _PACKAGE_SOURCE:
+        console.print(Text(_PACKAGE_SOURCE[packages.source], style="dim"))
+    console.print(
+        Text(
+            'Portals are started on demand: "not running" is normal until an app asks for one.',
+            style="dim",
+        )
+    )
+    console.print()
+    console.print(
+        Text("Activation environment (what portals started by the user manager see):", style="bold")
+    )
+    shell = snapshot.session.environment if snapshot.session else None
+    activation = services.activation_environment
+    if activation is None:
+        console.print(Text("  not read (see below)"))
+    else:
+        values = [_value(getattr(activation, attribute)) for _, attribute in _ACTIVATION_VARIABLES]
+        width = max(len(value) for value in values)
+        for name, attribute in _ACTIVATION_VARIABLES:
+            console.print(Text(_activation_line(name, attribute, activation, shell, width)))
+    _render_failures(snapshot, console)
+
+
+def _package_cell(package: PackageInfo | None) -> str:
+    if package is None or package.state is PackageState.UNKNOWN:
+        return "unknown"
+    if package.state is PackageState.NOT_INSTALLED:
+        return "not installed"
+    if package.state is PackageState.BROKEN:
+        return f"broken install ({package.version})" if package.version else "broken install"
+    return package.version or "installed"
+
+
+def _units_cell(units: tuple[str, ...], by_name: dict[str, UserService], *, known: bool) -> str:
+    if not known:
+        return "unknown"
+    states = [_unit_state(by_name.get(unit)) for unit in units]
+    if len(units) == 1:
+        return states[0]
+    return "; ".join(
+        f"{unit.rsplit('.', 1)[1]}: {state}" for unit, state in zip(units, states, strict=True)
+    )
+
+
+def _unit_state(service: UserService | None) -> str:
+    if service is None or service.load_state is None:
+        return "unknown"
+    if service.load_state == "not-found":
+        return "no unit"
+    if service.load_state == "masked":
+        return "masked"
+    if service.active_state == "active":
+        return f"running ({service.unit_file_state})" if service.unit_file_state else "running"
+    if service.active_state == "inactive":
+        return "not running"
+    if service.active_state == "failed":
+        return "failed"
+    return service.active_state or "unknown"
+
+
+def _value(value: str | None) -> str:
+    return value if value is not None else "unset"
+
+
+def _activation_line(
+    name: str,
+    attribute: str,
+    activation: SessionEnvironment,
+    shell: SessionEnvironment | None,
+    width: int,
+) -> str:
+    value = getattr(activation, attribute)
+    if shell is None or not (shell.wayland_display or shell.display):
+        return f"  {name:<21}{_value(value)}"  # not run from the desktop: nothing to compare
+    shell_value = getattr(shell, attribute)
+    if shell_value == value:
+        comparison = "(same as this shell)"
+    else:
+        comparison = f"(this shell: {_value(shell_value)})"
+    return f"  {name:<21}{_value(value):<{width}}  {comparison}"
 
 
 def redaction_line(snapshot: Snapshot) -> str | None:
