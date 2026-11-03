@@ -223,3 +223,23 @@ def test_monitor_only_backend_warns(real: Snapshot) -> None:
 
 def test_portal_rules_stay_silent_without_facts() -> None:
     assert _findings(Snapshot(tool_version="0.1.0", created_at="x")) == {}
+
+
+def test_a_portal_running_on_its_old_configuration_is_explained() -> None:
+    # The replayed bus still offers ScreenCast, as a portal started before the edit would.
+    user_file = "/home/user/.config/xdg-desktop-portal/gnome-portals.conf"
+    snapshot = gnome_snapshot(
+        {user_file: b"[preferred]\norg.freedesktop.impl.portal.ScreenCast=none\n"}
+    )
+    finding = _findings(snapshot)["SSD-PORTAL-002"]
+    assert "reads its configuration only when it starts" in finding.reason
+    assert finding.recommended_action is not None
+    assert "systemctl --user restart xdg-desktop-portal.service" in finding.recommended_action
+
+
+def test_no_restart_advice_when_the_portal_agrees(real: Snapshot) -> None:
+    dbus = _dbus(BusName(FRONTEND, True, True), objects=(PortalObject(FRONTEND, ()),))
+    assert real.portal_files is not None
+    files = dataclasses.replace(real.portal_files, descriptors=())
+    finding = _findings(dataclasses.replace(real, portal_files=files, dbus=dbus))["SSD-PORTAL-002"]
+    assert "restart" not in (finding.recommended_action or "")
