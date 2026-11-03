@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Build the GNOME Shell extension zip for extensions.gnome.org and GitHub releases.
-# Output: dist/<uuid>.shell-extension.zip
+# Output: dist/<uuid>.shell-extension.zip (or $OUT_DIR/…)
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 UUID="screenshare-doctor@bhuwanjoshi-01.github.io"
 SRC="$REPO_DIR/extension/$UUID"
-OUT="$REPO_DIR/dist"
+OUT="${OUT_DIR:-$REPO_DIR/dist}"
 
 mkdir -p "$OUT"
 rm -f "$OUT/$UUID.shell-extension.zip"
