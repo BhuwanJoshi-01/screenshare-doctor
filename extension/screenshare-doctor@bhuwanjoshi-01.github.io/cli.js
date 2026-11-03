@@ -2,7 +2,8 @@
 //
 // Runs the screenshare-doctor command-line tool, asynchronously and bounded: the
 // shell never waits for it, a cancelled run is killed, and a run that takes longer
-// than TIMEOUT_SECONDS is killed too.
+// than TIMEOUT_SECONDS is killed too. The timeout is the only main-loop source; it
+// is removed as soon as the run ends or is cancelled.
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
@@ -38,12 +39,19 @@ export function runCli(path, args, cancellable, timeoutSeconds = TIMEOUT_SECONDS
             proc.force_exit();
             return GLib.SOURCE_REMOVE;
         });
-        const cancelId = cancellable.connect(() => proc.force_exit());
-        proc.communicate_utf8_async(null, cancellable, (p, res) => {
+        const removeTimeout = () => {
             if (timeoutId) {
                 GLib.Source.remove(timeoutId);
                 timeoutId = 0;
             }
+        };
+        // Cancelling (disable() does) removes the timeout at once and kills the child.
+        const cancelId = cancellable.connect(() => {
+            removeTimeout();
+            proc.force_exit();
+        });
+        proc.communicate_utf8_async(null, cancellable, (p, res) => {
+            removeTimeout();
             cancellable.disconnect(cancelId);
             try {
                 const [, stdout, stderr] = p.communicate_utf8_finish(res);
