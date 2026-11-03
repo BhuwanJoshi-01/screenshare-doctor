@@ -9,9 +9,11 @@ is never listed: the rest of it can hold tokens and passwords.
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+import re
+import stat as stat_module
+from collections.abc import Callable, Mapping
 
-from screenshare_doctor.models import SessionEnvironment
+from screenshare_doctor.models import PathState, SessionEnvironment, SessionPaths
 
 ALLOWLIST: tuple[str, ...] = (
     "XDG_SESSION_TYPE",
@@ -66,3 +68,53 @@ def _without_guid(address: str) -> str:
         pairs = [pair for pair in params.split(",") if pair and not pair.startswith("guid=")]
         kept.append(f"{transport}:{','.join(pairs)}")
     return ";".join(kept)
+
+
+_X11_LOCAL_DISPLAY = re.compile(r"(?:unix)?:(\d+)(?:\.\d+)?")
+"""``:0``, ``:1.0`` or ``unix:0``: a display served on a local socket. ``host:10.0`` is TCP."""
+
+X11_SOCKET_DIR = "/tmp/.X11-unix"  # noqa: S108 - fixed by the X protocol, only stat()ed
+
+
+def check_session_paths(
+    env: SessionEnvironment, *, stat: Callable[[str], os.stat_result] = os.stat
+) -> SessionPaths:
+    """Look at the runtime directory and the display sockets the variables point to.
+
+    Only ``stat`` is used: nothing is opened or connected to. A relative
+    ``WAYLAND_DISPLAY`` lives in ``XDG_RUNTIME_DIR``; an absolute one is used as is, as
+    libwayland does. Without the variables the paths are not guessed.
+    """
+    runtime = env.runtime_dir
+    wayland_path: str | None = None
+    if env.wayland_display is not None:
+        if env.wayland_display.startswith("/"):
+            wayland_path = env.wayland_display
+        elif runtime is not None:
+            wayland_path = f"{runtime.rstrip('/')}/{env.wayland_display}"
+    x11_path: str | None = None
+    if env.display is not None and (match := _X11_LOCAL_DISPLAY.fullmatch(env.display)):
+        x11_path = f"{X11_SOCKET_DIR}/X{match.group(1)}"
+    return SessionPaths(
+        runtime_dir=_state(runtime, stat, want=stat_module.S_ISDIR),
+        wayland_socket=_state(wayland_path, stat, want=stat_module.S_ISSOCK),
+        wayland_socket_path=wayland_path,
+        x11_socket=_state(x11_path, stat, want=stat_module.S_ISSOCK),
+        x11_socket_path=x11_path,
+    )
+
+
+def _state(
+    path: str | None, stat: Callable[[str], os.stat_result], *, want: Callable[[int], bool]
+) -> PathState:
+    if path is None:
+        return PathState.NOT_CHECKED
+    try:
+        mode = stat(path).st_mode
+    except FileNotFoundError:
+        return PathState.MISSING
+    except OSError:  # permission denied, a file where a directory should be, too long…
+        return PathState.UNREADABLE
+    if not want(mode):
+        return PathState.OTHER
+    return PathState.DIRECTORY if stat_module.S_ISDIR(mode) else PathState.SOCKET
