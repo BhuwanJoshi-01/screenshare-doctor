@@ -9,10 +9,17 @@ running is therefore reported as not running instead of being started by the che
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 from typing import Any
 
-from screenshare_doctor.models import BusName, DbusFacts, FailureKind, ProbeFailure
+from screenshare_doctor.models import (
+    BusName,
+    DbusFacts,
+    FailureKind,
+    ProbeFailure,
+    ScreenCastProperties,
+)
 from screenshare_doctor.runner import CommandRunner, probe_failure
 
 FRONTEND = "org.freedesktop.portal.Desktop"
@@ -28,6 +35,19 @@ BUS_NAMES: tuple[str, ...] = (
 )
 """The frontend, the backends, and GNOME's compositor-side screen-cast service, which the
 GNOME backend calls. KDE and Hyprland offer theirs through Wayland protocols instead."""
+
+
+PORTAL_PATH = "/org/freedesktop/portal/desktop"
+SCREENCAST = "org.freedesktop.portal.ScreenCast"
+IMPL_SCREENCAST = "org.freedesktop.impl.portal.ScreenCast"
+SCREENCAST_PROPERTIES = ("version", "AvailableSourceTypes", "AvailableCursorModes")
+
+_INTERFACE = re.compile(r"<interface\s+name=\"([^\"]+)\"")
+_PORTAL_INTERFACE_PREFIXES = (
+    "org.freedesktop.portal.",
+    "org.freedesktop.impl.portal.",
+    "org.freedesktop.host.portal.",
+)
 
 
 class BusctlOutputError(ValueError):
@@ -74,6 +94,51 @@ def parse_string_list_reply(text: str) -> list[str]:
     if not isinstance(names, list) or not all(isinstance(name, str) for name in names):
         raise BusctlOutputError("expected one string array")
     return names
+
+
+def parse_introspection(text: str) -> tuple[str, ...]:
+    """The portal interfaces named in an ``Introspect`` reply, sorted, without duplicates.
+
+    The XML is not parsed as XML: only ``<interface name="…">`` is needed, and a
+    regular expression cannot be made to expand entities.
+    """
+    document = parse_busctl_json(text)[0]
+    data = document["data"]
+    if document.get("type") != "s" or not isinstance(data, list) or len(data) != 1:
+        raise BusctlOutputError("expected one string")
+    if not isinstance(data[0], str):
+        raise BusctlOutputError("expected one string")
+    names = {
+        name for name in _INTERFACE.findall(data[0]) if name.startswith(_PORTAL_INTERFACE_PREFIXES)
+    }
+    return tuple(sorted(names))
+
+
+def parse_screencast_properties(text: str) -> ScreenCastProperties:
+    """``get-property … version AvailableSourceTypes AvailableCursorModes``: three lines."""
+    documents = parse_busctl_json(text)
+    if len(documents) != len(SCREENCAST_PROPERTIES):
+        raise BusctlOutputError(f"expected {len(SCREENCAST_PROPERTIES)} properties")
+    values = [_unsigned(document) for document in documents]
+    return ScreenCastProperties(*values)
+
+
+def parse_integer_property(text: str) -> int:
+    """One integer property, such as Mutter's ScreenCast ``Version`` (type ``i``)."""
+    return _unsigned(parse_busctl_json(text)[0])
+
+
+def _unsigned(document: dict[str, Any]) -> int:
+    data = document["data"]
+    if (
+        document.get("type") not in {"u", "i"}
+        or isinstance(data, bool)
+        or not isinstance(data, int)
+    ):
+        raise BusctlOutputError("expected an integer property")
+    if data < 0:
+        raise BusctlOutputError("expected a non-negative integer")
+    return data
 
 
 BUSCTL_TIMEOUT = 5.0
