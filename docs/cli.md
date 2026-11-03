@@ -120,6 +120,42 @@ the shell. When the tool runs in the desktop, each value is compared with the sh
 
 **Exit code**: 0, also when systemd or a package manager is missing; what could not be read is listed.
 
+## `check desktop`
+
+```bash
+screenshare-doctor check desktop
+screenshare-doctor check desktop --as kde     # compare with another desktop's defaults
+```
+
+Compares the setup with what the desktop ships by default ([the defaults and their sources](desktops.md)):
+
+```text
+screenshare-doctor 0.1.0: desktop
+
+Desktop     GNOME (from XDG_CURRENT_DESKTOP of the user manager)
+
+PASS    xdg-desktop-portal-gnome is installed
+        version 50.0-0ubuntu1
+PASS    gnome.portal declares ScreenCast
+        /usr/share/xdg-desktop-portal/portals/gnome.portal
+PASS    gnome-portals.conf is installed
+        /usr/share/xdg-desktop-portal/gnome-portals.conf
+PASS    ScreenCast is routed to the gnome backend
+        decided by /usr/share/xdg-desktop-portal/gnome-portals.conf
+PASS    org.freedesktop.impl.portal.desktop.gnome runs or can be started
+        running
+PASS    org.gnome.Mutter.ScreenCast is running
+        running
+```
+
+(Real output from Ubuntu 26.04 with GNOME 50.1.)
+
+It reads what `routes explain` reads. FAIL means the facts show the default cannot work (the backend is not
+installed or cannot start); WARN means the setup differs from the default and may still be fine; UNKNOWN means a
+fact could not be read; N/A means the desktop has no such default.
+
+**Exit code**: 0; 2 for an unknown `--as` value.
+
 ## `check dbus`
 
 ```bash
