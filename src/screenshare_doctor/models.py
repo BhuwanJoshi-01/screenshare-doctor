@@ -362,8 +362,8 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session``, ``packages`` and ``services`` are ``None`` when the command did not
-    look at them. Portal and PipeWire facts join this record as their collectors are
+    ``session``, ``packages``, ``services`` and ``dbus`` are ``None`` when the command
+    did not look at them. Portal and PipeWire facts join this record as their collectors are
     added.
     """
 
@@ -373,6 +373,7 @@ class Snapshot:
     session: SessionFacts | None = None
     packages: PackageFacts | None = None
     services: ServiceFacts | None = None
+    dbus: DbusFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()

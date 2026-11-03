@@ -7,10 +7,16 @@ from screenshare_doctor import __version__
 from screenshare_doctor.collectors.packages import DPKG_FORMAT, PACKAGES
 from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
 from screenshare_doctor.models import FailureKind, PathState, SessionEnvironment
-from screenshare_doctor.orchestrator import collect_session, inspect_services, inspect_session
+from screenshare_doctor.orchestrator import (
+    collect_session,
+    inspect_dbus,
+    inspect_services,
+    inspect_session,
+)
 from screenshare_doctor.privacy import RedactionContext, redact_snapshot
 from screenshare_doctor.runner import CommandResult, Outcome
 from tests.fakes import FakeRunner, read_env_fixture, read_fixture
+from tests.scenarios import script_gnome_bus
 
 SHOW_USER = ("loginctl", "--no-pager", "show-user", "1000", "-p", "Display")
 SHOW_63 = ("loginctl", "--no-pager", "show-session", "63")
@@ -120,3 +126,13 @@ def test_inspect_services_collects_session_packages_and_services() -> None:
     assert snapshot.packages.source == "dpkg"
     assert snapshot.services is not None
     assert snapshot.services.activation_environment is not None
+
+
+def test_inspect_dbus_on_the_real_gnome_bus() -> None:
+    runner = FakeRunner()
+    script_gnome_bus(runner)
+    snapshot = inspect_dbus(runner)
+    assert snapshot.probe_failures == ()
+    assert snapshot.dbus is not None
+    assert snapshot.dbus.reachable is True
+    assert snapshot.session is None
