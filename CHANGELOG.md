@@ -63,3 +63,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   JSON frozen in `docs/json-schema-v1.json`, with a derived `summary` (session,
   desktop, portal version, counts, worst status). Contract tests keep the code
   and the schema in step and prove that planted secrets reach no output.
+- A GNOME Shell extension (GNOME 46 to 50, GPL-2.0-or-later) in `extension/`:
+  a top-bar indicator that runs `screenshare-doctor doctor` when its menu is
+  opened and shows the result, with the worst status as its icon, "Copy a
+  report for a bug tracker", and a preferences page for the tool's path.
+  Nothing runs while the menu is closed. Release zips carry it.
