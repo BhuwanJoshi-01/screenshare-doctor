@@ -19,6 +19,7 @@ PipeWire.
 git clone https://github.com/BhuwanJoshi-01/screenshare-doctor.git
 cd screenshare-doctor
 uv sync
+uv run screenshare-doctor --help
 ```
 
 Before every commit, run the same checks as CI:

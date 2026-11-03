@@ -19,11 +19,24 @@ uv run pytest -q --cov                     # with coverage
 ## Layout
 
 ```
-src/screenshare_doctor/   the package
-tests/                    unit tests on fixtures (no session, D-Bus or PipeWire needed), fixtures/
-docs/roadmap.md           requirement IDs WLD-001 … and what v0.1 includes
-.github/                  CI, issue forms, PR template
+src/screenshare_doctor/
+  cli.py          Typer app + main(): exit codes, redacted internal errors (SSD_DEBUG=1 for tracebacks)
+  models.py       Status/Severity/Confidence, Layer, Evidence, Finding (codes SSD-<AREA>-<NNN>),
+                  ProbeFailure, Snapshot
+  runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
+                  capped output), probe_failure()
+  privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()
+  exit_codes.py   ExitCode: 0 ok, 1 strict, 2 error, 3 context unavailable, 130 interrupted
+tests/
+  conftest.py     autouse no_network guard (UNIX sockets allowed); HYPOTHESIS_PROFILE=thorough
+  fakes.py        FakeRunner: scripted commands only, anything else fails the test; read_fixture()
+  unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
+docs/roadmap.md   requirement IDs WLD-001 … and what v0.1 includes
+.github/          CI, issue forms, PR template
 ```
+
+The core (runner, privacy, models, CLI shell) was ported from gpu-stack-inspector; each project keeps its own
+copy on purpose.
 
 ## Rules that are easy to break
 
