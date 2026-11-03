@@ -406,6 +406,25 @@ class PortalsConf:
 
 
 @dataclass(frozen=True, slots=True)
+class PortalFiles:
+    """The portal configuration as found on disk, in the frontend's search order.
+
+    ``desktops`` are the names the lookup used (from the portal's
+    ``XDG_CURRENT_DESKTOP``). ``configs`` are the candidate files that exist,
+    highest priority first; ``descriptors`` every ``.portal`` file found, in load order
+    (duplicates included: the first file of a name wins). ``unreadable`` lists files
+    that exist but could not be read, so nothing is concluded from their absence.
+    """
+
+    desktops: tuple[str, ...] = ()
+    config_directories: tuple[str, ...] = ()
+    configs: tuple[PortalsConf, ...] = ()
+    descriptor_directories: tuple[str, ...] = ()
+    descriptors: tuple[PortalDescriptor, ...] = ()
+    unreadable: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
