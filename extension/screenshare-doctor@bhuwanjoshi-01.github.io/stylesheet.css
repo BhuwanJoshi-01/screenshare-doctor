@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+.ssd-header { font-weight: bold; }
+.ssd-context, .ssd-next { font-size: smaller; }
+.ssd-next { padding-left: 2em; }
+.ssd-problem, .ssd-next { max-width: 32em; }
+.ssd-fail { color: #e66100; }

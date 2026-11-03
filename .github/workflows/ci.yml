@@ -89,3 +89,43 @@ jobs:
       - uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: moderate
+
+  extension:
+    # The GNOME Shell extension: syntax, metadata, settings schema, the packed zip, and
+    # the checks extensions.gnome.org reviewers run (Shexli).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: JavaScript syntax
+        run: |
+          for f in extension/*/*.js; do
+            cp "$f" "${RUNNER_TEMP}/check.mjs"
+            node --check "${RUNNER_TEMP}/check.mjs" || { echo "::error file=$f::syntax error"; exit 1; }
+          done
+      - name: Extension metadata
+        run: python3 -c "import json,glob; [json.load(open(f)) for f in glob.glob('extension/*/metadata.json')]"
+      - name: Report logic tests (node)
+        working-directory: extension
+        run: node --test
+      - name: Command runner tests (gjs)
+        run: |
+          sudo apt-get install -y -qq gjs > /dev/null
+          gjs -m extension/tests/cli.gjs.js
+      - name: The test report is the current sample report
+        run: cmp docs/sample-reports/gnome-healthy.json extension/tests/healthy.json
+      - name: Settings schema
+        run: |
+          sudo apt-get install -y -qq libglib2.0-bin > /dev/null
+          glib-compile-schemas --strict --dry-run extension/*/schemas
+      - name: Shell scripts
+        run: |
+          for f in scripts/*.sh; do bash -n "$f"; done
+          shellcheck -x -S warning scripts/*.sh
+      - name: Extension package
+        run: scripts/pack-extension.sh
+      - name: extensions.gnome.org review checks (Shexli)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/shexli"
+          # tree-sitter 0.26 segfaults inside shexli 0.2.1
+          "$RUNNER_TEMP/shexli/bin/pip" install -q shexli "tree-sitter<0.26"
+          "$RUNNER_TEMP/shexli/bin/shexli" "$PWD/dist/screenshare-doctor@bhuwanjoshi-01.github.io.shell-extension.zip"
