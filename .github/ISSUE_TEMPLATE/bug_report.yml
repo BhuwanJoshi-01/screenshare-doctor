@@ -1,0 +1,63 @@
+name: Bug report
+description: The tool crashed, hung, or its diagnosis was wrong
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never attach tokens, raw journal logs, or screenshots that show personal windows or
+        data.** Reports from `screenshare-doctor report` are redacted by default; check them anyway before posting.
+  - type: input
+    id: command
+    attributes:
+      label: Exact command
+      placeholder: screenshare-doctor troubleshoot screenshare --app firefox --symptom black-screen
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `screenshare-doctor --version`
+    validations:
+      required: true
+  - type: input
+    id: desktop
+    attributes:
+      label: Distribution, desktop and session
+      placeholder: e.g. Fedora 44, KDE Plasma 6.4, Wayland
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: App you tried to share from, and how it is installed
+      placeholder: e.g. Discord 0.0.110, Flatpak
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened instead?
+      description: The screen-sharing symptom, and what the tool said about it.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Sanitized report
+      description: "`screenshare-doctor report --format markdown --output -` (redacted by default)"
+      render: markdown
+  - type: dropdown
+    id: interactive
+    attributes:
+      label: Did you run an interactive screen-sharing test?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
