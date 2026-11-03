@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-screenshare-doctor = "screenshare_doctor:main"
+screenshare-doctor = "screenshare_doctor.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.29,<0.12.0"]
