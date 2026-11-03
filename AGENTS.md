@@ -25,8 +25,8 @@ src/screenshare_doctor/
                   ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts,
                   PackageFacts, ServiceFacts, BusName/PortalObject/DbusFacts, XdgDirectories,
                   PortalDescriptor/PortalsConf/PortalFiles, PipeWireFacts, Snapshot
-  orchestrator.py collect_session(), inspect_session/services/dbus/routes(): run the collectors and
-                  build the Snapshot (facts only; conclusions are recomputed)
+  orchestrator.py collect_session(), inspect_session/services/dbus/routes/all(): run the collectors
+                  and build the Snapshot; diagnose() adds the findings of every rule
   collectors/     environment.py (allowlisted session variables, stat() of runtime dir and sockets),
                   logind.py (loginctl show-user/show-session only; ids checked before use),
                   packages.py (dpkg-query -W / rpm -q / pacman -Q; manager needs program AND database;
@@ -48,8 +48,11 @@ src/screenshare_doctor/
                   Read docs/portal-routing.md before changing it.
   desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
   session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
-  reports/        terminal.py: render_session/services/dbus/route/desktop() (plain Text, never Rich markup
-                  from collected data)
+  rules/          engine.py (Registry, evaluate, root_causes), catalog.py (module order as data),
+                  session.py, portal.py, desktop.py, pipewire.py: the SSD-* checks (docs/rules.md lists
+                  them; a test fails if one is missing there)
+  reports/        terminal.py: render_session/services/dbus/route/desktop(); findings.py: doctor report
+                  (plain Text, never Rich markup from collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
   privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()
@@ -64,7 +67,7 @@ tests/
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
                   portal-routing.md (search order and the per-release selection rules),
-                  desktops.md (the bundles in prose, with sources)
+                  desktops.md (the bundles in prose, with sources), rules.md (every SSD check)
 .github/          CI, issue forms, PR template
 ```
 

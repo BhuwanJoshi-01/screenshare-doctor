@@ -21,6 +21,8 @@ session.
 
 What works already (see the [command reference](docs/cli.md)):
 
+- `screenshare-doctor doctor` runs every [check](docs/rules.md), from the session to PipeWire, and explains what
+  needs attention.
 - `screenshare-doctor check session` tells Wayland, X11, SSH and no session apart and shows the desktop names the
   portal reads.
 - `screenshare-doctor check services` shows which portal backends, PipeWire and WirePlumber are installed and

@@ -178,7 +178,7 @@ def gnome_file_access(
     return read, list_dir
 
 
-def _stat_socket_or_dir(path: str) -> os.stat_result:
+def stat_socket_or_dir(path: str) -> os.stat_result:
     mode = stat.S_IFDIR if path.endswith("/1000") else stat.S_IFSOCK
     return os.stat_result((mode, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
@@ -192,7 +192,7 @@ def gnome_snapshot(extra_files: dict[str, bytes] | None = None) -> Snapshot:
         runner,
         environ=read_env_fixture("gnome-wayland-ubuntu"),
         uid=1000,
-        stat=_stat_socket_or_dir,
+        stat=stat_socket_or_dir,
         which=lambda name: "/usr/bin/dpkg-query" if name == "dpkg-query" else None,
         exists=lambda path: path == "/var/lib/dpkg/status",
         read=read,

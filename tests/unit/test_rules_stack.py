@@ -23,6 +23,7 @@ from screenshare_doctor.models import (
     Status,
     UserService,
 )
+from screenshare_doctor.privacy import RedactionContext, redact_snapshot
 from screenshare_doctor.rules.catalog import builtin_rules
 from screenshare_doctor.rules.engine import evaluate
 from tests.fakes import FakeRunner
@@ -256,3 +257,12 @@ def test_bus_names_are_not_mistaken_for_missing(real: Snapshot) -> None:
         dataclasses.replace(real, dbus=dataclasses.replace(real.dbus, names=names))
     )["SSD-DESKTOP-001"]
     assert finding.status is Status.PASS
+
+
+def test_desktop_evidence_survives_redaction(real: Snapshot) -> None:
+    """Evidence like "pass: running" once looked like a password assignment to the redactor."""
+    findings = evaluate(real, [r for r in builtin_rules() if r.id.startswith(STACK_RULES)])
+    redacted = redact_snapshot(dataclasses.replace(real, findings=findings), RedactionContext())
+    assert not any(item.kind == "secret_value" for item in redacted.redactions)
+    desktop = next(f for f in redacted.findings if f.id == "SSD-DESKTOP-001")
+    assert desktop.evidence[4].value == "running (pass)"

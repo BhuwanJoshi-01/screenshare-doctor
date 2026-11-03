@@ -71,7 +71,7 @@ def desktop_defaults(snapshot: Snapshot, context: RuleContext) -> Iterator[Findi
     expectations = [e for e in check_bundle(bundle, snapshot) if e.key != "compositor"]
     status = next((s for s in _ORDER if any(e.status is s for e in expectations)), Status.PASS)
     evidence = tuple(
-        Evidence(f"{bundle.name} default", e.summary, f"{e.status.value}: {e.detail}")
+        Evidence(f"{bundle.name} default", e.summary, f"{e.detail} ({e.status.value})")
         for e in expectations
     )
     if status is Status.PASS:
@@ -101,7 +101,7 @@ def desktop_defaults(snapshot: Snapshot, context: RuleContext) -> Iterator[Findi
 
 
 def _describe(expectation: Expectation) -> str:
-    return f"{expectation.summary}: {expectation.status.value} ({expectation.detail})"
+    return f"{expectation.summary} - {expectation.status.value} ({expectation.detail})"
 
 
 def _action(bundle: DesktopBundle, problems: list[Expectation]) -> str | None:

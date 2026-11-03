@@ -12,20 +12,24 @@ from typing import Annotated
 
 import typer
 from rich.console import Console
+from rich.text import Text
 
 from screenshare_doctor import __version__
 from screenshare_doctor.bundles import bundle_for
 from screenshare_doctor.bundles.check import check_bundle
 from screenshare_doctor.desktops import DesktopFamily, identify_desktop
 from screenshare_doctor.exit_codes import ExitCode
-from screenshare_doctor.models import SessionEnvironment, SessionFacts
+from screenshare_doctor.models import SessionEnvironment, SessionFacts, Status
 from screenshare_doctor.orchestrator import (
+    diagnose,
+    inspect_all,
     inspect_dbus,
     inspect_routes,
     inspect_services,
     inspect_session,
 )
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
+from screenshare_doctor.reports.findings import render_findings
 from screenshare_doctor.reports.terminal import (
     render_dbus,
     render_desktop,
@@ -34,6 +38,7 @@ from screenshare_doctor.reports.terminal import (
     render_session,
 )
 from screenshare_doctor.routes import normalize_interface
+from screenshare_doctor.rules.catalog import builtin_rules
 from screenshare_doctor.runner import SubprocessRunner
 from screenshare_doctor.session import SessionKind, assess_session
 
@@ -71,6 +76,67 @@ def cli(
     ] = False,
 ) -> None:
     """Global options (the help text comes from HELP)."""
+
+
+@app.command()
+def doctor(
+    strict: Annotated[
+        bool,
+        typer.Option("--strict", help="Exit with code 1 when any check fails."),
+    ] = False,
+    show_all: Annotated[
+        bool,
+        typer.Option("--all", help="Also show findings that follow from another one."),
+    ] = False,
+) -> None:
+    """Run every check, from the session to PipeWire, and explain what needs attention.
+
+    Passive: reads session variables, the package database, the user manager, portal
+    files, the session bus (only already-running services are contacted, with
+    --auto-start=no) and a running PipeWire. Nothing is started, changed or recorded.
+    """
+    snapshot = diagnose(inspect_all(SubprocessRunner()))
+    render_findings(redact_snapshot(snapshot), Console(highlight=False), show_all=show_all)
+    if strict and any(f.status is Status.FAIL for f in snapshot.findings):
+        raise typer.Exit(ExitCode.STRICT_FAILURE)
+
+
+rules_app = typer.Typer(
+    help="List the checks, or explain one.",
+    no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+app.add_typer(rules_app, name="rules")
+
+
+@rules_app.command("list")
+def rules_list() -> None:
+    """List every check with its code and the layer it judges."""
+    console = Console(highlight=False)
+    for rule in builtin_rules():
+        console.print(
+            Text.assemble(
+                (f"{rule.id:<20}", "bold"), (f"{rule.layer.value:<16}", "dim"), rule.title
+            )
+        )
+
+
+@rules_app.command("explain")
+def rules_explain(
+    code: Annotated[str, typer.Argument(help="A check code, e.g. SSD-PORTAL-002.")],
+) -> None:
+    """Explain what one check looks at and how it decides."""
+    rule = builtin_rules().get(code)
+    if rule is None:
+        typer.echo(
+            f"screenshare-doctor: no check {code!r}; see screenshare-doctor rules list", err=True
+        )
+        raise typer.Exit(ExitCode.ERROR)
+    console = Console(highlight=False)
+    console.print(Text(f"{rule.id}  {rule.title}", style="bold"))
+    console.print(Text(f"Layer: {rule.layer.value}", style="dim"))
+    console.print()
+    console.print(Text(rule.explanation))
 
 
 check_app = typer.Typer(
