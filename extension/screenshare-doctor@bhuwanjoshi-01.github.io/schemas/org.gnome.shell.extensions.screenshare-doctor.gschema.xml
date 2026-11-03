@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<schemalist>
+  <schema id="org.gnome.shell.extensions.screenshare-doctor"
+          path="/org/gnome/shell/extensions/screenshare-doctor/">
+    <key name="cli-path" type="s">
+      <default>''</default>
+      <summary>Path of the screenshare-doctor command</summary>
+      <description>Empty: look for screenshare-doctor in PATH and in ~/.local/bin.</description>
+    </key>
+  </schema>
+</schemalist>
