@@ -48,5 +48,34 @@
 `0.1.0` is the first validated release. Minor versions add features; until `1.0.0` the CLI may still change, but the
 JSON output follows `docs/json-schema-v1.json` and finding codes are never reused (see [the checks](rules.md)).
 
-The GNOME Shell extension is versioned and published separately on extensions.gnome.org; see its own section once it
-is added.
+## The GNOME Shell extension
+
+The extension has its own version (`version` in its `metadata.json`) and is published on extensions.gnome.org (EGO)
+by the maintainer, from their account. Each GitHub release also carries the zip.
+
+1. Bump `version` in `extension/screenshare-doctor@bhuwanjoshi-01.github.io/metadata.json` (EGO requires an
+   increasing integer) and merge it.
+2. Check and pack:
+
+   ```bash
+   scripts/test-extension-nested.sh     # enable, preferences, disable in a headless nested shell
+   scripts/pack-extension.sh            # dist/screenshare-doctor@bhuwanjoshi-01.github.io.shell-extension.zip
+   ```
+
+3. Upload the zip at <https://extensions.gnome.org/upload/> and paste the review notes below.
+
+### Notes for the reviewers
+
+- **Subprocess.** The extension runs one program, the user-installed `screenshare-doctor` command-line tool, with
+  `Gio.Subprocess` and `communicate_utf8_async`: never synchronously, never through a shell, only when the user opens
+  the menu (no polling, no timers while closed). The arguments are fixed (`doctor --format json`, `report`). It is
+  not privileged and needs no `pkexec`; the tool itself is read-only.
+- **Cleanup.** `disable()` destroys the indicator, whose `destroy()` cancels a shared `Gio.Cancellable`. Cancelling
+  removes the only main-loop source (the 60-second kill timeout of a running check) at once and force-exits a running
+  child.
+- **Clipboard.** Write only, on an explicit menu action (copy the report, copy the install command); declared in the
+  description. Never read.
+- **No bundled binaries**, no network access, no telemetry. Settings: one GSettings key (`cli-path`).
+- **Session modes.** No `session-modes` key: the extension runs in the user session only and is disabled on the lock
+  screen.
+- **Shexli** reports one manual-review item, EGO-A-005, for the declared clipboard use.

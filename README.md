@@ -51,6 +51,11 @@ What works already (see the [command reference](docs/cli.md)):
 - **Shareable reports.** User names, home paths and window titles are redacted before any output is written,
   JSON included. No network access, no telemetry.
 
+## GNOME Shell extension
+
+A small top-bar indicator shows the result of `doctor` whenever you open its menu; see
+[extension/README.md](extension/README.md). It needs the command-line tool and runs nothing while the menu is closed.
+
 ## Tested on
 
 GNOME 50.1 on Ubuntu 26.04 (Wayland). KDE Plasma and Hyprland are next; until then their checks rest on upstream
@@ -75,4 +80,4 @@ Screenshare Doctor focuses on the **app-centred workflow** and on validated GNOM
 
 ## License
 
-The CLI is [MIT](LICENSE). The GNOME Shell extension (once added) is GPL-2.0-or-later.
+The CLI is [MIT](LICENSE). The GNOME Shell extension is [GPL-2.0-or-later](extension/LICENSE).

@@ -3,7 +3,8 @@
 #
 # Load the packed extension into a headless, nested GNOME Shell and check that it
 # enables and disables without errors. Everything happens on a private D-Bus with
-# temporary data and config directories; the running desktop is not touched.
+# temporary data and config directories; the running desktop is not touched. The
+# preferences window is opened on the nested display too.
 # Needs gnome-shell (46 or newer), dbus-run-session and glib-compile-schemas.
 set -euo pipefail
 
@@ -36,17 +37,20 @@ done
 sleep 3
 gnome-extensions enable "$UUID"; sleep 3
 echo "enabled:  \$(info | tr '\n' ' ')"
+WAYLAND_DISPLAY="ssd-test-\$\$" gnome-extensions prefs "$UUID" && echo "prefs:    opened"
+sleep 4
 gnome-extensions disable "$UUID"; sleep 2
 echo "disabled: \$(info | tr '\n' ' ')"
 kill "\$pid"; wait "\$pid" 2> /dev/null
 INNER
 chmod +x "$WORK/run.sh"
 
-out="$(XDG_DATA_HOME="$WORK/data" XDG_CONFIG_HOME="$WORK/config" dbus-run-session -- "$WORK/run.sh" 2> /dev/null)"
+out="$(XDG_DATA_HOME="$WORK/data" XDG_CONFIG_HOME="$WORK/config" dbus-run-session -- "$WORK/run.sh" 2> "$WORK/bus.log")"
 echo "$out"
-errors="$(grep -c "JS ERROR" "$WORK/shell.log" || true)"
-echo "JS errors in the shell log: $errors"
+errors="$(cat "$WORK/shell.log" "$WORK/bus.log" | grep -c "JS ERROR" || true)"
+echo "JS errors in the shell and preferences logs: $errors"
 [[ "$out" == *"enabled:  'state': <1.0> 'error': <''>"* ]] || { echo "the extension did not become active"; exit 1; }
 [[ "$out" == *"disabled: 'state': <2.0> 'error': <''>"* ]] || { echo "the extension did not disable cleanly"; exit 1; }
-[[ "$errors" == 0 ]] || { grep -A5 "JS ERROR" "$WORK/shell.log"; exit 1; }
+[[ "$out" == *"prefs:    opened"* ]] || { echo "the preferences did not open"; exit 1; }
+[[ "$errors" == 0 ]] || { grep -h -A5 "JS ERROR" "$WORK/shell.log" "$WORK/bus.log"; exit 1; }
 echo "ok"

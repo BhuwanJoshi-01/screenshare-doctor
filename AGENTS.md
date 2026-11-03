@@ -6,7 +6,7 @@ Guide for contributors and coding agents. Read [CONTRIBUTING.md](CONTRIBUTING.md
 
 A read-only Python CLI that diagnoses screen sharing on Linux Wayland desktops (GNOME first, then KDE Plasma and
 Hyprland), starting from the app and the symptom. Plain Python 3.11+, Typer and Rich, packaged with uv
-(`uv_build` backend), `src/` layout. A GNOME Shell extension (GJS, GPL-2.0-or-later) will live in `extension/`.
+(`uv_build` backend), `src/` layout. A GNOME Shell extension (GJS, GPL-2.0-or-later) lives in `extension/`.
 
 ## Commands
 
@@ -74,6 +74,11 @@ tests/
   contract/       test_passive_harness.py: is_read_only() is THE definition of passive, every command
                   is checked against it; JSON schema contract (every model field in docs/json-schema-v1.json) and the canary
                   test: planted secrets must reach no renderer
+extension/        GNOME Shell extension (GPL-2.0-or-later, GJS ES modules, GNOME 46-50): extension.js,
+                  indicator.js (runs the CLI ONLY on menu open), cli.js (async Gio.Subprocess; cancel
+                  removes the timeout and force-exits), report.js (no gi imports; node --test),
+                  prefs.js, schemas/; tests/ (node + gjs). README.md has the EGO-facing details
+scripts/          pack-extension.sh, test-extension-nested.sh (headless nested shell), render_demo.py
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
                   portal-routing.md (search order and the per-release selection rules),
                   desktops.md (the bundles in prose, with sources), rules.md (every SSD check),
@@ -101,6 +106,8 @@ copy on purpose.
 - A failed or missing probe yields `unknown`, never `pass`.
 - Redact before serializing (user names, home paths, window titles, app names nobody asked about).
 - Finding codes are `SSD-*`; requirement IDs are `WLD-0xx`.
+- Extension: no synchronous spawn, no polling, every main-loop source removed in disable(), clipboard
+  write-only and declared in metadata.json; Shexli must stay at the one known manual-review item.
 - Tests first where possible: `@pytest.mark.xfail(strict=True, reason="WLD-0xx")`, then implement and drop the
   marker.
 
