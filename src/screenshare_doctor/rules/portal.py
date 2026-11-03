@@ -360,19 +360,28 @@ def backend(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding]:
         Evidence("busctl", "agreement", observation.agreement.value),
     )
     limitations = route.uncertain
+    stale = observation.agreement is Agreement.OFFERED_WITHOUT_BACKEND
+    restart = "systemctl --user restart xdg-desktop-portal.service"
+    stale_note = (
+        " The running portal still offers ScreenCast: it reads its configuration only when "
+        "it starts, so it was started before this changed and keeps the old choice until "
+        "it is restarted."
+    )
     if route.kind is RouteKind.DISABLED:
+        action = (
+            f"Remove the none entry from {route.config} "
+            "if it was not meant to disable screen sharing."
+        )
         yield Finding(
             id="SSD-PORTAL-002",
             status=Status.FAIL,
             severity=Severity.HIGH,
             confidence=Confidence.HIGH,
             summary="ScreenCast is disabled by a portals.conf",
-            reason=f"{route.config} sets it to none.",
+            reason=f"{route.config} sets it to none." + (stale_note if stale else ""),
             evidence=evidence,
-            recommended_action=(
-                f"Remove the none entry from {route.config} if it was not meant to disable screen "
-                "sharing."
-            ),
+            recommended_action=action
+            + (f" Restart the portal afterwards: {restart}" if stale else ""),
             verify_command=explain,
             limitations=limitations,
         )
@@ -384,7 +393,8 @@ def backend(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding]:
             severity=Severity.HIGH,
             confidence=Confidence.HIGH,
             summary="No installed backend implements ScreenCast",
-            reason="No configuration entry or fallback leads to a backend with ScreenCast.",
+            reason="No configuration entry or fallback leads to a backend with ScreenCast."
+            + (stale_note if stale else ""),
             evidence=evidence,
             recommended_action=(
                 "Install your desktop's portal backend (see screenshare-doctor check desktop)."

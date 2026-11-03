@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Screenshare Doctor</title>
+  <meta name="description" content="Find out why screen sharing fails on your Linux Wayland desktop. Starts from the app and the symptom; read-only, open source.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Screenshare Doctor</h1>
+    <p class="tagline">Find out why screen sharing fails on your Linux Wayland desktop.</p>
+    <p class="links">
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor">Source on GitHub</a>
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/troubleshooting.md">Troubleshooting</a>
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/portal-routing.md">How routing works</a>
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/support-matrix.md">Tested on</a>
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <p>You click <em>Share screen</em> and get no picker, a black frame or the wrong windows. The cause can sit in the
+        app, the xdg-desktop-portal routing, the desktop's portal backend, PipeWire, WirePlumber or the compositor.
+        Screenshare Doctor starts from <strong>the app and what you see</strong>, checks the whole chain without
+        touching it, and tells you which link is broken and how to check the fix.</p>
+      <figure>
+        <img src="assets/troubleshoot.svg" alt="troubleshoot output for Discord with no picker on GNOME: every portal check passes except SSD-PORTAL-002, ScreenCast is disabled by a portals.conf in the user's config folder, and the running portal still uses its old configuration until it is restarted; the most likely cause is named and the restart command shown.">
+        <figcaption>From the real captures of a GNOME 50 machine, with a copied Hyprland <code>portals.conf</code> in
+          <code>~/.config</code>.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Install</h2>
+      <pre><code>uv tool install git+https://github.com/BhuwanJoshi-01/screenshare-doctor
+screenshare-doctor troubleshoot screenshare --app firefox --symptom no-picker
+screenshare-doctor doctor</code></pre>
+      <p>Needs Python 3.11 or newer on Linux.</p>
+    </section>
+
+    <section class="promises">
+      <h2>What it promises</h2>
+      <ul>
+        <li><strong>Passive.</strong> No screen-sharing request, no picker, nothing recorded. A portal that is not
+          running is reported, not started; PipeWire is only asked when it already runs.</li>
+        <li><strong>The portal's own rules.</strong> <code>routes explain</code> follows xdg-desktop-portal's backend
+          selection for your version, then checks the prediction on D-Bus: configured is not the same as working.</li>
+        <li><strong>Unknown is not a pass.</strong> A check that could not run never shows as green.</li>
+        <li><strong>Shareable reports.</strong> Home paths, names, secrets and tokens are redacted before anything is
+          printed, and each report says what was removed.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>MIT licensed. Test reports from KDE Plasma, Hyprland and other desktops are very welcome on
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/issues">GitHub</a>.</p>
+  </footer>
+</body>
+</html>
