@@ -1,0 +1,146 @@
+{
+  "retrieved": "2026-11-03",
+  "note": "Hints about how an app shares the screen on Wayland. Each names its source; they explain, they never decide a check.",
+  "apps": [
+    {
+      "id": "firefox",
+      "name": "Firefox",
+      "aliases": [
+        "firefox",
+        "firefox-esr",
+        "librewolf",
+        "floorp"
+      ],
+      "flatpak_ids": [
+        "org.mozilla.firefox",
+        "io.gitlab.librewolf-community",
+        "one.ablaze.floorp"
+      ],
+      "hints": [
+        {
+          "symptoms": [],
+          "text": "Firefox 121 and later run natively on Wayland when a Wayland session is available; older versions run through XWayland unless MOZ_ENABLE_WAYLAND=1 is set.",
+          "source": "https://www.mozilla.org/firefox/121.0/releasenotes/",
+          "confidence": "high"
+        },
+        {
+          "symptoms": [
+            "no-picker",
+            "permission-denied"
+          ],
+          "text": "On Wayland Firefox shares through the portal and needs no extra setting once your desktop's portal backend is installed, so a missing picker points at the portal side.",
+          "source": "https://access.redhat.com/solutions/6712111",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "chromium",
+      "name": "Chromium-based browsers (Chrome, Chromium, Edge, Brave, Vivaldi)",
+      "aliases": [
+        "chromium",
+        "chrome",
+        "google-chrome",
+        "chromium-browser",
+        "microsoft-edge",
+        "edge",
+        "brave",
+        "brave-browser",
+        "vivaldi"
+      ],
+      "flatpak_ids": [
+        "org.chromium.Chromium",
+        "com.google.Chrome",
+        "com.microsoft.Edge",
+        "com.brave.Browser",
+        "com.vivaldi.Vivaldi"
+      ],
+      "hints": [
+        {
+          "symptoms": [],
+          "text": "Chrome and Chromium 110 and later share through PipeWire and the portal by default; older versions need chrome://flags/#enable-webrtc-pipewire-capturer enabled.",
+          "source": "https://access.redhat.com/solutions/6712111",
+          "confidence": "medium"
+        },
+        {
+          "symptoms": [
+            "app-only",
+            "missing-window"
+          ],
+          "text": "Chrome 140 made --ozone-platform-hint=auto the default, so it runs natively on Wayland when available; older versions run through XWayland unless started with that flag.",
+          "source": "https://www.phoronix.com/news/Chrome-Auto-Ozone-Platform",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "electron",
+      "name": "Electron apps (Discord, Slack, Teams for Linux, Signal, VS Code…)",
+      "aliases": [
+        "electron",
+        "discord",
+        "vesktop",
+        "slack",
+        "teams",
+        "teams-for-linux",
+        "signal",
+        "signal-desktop",
+        "code",
+        "vscode",
+        "element",
+        "obsidian"
+      ],
+      "flatpak_ids": [
+        "com.discordapp.Discord",
+        "dev.vencord.Vesktop",
+        "com.slack.Slack",
+        "com.github.IsmaelMartinez.teams_for_linux",
+        "org.signal.Signal",
+        "com.visualstudio.code",
+        "im.riot.Riot",
+        "md.obsidian.Obsidian"
+      ],
+      "hints": [
+        {
+          "symptoms": [
+            "app-only",
+            "missing-window"
+          ],
+          "text": "With XWayland present, Electron (20 to 22 in this report) captured X11 windows and screens even with PipeWire capture enabled, so only X11 windows could be shared; an app running natively on Wayland gets the portal's picker instead.",
+          "source": "https://github.com/electron/electron/issues/36660",
+          "confidence": "medium"
+        },
+        {
+          "symptoms": [],
+          "text": "Electron 38 and later pick Wayland automatically when it is available (ELECTRON_OZONE_PLATFORM_HINT is deprecated); older Electron apps need --ozone-platform-hint=auto to run natively.",
+          "source": "https://github.com/electron/electron/pull/48002",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "obs",
+      "name": "OBS Studio",
+      "aliases": [
+        "obs",
+        "obs-studio"
+      ],
+      "flatpak_ids": [
+        "com.obsproject.Studio"
+      ],
+      "hints": [
+        {
+          "symptoms": [],
+          "text": "On Wayland OBS captures through its \"Screen Capture (PipeWire)\" and \"Window Capture (PipeWire)\" sources, which use the portal; when they are missing from the source list, PipeWire, WirePlumber or the portal are usually not running.",
+          "source": "https://obsproject.com/forum/threads/missing-screen-window-capture-even-though-pipewire-is-running.150377",
+          "confidence": "low"
+        }
+      ]
+    }
+  ],
+  "flatpak": {
+    "text": "Flatpak apps cannot read the screen themselves and always share through the portal, so the portal checks apply to them in full.",
+    "source": "https://docs.flatpak.org/en/latest/desktop-integration.html#portals",
+    "confidence": "high"
+  }
+}
