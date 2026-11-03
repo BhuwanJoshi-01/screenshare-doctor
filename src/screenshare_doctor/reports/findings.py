@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections import Counter
 
 from rich.console import Console
+from rich.table import Table
 from rich.text import Text
 
 from screenshare_doctor.bundles import bundle_for
@@ -113,25 +114,29 @@ def render_findings(snapshot: Snapshot, console: Console, *, show_all: bool = Fa
 
 
 def render_finding(finding: Finding, console: Console, *, details: bool = False) -> None:
-    """One line, plus reason, next step and check for problems (or always with ``details``)."""
-    label = _LABEL[finding.status]
+    """One line, plus reason, next step and check for problems (or always with ``details``).
+
+    A three-column grid keeps wrapped summaries and details aligned under the summary
+    instead of falling back to the left margin in a narrow terminal.
+    """
     summary = finding.summary
     if finding.caused_by:
         summary += f" (follows from {finding.caused_by})"
-    console.print(
-        Text.assemble(
-            (f"{label:<8}", _STYLE.get(finding.status, "dim")),
-            (f"{finding.id:<19}", "bold"),
-            summary,
-        )
+    grid = Table.grid(padding=(0, 0))
+    grid.add_column(width=8, no_wrap=True)
+    grid.add_column(width=19, no_wrap=True)
+    grid.add_column(ratio=1)
+    grid.add_row(
+        Text(_LABEL[finding.status], style=_STYLE.get(finding.status, "dim")),
+        Text(finding.id, style="bold"),
+        Text(summary),
     )
-    if finding.status not in _DETAILED and not details:
-        return
-    indent = " " * 27
-    console.print(Text(f"{indent}{finding.reason}"))
-    if finding.recommended_action:
-        console.print(Text(f"{indent}Next: {finding.recommended_action}"))
-    if finding.verify_command:
-        console.print(Text(f"{indent}Check: {finding.verify_command}"))
-    for limitation in finding.limitations:
-        console.print(Text(f"{indent}Note: {limitation}", style="dim"))
+    if finding.status in _DETAILED or details:
+        grid.add_row("", "", Text(finding.reason))
+        if finding.recommended_action:
+            grid.add_row("", "", Text(f"Next: {finding.recommended_action}"))
+        if finding.verify_command:
+            grid.add_row("", "", Text(f"Check: {finding.verify_command}"))
+        for limitation in finding.limitations:
+            grid.add_row("", "", Text(f"Note: {limitation}", style="dim"))
+    console.print(grid)
