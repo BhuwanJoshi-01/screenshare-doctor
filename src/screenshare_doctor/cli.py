@@ -15,9 +15,9 @@ from rich.console import Console
 from screenshare_doctor import __version__
 from screenshare_doctor.exit_codes import ExitCode
 from screenshare_doctor.models import SessionFacts
-from screenshare_doctor.orchestrator import inspect_session
+from screenshare_doctor.orchestrator import inspect_services, inspect_session
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
-from screenshare_doctor.reports.terminal import render_session
+from screenshare_doctor.reports.terminal import render_services, render_session
 from screenshare_doctor.runner import SubprocessRunner
 from screenshare_doctor.session import SessionKind, assess_session
 
@@ -79,6 +79,18 @@ def check_session() -> None:
     kind = assess_session(facts.environment, facts.paths, facts.logind).kind
     if kind in {SessionKind.NONE, SessionKind.UNKNOWN}:
         raise typer.Exit(ExitCode.CONTEXT_UNAVAILABLE)
+
+
+@check_app.command("services")
+def check_services() -> None:
+    """Show the installed portal, PipeWire and WirePlumber packages and their user services.
+
+    Reads the package database (dpkg-query, rpm or pacman, query commands only) and the
+    user manager (systemctl --user show, show-environment). Nothing is started: a portal
+    that is not running stays that way.
+    """
+    snapshot = inspect_services(SubprocessRunner())
+    render_services(redact_snapshot(snapshot), Console(highlight=False))
 
 
 def main() -> None:
