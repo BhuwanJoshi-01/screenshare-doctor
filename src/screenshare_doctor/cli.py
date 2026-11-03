@@ -15,9 +15,20 @@ from rich.console import Console
 from screenshare_doctor import __version__
 from screenshare_doctor.exit_codes import ExitCode
 from screenshare_doctor.models import SessionFacts
-from screenshare_doctor.orchestrator import inspect_dbus, inspect_services, inspect_session
+from screenshare_doctor.orchestrator import (
+    inspect_dbus,
+    inspect_routes,
+    inspect_services,
+    inspect_session,
+)
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
-from screenshare_doctor.reports.terminal import render_dbus, render_services, render_session
+from screenshare_doctor.reports.terminal import (
+    render_dbus,
+    render_route,
+    render_services,
+    render_session,
+)
+from screenshare_doctor.routes import normalize_interface
 from screenshare_doctor.runner import SubprocessRunner
 from screenshare_doctor.session import SessionKind, assess_session
 
@@ -106,6 +117,42 @@ def check_dbus() -> None:
     render_dbus(redact_snapshot(snapshot), Console(highlight=False))
     if snapshot.dbus is None or snapshot.dbus.reachable is not True:
         raise typer.Exit(ExitCode.CONTEXT_UNAVAILABLE)
+
+
+routes_app = typer.Typer(
+    help="Explain which portal backend handles an interface, and why.",
+    no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+app.add_typer(routes_app, name="routes")
+
+
+@routes_app.command("explain")
+def routes_explain(
+    interface: Annotated[
+        str,
+        typer.Argument(
+            help="Portal interface: ScreenCast, Screenshot, RemoteDesktop… (short or full name).",
+        ),
+    ] = "ScreenCast",
+) -> None:
+    """Predict the backend xdg-desktop-portal uses for INTERFACE, and check it on D-Bus.
+
+    Follows the frontend's own rules for the installed version: its XDG_CURRENT_DESKTOP
+    and directories (from the user manager), every portals.conf candidate in search
+    order, and the .portal descriptors. Then compares the prediction with the session
+    bus, without starting anything.
+    """
+    impl = normalize_interface(interface)
+    if impl is None:
+        typer.echo(
+            f"screenshare-doctor: {interface!r} is not a portal interface name "
+            "(try ScreenCast or org.freedesktop.portal.ScreenCast)",
+            err=True,
+        )
+        raise typer.Exit(ExitCode.ERROR)
+    snapshot = inspect_routes(SubprocessRunner())
+    render_route(redact_snapshot(snapshot), impl, Console(highlight=False))
 
 
 def main() -> None:
