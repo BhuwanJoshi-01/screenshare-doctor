@@ -6,9 +6,11 @@ import stat
 from screenshare_doctor import __version__
 from screenshare_doctor.collectors.packages import DPKG_FORMAT, PACKAGES
 from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
-from screenshare_doctor.models import FailureKind, PathState, SessionEnvironment
+from screenshare_doctor.models import FailureKind, PathState, SessionEnvironment, Status
 from screenshare_doctor.orchestrator import (
     collect_session,
+    diagnose,
+    inspect_all,
     inspect_dbus,
     inspect_routes,
     inspect_services,
@@ -201,3 +203,26 @@ def test_inspect_routes_falls_back_to_the_shell_without_systemd() -> None:
     assert snapshot.portal_files is not None
     assert snapshot.portal_files.variables_from == "this shell"
     assert snapshot.portal_files.desktops == ("gnome",)
+
+
+def test_inspect_all_and_diagnose_on_the_real_machine() -> None:
+    runner = FakeRunner()
+    script_gnome_machine(runner, uid=1000)
+    read, list_dir = gnome_file_access()
+    snapshot = inspect_all(
+        runner,
+        environ=read_env_fixture("gnome-wayland-ubuntu"),
+        uid=1000,
+        stat=_socket_stat,
+        which=lambda name: "/usr/bin/dpkg-query" if name == "dpkg-query" else None,
+        exists=lambda path: path == "/var/lib/dpkg/status",
+        read=read,
+        list_dir=list_dir,
+    )
+    assert snapshot.probe_failures == ()
+    assert snapshot.pipewire is not None
+    assert snapshot.pipewire.version == "1.6.2"
+    diagnosed = diagnose(snapshot)
+    assert len(diagnosed.findings) == 15
+    assert {f.status for f in diagnosed.findings} == {Status.PASS}
+    assert all(f.layer is not None for f in diagnosed.findings)

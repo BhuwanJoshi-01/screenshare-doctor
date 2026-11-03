@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import shutil
 from collections.abc import Callable, Mapping
+from dataclasses import replace
 
 from screenshare_doctor import __version__
 from screenshare_doctor.collectors.dbus import collect_dbus
@@ -30,6 +31,8 @@ from screenshare_doctor.models import (
     Snapshot,
     utc_timestamp,
 )
+from screenshare_doctor.rules.catalog import builtin_rules
+from screenshare_doctor.rules.engine import RuleContext, evaluate
 from screenshare_doctor.runner import CommandRunner
 
 
@@ -172,3 +175,45 @@ def inspect_routes(
             *dbus_failures,
         ),
     )
+
+
+def inspect_all(
+    runner: CommandRunner,
+    *,
+    environ: Mapping[str, str] = os.environ,
+    uid: int | None = None,
+    stat: Callable[[str], os.stat_result] = os.stat,
+    which: Callable[[str], str | None] = shutil.which,
+    exists: Callable[[str], bool] = _exists,
+    read: Callable[[str], bytes | None] = read_capped,
+    list_dir: Callable[[str], tuple[str, ...]] = list_portal_files,
+) -> Snapshot:
+    """Every collector: what ``routes explain`` reads, plus PipeWire.
+
+    PipeWire comes last because whether it may be asked depends on the service states.
+    """
+    snapshot = inspect_routes(
+        runner,
+        environ=environ,
+        uid=uid,
+        stat=stat,
+        which=which,
+        exists=exists,
+        read=read,
+        list_dir=list_dir,
+    )
+    systemd_missing = any(
+        f.probe == "systemctl --user show" and f.kind is FailureKind.NOT_FOUND
+        for f in snapshot.probe_failures
+    )
+    pipewire, failures = collect_pipewire(
+        runner, snapshot.services, systemd_missing=systemd_missing
+    )
+    return replace(
+        snapshot, pipewire=pipewire, probe_failures=(*snapshot.probe_failures, *failures)
+    )
+
+
+def diagnose(snapshot: Snapshot, context: RuleContext | None = None) -> Snapshot:
+    """The snapshot with the findings of every built-in rule."""
+    return replace(snapshot, findings=evaluate(snapshot, builtin_rules(), context))
