@@ -8,7 +8,7 @@ from screenshare_doctor.rules.engine import Registry
 
 RULES = Registry()
 
-_MODULES: tuple[str, ...] = ("session", "portal")
+_MODULES: tuple[str, ...] = ("session", "portal", "desktop", "pipewire")
 """Evaluation order, from the session up to the app, as a screen-sharing request
 travels. Kept as data on purpose: import sorting would otherwise reorder the rules."""
 
