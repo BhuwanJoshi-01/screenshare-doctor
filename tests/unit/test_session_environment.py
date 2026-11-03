@@ -6,15 +6,12 @@ from collections.abc import Iterator, Mapping
 
 import pytest
 
+from screenshare_doctor.collectors.environment import read_session_environment
 from screenshare_doctor.models import SessionEnvironment
 from tests.fakes import read_env_fixture
 
-pytestmark = pytest.mark.xfail(strict=True, reason="WLD-001")
-
 
 def _read(environ: Mapping[str, str]) -> SessionEnvironment:
-    from screenshare_doctor.collectors.environment import read_session_environment
-
     return read_session_environment(environ)
 
 
