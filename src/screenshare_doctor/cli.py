@@ -10,10 +10,16 @@ import sys
 from typing import Annotated
 
 import typer
+from rich.console import Console
 
 from screenshare_doctor import __version__
 from screenshare_doctor.exit_codes import ExitCode
-from screenshare_doctor.privacy import RedactionContext, Redactor
+from screenshare_doctor.models import SessionFacts
+from screenshare_doctor.orchestrator import inspect_session
+from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
+from screenshare_doctor.reports.terminal import render_session
+from screenshare_doctor.runner import SubprocessRunner
+from screenshare_doctor.session import SessionKind, assess_session
 
 HELP = (
     "Find out why screen sharing fails on your Linux Wayland desktop.\n\n"
@@ -49,6 +55,30 @@ def cli(
     ] = False,
 ) -> None:
     """Global options (the help text comes from HELP)."""
+
+
+check_app = typer.Typer(
+    help="Check one part of the screen-sharing stack.",
+    no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+app.add_typer(check_app, name="check")
+
+
+@check_app.command("session")
+def check_session() -> None:
+    """Show the session type, the desktop and its display sockets, and where this runs.
+
+    Reads a fixed list of session variables, looks at the sockets they point to and asks
+    logind (loginctl show-user, show-session). Exits with code 3 when no graphical
+    session can be found.
+    """
+    snapshot = inspect_session(SubprocessRunner())
+    render_session(redact_snapshot(snapshot), Console(highlight=False))
+    facts = snapshot.session or SessionFacts()
+    kind = assess_session(facts.environment, facts.paths, facts.logind).kind
+    if kind in {SessionKind.NONE, SessionKind.UNKNOWN}:
+        raise typer.Exit(ExitCode.CONTEXT_UNAVAILABLE)
 
 
 def main() -> None:
