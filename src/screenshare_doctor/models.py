@@ -351,6 +351,41 @@ class DbusFacts:
 
 
 @dataclass(frozen=True, slots=True)
+class PortalDescriptor:
+    """A ``<source>.portal`` file: which backend implements which interfaces.
+
+    ``source`` is the file name without ``.portal``; it is the name ``portals.conf``
+    refers to. ``error`` says why the portal frontend would skip the file (unreadable,
+    no valid ``DBusName``, an interface outside ``org.freedesktop.impl.portal.*``…);
+    ``None`` means it is usable.
+    """
+
+    source: str
+    path: str
+    dbus_name: str | None = None
+    interfaces: tuple[str, ...] = ()
+    use_in: tuple[str, ...] | None = None
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PortalsConf:
+    """One ``portals.conf`` or ``<desktop>-portals.conf`` file.
+
+    ``preferred`` holds the ``[preferred]`` keys in file order with their backend lists
+    (a key set twice keeps its last value; ``duplicates`` names such keys). ``usable``
+    is ``False`` when the portal would ignore the file: unreadable, invalid, or without
+    a ``[preferred]`` group; ``error`` then says why.
+    """
+
+    path: str
+    preferred: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    duplicates: tuple[str, ...] = ()
+    usable: bool = True
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
