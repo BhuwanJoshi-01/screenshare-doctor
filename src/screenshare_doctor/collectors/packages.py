@@ -67,6 +67,46 @@ def parse_dpkg(
     return _in_order(names, found, missing)
 
 
+RPM_FORMAT = "%{NAME}\\t%{VERSION}-%{RELEASE}\\n"
+
+_RPM_MISSING = re.compile(r"package (\S+) is not installed")
+_PACMAN_MISSING = re.compile(r"error: package '([^']+)' was not found")
+
+
+def parse_rpm(stdout: str, names: Sequence[str] = PACKAGES) -> tuple[PackageInfo, ...]:
+    """``rpm -q --queryformat RPM_FORMAT names…`` output, in the order of ``names``.
+
+    rpm reports missing packages on stdout ("package NAME is not installed"). A package
+    installed for two architectures prints two lines; the first one is kept.
+    """
+    found: dict[str, PackageInfo] = {}
+    missing: set[str] = set()
+    for line in stdout.splitlines():
+        if match := _RPM_MISSING.fullmatch(line.strip()):
+            missing.add(match.group(1))
+            continue
+        name, tab, version = line.partition("\t")
+        if tab and name in names and name not in found:
+            found[name] = PackageInfo(name, PackageState.INSTALLED, version.strip() or None)
+    return _in_order(names, found, missing)
+
+
+def parse_pacman(
+    stdout: str, stderr: str, names: Sequence[str] = PACKAGES
+) -> tuple[PackageInfo, ...]:
+    """``pacman -Q names…`` output (``name version`` lines), in the order of ``names``.
+
+    pacman reports missing packages on stderr ("error: package 'NAME' was not found").
+    """
+    found: dict[str, PackageInfo] = {}
+    for line in stdout.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[0] in names:
+            found[parts[0]] = PackageInfo(parts[0], PackageState.INSTALLED, parts[1])
+    missing = set(_PACMAN_MISSING.findall(stderr))
+    return _in_order(names, found, missing)
+
+
 def _in_order(
     names: Sequence[str], found: dict[str, PackageInfo], missing: set[str]
 ) -> tuple[PackageInfo, ...]:
