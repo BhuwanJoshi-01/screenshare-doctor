@@ -17,6 +17,7 @@ from rich.text import Text
 from screenshare_doctor import __version__
 from screenshare_doctor.bundles import bundle_for
 from screenshare_doctor.bundles.check import check_bundle
+from screenshare_doctor.collectors.flatpak import installed_flatpaks
 from screenshare_doctor.desktops import DesktopFamily, identify_desktop
 from screenshare_doctor.exit_codes import ExitCode
 from screenshare_doctor.models import SessionEnvironment, SessionFacts, Status
@@ -37,10 +38,13 @@ from screenshare_doctor.reports.terminal import (
     render_services,
     render_session,
 )
+from screenshare_doctor.reports.troubleshoot import render_troubleshooting
 from screenshare_doctor.routes import normalize_interface
 from screenshare_doctor.rules.catalog import builtin_rules
 from screenshare_doctor.runner import SubprocessRunner
 from screenshare_doctor.session import SessionKind, assess_session
+from screenshare_doctor.troubleshoot import load_apps, load_symptoms
+from screenshare_doctor.troubleshoot.select import troubleshoot
 
 HELP = (
     "Find out why screen sharing fails on your Linux Wayland desktop.\n\n"
@@ -99,6 +103,63 @@ def doctor(
     render_findings(redact_snapshot(snapshot), Console(highlight=False), show_all=show_all)
     if strict and any(f.status is Status.FAIL for f in snapshot.findings):
         raise typer.Exit(ExitCode.STRICT_FAILURE)
+
+
+troubleshoot_app = typer.Typer(
+    help="Start from an app and what you see, and get the checks that explain it.",
+    no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+app.add_typer(troubleshoot_app, name="troubleshoot")
+
+_SYMPTOM_HELP = "What you see: " + ", ".join(load_symptoms()) + "."
+
+
+@troubleshoot_app.command("screenshare")
+def troubleshoot_screenshare(
+    app_name: Annotated[
+        str | None,
+        typer.Option(
+            "--app", metavar="NAME", help="The app you share from: firefox, chrome, discord, obs…"
+        ),
+    ] = None,
+    symptom_id: Annotated[
+        str | None, typer.Option("--symptom", metavar="SYMPTOM", help=_SYMPTOM_HELP)
+    ] = None,
+    explain: Annotated[
+        bool, typer.Option("--explain", help="Explain every check, passes included.")
+    ] = False,
+) -> None:
+    """Explain why screen sharing fails in an app, starting from the symptom.
+
+    Runs the same passive checks as doctor, then shows the ones that explain the
+    symptom, most likely cause first, with what is known about the app. App names are
+    profiles for hints, not something the tool inspects in the running app.
+    """
+    symptoms = load_symptoms()
+    symptom = None
+    if symptom_id is not None:
+        symptom = symptoms.get(symptom_id.lower())
+        if symptom is None:
+            typer.echo(
+                f"screenshare-doctor: unknown symptom {symptom_id!r}; choose one of: "
+                + ", ".join(symptoms),
+                err=True,
+            )
+            raise typer.Exit(ExitCode.ERROR)
+    snapshot = diagnose(inspect_all(SubprocessRunner()))
+    apps = load_apps()
+    profile = apps.find(app_name) if app_name else None
+    flatpak = (
+        installed_flatpaks(profile.flatpak_ids, home=os.environ.get("HOME")) if profile else ()
+    )
+    redacted = redact_snapshot(snapshot)
+    result = troubleshoot(
+        redacted.findings, symptom=symptom, app_name=app_name, apps=apps, flatpak=flatpak
+    )
+    render_troubleshooting(
+        redacted, result, builtin_rules(), Console(highlight=False), explain=explain
+    )
 
 
 rules_app = typer.Typer(

@@ -2,8 +2,8 @@
 
 **Find out why screen sharing fails on your Linux Wayland desktop.**
 
-> **Status: in development.** Nothing is released yet. The commands below are the planned interface for 0.1.0;
-> see the [roadmap](docs/roadmap.md).
+> **Status: in development.** Nothing is released yet; see the [roadmap](docs/roadmap.md). Report generation
+> (`report --format markdown`) is still planned.
 
 You click "Share screen" in a browser or a meeting app and get a black frame, no picker, the wrong windows or a
 permission error. The cause can sit in the app, the way it was launched (native, Flatpak, XWayland), the
@@ -21,6 +21,8 @@ session.
 
 What works already (see the [command reference](docs/cli.md)):
 
+- `screenshare-doctor troubleshoot screenshare --app firefox --symptom no-picker` starts from the app and what
+  you see, and shows the checks that explain it, most likely cause first ([apps and symptoms](docs/apps-and-symptoms.md)).
 - `screenshare-doctor doctor` runs every [check](docs/rules.md), from the session to PipeWire, and explains what
   needs attention.
 - `screenshare-doctor check session` tells Wayland, X11, SSH and no session apart and shows the desktop names the

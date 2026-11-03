@@ -34,6 +34,7 @@ src/screenshare_doctor/
                   dbus.py (bus daemon: ListActivatableNames + NameHasOwner; then ONLY running names,
                   always busctl --auto-start=no: Introspect, ScreenCast properties)
                   portal_config.py (candidate portals.conf + *.portal files, read-only, 64 KiB cap),
+                  flatpak.py (stat of the two installation dirs, only for the named app),
                   pipewire.py (pw-dump per object type, ONLY if pipewire.service is active: socket
                   activation would start it; reduced to counters + known client names)
   bundles/        desktops.json (sourced defaults per desktop: backend, package, unit, portals.conf
@@ -48,6 +49,8 @@ src/screenshare_doctor/
                   Read docs/portal-routing.md before changing it.
   desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
   session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
+  troubleshoot/   symptoms.json (symptom -> checks, most likely first), apps.json (sourced hints; never
+                  decide a check), select.py troubleshoot(): ordering, likely cause, hints
   rules/          engine.py (Registry, evaluate, root_causes), catalog.py (module order as data),
                   session.py, portal.py, desktop.py, pipewire.py: the SSD-* checks (docs/rules.md lists
                   them; a test fails if one is missing there)
@@ -67,7 +70,8 @@ tests/
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
                   portal-routing.md (search order and the per-release selection rules),
-                  desktops.md (the bundles in prose, with sources), rules.md (every SSD check)
+                  desktops.md (the bundles in prose, with sources), rules.md (every SSD check),
+                  apps-and-symptoms.md (troubleshoot profiles and their sources)
 .github/          CI, issue forms, PR template
 ```
 
