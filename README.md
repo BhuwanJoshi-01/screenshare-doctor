@@ -25,6 +25,8 @@ What works already (see the [command reference](docs/cli.md)):
   portal reads.
 - `screenshare-doctor check services` shows which portal backends, PipeWire and WirePlumber are installed and
   running, and whether portals will see the same desktop variables as your shell.
+- `screenshare-doctor check dbus` shows which portal services are on the session bus and what they offer for
+  screen sharing, without starting any of them.
 
 ## What it promises
 

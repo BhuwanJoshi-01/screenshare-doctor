@@ -10,13 +10,18 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
+from screenshare_doctor.collectors.dbus import FRONTEND, MUTTER_SCREENCAST
 from screenshare_doctor.desktops import DesktopFamily, DesktopIdentity, identify_desktop
 from screenshare_doctor.models import (
+    BusName,
+    DbusFacts,
     LogindSession,
     PackageFacts,
     PackageInfo,
     PackageState,
     PathState,
+    PortalObject,
+    ScreenCastProperties,
     ServiceFacts,
     SessionEnvironment,
     SessionFacts,
@@ -24,6 +29,7 @@ from screenshare_doctor.models import (
     Snapshot,
     UserService,
 )
+from screenshare_doctor.screencast import cursor_mode_names, source_type_names
 from screenshare_doctor.session import Location, SessionAssessment, SessionKind, assess_session
 
 _LABEL_WIDTH = 12
@@ -290,6 +296,76 @@ def _activation_line(
     else:
         comparison = f"(this shell: {_value(shell_value)})"
     return f"  {name:<21}{_value(value):<{width}}  {comparison}"
+
+
+_BUS_LABELS = {
+    FRONTEND: "portal frontend",
+    "org.freedesktop.impl.portal.desktop.gnome": "GNOME backend",
+    "org.freedesktop.impl.portal.desktop.gtk": "GTK backend",
+    "org.freedesktop.impl.portal.desktop.kde": "KDE backend",
+    "org.freedesktop.impl.portal.desktop.wlr": "wlr backend",
+    "org.freedesktop.impl.portal.desktop.hyprland": "Hyprland backend",
+    MUTTER_SCREENCAST: "Mutter ScreenCast",
+}
+
+
+def render_dbus(snapshot: Snapshot, console: Console) -> None:
+    """Which portal names run or can start, and what the running ones offer for ScreenCast."""
+    console.print(Text(f"screenshare-doctor {snapshot.tool_version}: D-Bus", style="bold"))
+    console.print()
+    dbus = snapshot.dbus or DbusFacts()
+    reachable = {True: "reachable", False: "not reachable", None: "unknown"}[dbus.reachable]
+    console.print(_row("Session bus", reachable))
+    if dbus.names:
+        console.print()
+        objects = {portal.name: portal for portal in dbus.objects}
+        table = Table(box=None, show_edge=False, pad_edge=False, header_style="bold")
+        for column in ("Component", "Running", "Can start", "ScreenCast"):
+            table.add_column(column)
+        for name in dbus.names:
+            table.add_row(
+                Text(_BUS_LABELS.get(name.name, name.name)),
+                Text(_yes_no(name.running)),
+                Text(_yes_no(name.activatable)),
+                Text(_screencast_cell(name, objects.get(name.name))),
+            )
+        console.print(table)
+        console.print(
+            Text(
+                "Only services that were already running were contacted; nothing was started.",
+                style="dim",
+            )
+        )
+    _render_failures(snapshot, console)
+
+
+def _yes_no(value: bool | None) -> str:
+    return {True: "yes", False: "no", None: "unknown"}[value]
+
+
+def _screencast_cell(name: BusName, portal: PortalObject | None) -> str:
+    if name.running is not True:
+        return "-"
+    if portal is None or (portal.interfaces is None and portal.screencast is None):
+        return "unknown (see below)"
+    if portal.screencast is None:
+        if portal.interfaces is not None and not any(
+            interface.endswith(".ScreenCast") for interface in portal.interfaces
+        ):
+            return "not implemented"
+        return "unknown (see below)"
+    return _describe_screencast(portal.screencast)
+
+
+def _describe_screencast(properties: ScreenCastProperties) -> str:
+    parts = [f"version {properties.version}" if properties.version is not None else "version ?"]
+    if properties.source_types is not None:
+        sources = source_type_names(properties.source_types)
+        parts.append("sources: " + (", ".join(sources) if sources else "none"))
+    if properties.cursor_modes is not None:
+        modes = cursor_mode_names(properties.cursor_modes)
+        parts.append("cursor: " + (", ".join(modes) if modes else "none"))
+    return "; ".join(parts)
 
 
 def redaction_line(snapshot: Snapshot) -> str | None:

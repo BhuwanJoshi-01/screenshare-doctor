@@ -310,15 +310,44 @@ class BusName:
 
 
 @dataclass(frozen=True, slots=True)
+class ScreenCastProperties:
+    """The ScreenCast interface's properties; ``None`` when not reported.
+
+    ``source_types`` and ``cursor_modes`` are the bit masks from the specification:
+    sources 1 monitor, 2 window, 4 virtual; cursor modes 1 hidden, 2 embedded,
+    4 metadata.
+    """
+
+    version: int | None = None
+    source_types: int | None = None
+    cursor_modes: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PortalObject:
+    """What a running portal service exposes.
+
+    ``interfaces`` lists the portal interfaces it implements, from introspection
+    (``None`` when it was not introspected). ``screencast`` holds its ScreenCast
+    properties, ``None`` when it has no ScreenCast interface or they could not be read.
+    """
+
+    name: str
+    interfaces: tuple[str, ...] | None = None
+    screencast: ScreenCastProperties | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class DbusFacts:
     """What the session bus said, read without starting any service.
 
     ``reachable`` is ``False`` when the session bus itself did not answer, ``None``
-    when it was not tried.
+    when it was not tried. ``objects`` covers only names that were already running.
     """
 
     reachable: bool | None = None
     names: tuple[BusName, ...] = ()
+    objects: tuple[PortalObject, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -333,8 +362,8 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session``, ``packages`` and ``services`` are ``None`` when the command did not
-    look at them. Portal and PipeWire facts join this record as their collectors are
+    ``session``, ``packages``, ``services`` and ``dbus`` are ``None`` when the command
+    did not look at them. Portal and PipeWire facts join this record as their collectors are
     added.
     """
 
@@ -344,6 +373,7 @@ class Snapshot:
     session: SessionFacts | None = None
     packages: PackageFacts | None = None
     services: ServiceFacts | None = None
+    dbus: DbusFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()

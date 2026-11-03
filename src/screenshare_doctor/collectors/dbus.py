@@ -9,13 +9,22 @@ running is therefore reported as not running instead of being started by the che
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 from typing import Any
 
-from screenshare_doctor.models import BusName, DbusFacts, FailureKind, ProbeFailure
+from screenshare_doctor.models import (
+    BusName,
+    DbusFacts,
+    FailureKind,
+    PortalObject,
+    ProbeFailure,
+    ScreenCastProperties,
+)
 from screenshare_doctor.runner import CommandRunner, probe_failure
 
 FRONTEND = "org.freedesktop.portal.Desktop"
+MUTTER_SCREENCAST = "org.gnome.Mutter.ScreenCast"
 
 BUS_NAMES: tuple[str, ...] = (
     FRONTEND,
@@ -24,10 +33,23 @@ BUS_NAMES: tuple[str, ...] = (
     "org.freedesktop.impl.portal.desktop.kde",
     "org.freedesktop.impl.portal.desktop.wlr",
     "org.freedesktop.impl.portal.desktop.hyprland",
-    "org.gnome.Mutter.ScreenCast",
+    MUTTER_SCREENCAST,
 )
 """The frontend, the backends, and GNOME's compositor-side screen-cast service, which the
 GNOME backend calls. KDE and Hyprland offer theirs through Wayland protocols instead."""
+
+
+PORTAL_PATH = "/org/freedesktop/portal/desktop"
+SCREENCAST = "org.freedesktop.portal.ScreenCast"
+IMPL_SCREENCAST = "org.freedesktop.impl.portal.ScreenCast"
+SCREENCAST_PROPERTIES = ("version", "AvailableSourceTypes", "AvailableCursorModes")
+
+_INTERFACE = re.compile(r"<interface\s+name=\"([^\"]+)\"")
+_PORTAL_INTERFACE_PREFIXES = (
+    "org.freedesktop.portal.",
+    "org.freedesktop.impl.portal.",
+    "org.freedesktop.host.portal.",
+)
 
 
 class BusctlOutputError(ValueError):
@@ -74,6 +96,51 @@ def parse_string_list_reply(text: str) -> list[str]:
     if not isinstance(names, list) or not all(isinstance(name, str) for name in names):
         raise BusctlOutputError("expected one string array")
     return names
+
+
+def parse_introspection(text: str) -> tuple[str, ...]:
+    """The portal interfaces named in an ``Introspect`` reply, sorted, without duplicates.
+
+    The XML is not parsed as XML: only ``<interface name="…">`` is needed, and a
+    regular expression cannot be made to expand entities.
+    """
+    document = parse_busctl_json(text)[0]
+    data = document["data"]
+    if document.get("type") != "s" or not isinstance(data, list) or len(data) != 1:
+        raise BusctlOutputError("expected one string")
+    if not isinstance(data[0], str):
+        raise BusctlOutputError("expected one string")
+    names = {
+        name for name in _INTERFACE.findall(data[0]) if name.startswith(_PORTAL_INTERFACE_PREFIXES)
+    }
+    return tuple(sorted(names))
+
+
+def parse_screencast_properties(text: str) -> ScreenCastProperties:
+    """``get-property … version AvailableSourceTypes AvailableCursorModes``: three lines."""
+    documents = parse_busctl_json(text)
+    if len(documents) != len(SCREENCAST_PROPERTIES):
+        raise BusctlOutputError(f"expected {len(SCREENCAST_PROPERTIES)} properties")
+    values = [_unsigned(document) for document in documents]
+    return ScreenCastProperties(*values)
+
+
+def parse_integer_property(text: str) -> int:
+    """One integer property, such as Mutter's ScreenCast ``Version`` (type ``i``)."""
+    return _unsigned(parse_busctl_json(text)[0])
+
+
+def _unsigned(document: dict[str, Any]) -> int:
+    data = document["data"]
+    if (
+        document.get("type") not in {"u", "i"}
+        or isinstance(data, bool)
+        or not isinstance(data, int)
+    ):
+        raise BusctlOutputError("expected an integer property")
+    if data < 0:
+        raise BusctlOutputError("expected a non-negative integer")
+    return data
 
 
 BUSCTL_TIMEOUT = 5.0
@@ -132,3 +199,106 @@ def _has_owner(runner: CommandRunner, name: str) -> tuple[bool | None, ProbeFail
         return parse_bool_reply(result.stdout), None
     except BusctlOutputError as exc:
         return None, ProbeFailure("busctl NameHasOwner", FailureKind.MALFORMED_OUTPUT, str(exc))
+
+
+NO_AUTO_START = (*BUSCTL, "--auto-start=no")
+"""For every message to a service: if the name has no owner, fail instead of starting it."""
+
+
+def collect_portal_objects(
+    runner: CommandRunner, names: Sequence[BusName]
+) -> tuple[tuple[PortalObject, ...], tuple[ProbeFailure, ...]]:
+    """Introspect each running portal service and read its ScreenCast properties.
+
+    Only names reported running are contacted, and always with ``--auto-start=no``, so
+    even a name that stopped in the meantime is not started again by the check.
+    """
+    objects: list[PortalObject] = []
+    failures: list[ProbeFailure] = []
+    for bus_name in names:
+        if bus_name.running is not True:
+            continue
+        if bus_name.name == MUTTER_SCREENCAST:
+            portal_object, failure = _mutter(runner)
+        else:
+            portal_object, failure = _portal(runner, bus_name.name)
+        objects.append(portal_object)
+        if failure is not None:
+            failures.append(failure)
+    return tuple(objects), tuple(failures)
+
+
+def collect_dbus(runner: CommandRunner) -> tuple[DbusFacts, tuple[ProbeFailure, ...]]:
+    """Names first (bus daemon only), then the objects of the names that run."""
+    facts, failures = collect_bus_names(runner)
+    if not facts.names:
+        return facts, failures
+    objects, object_failures = collect_portal_objects(runner, facts.names)
+    return (
+        DbusFacts(reachable=facts.reachable, names=facts.names, objects=objects),
+        (*failures, *object_failures),
+    )
+
+
+def _portal(runner: CommandRunner, name: str) -> tuple[PortalObject, ProbeFailure | None]:
+    result = runner.run(
+        [
+            *NO_AUTO_START,
+            "call",
+            name,
+            PORTAL_PATH,
+            "org.freedesktop.DBus.Introspectable",
+            "Introspect",
+        ],
+        timeout=BUSCTL_TIMEOUT,
+    )
+    failure = probe_failure(f"busctl introspect {name}", result)
+    if failure is not None:
+        return PortalObject(name), failure
+    try:
+        interfaces = parse_introspection(result.stdout)
+    except BusctlOutputError as exc:
+        return PortalObject(name), ProbeFailure(
+            f"busctl introspect {name}", FailureKind.MALFORMED_OUTPUT, str(exc)
+        )
+    interface = SCREENCAST if name == FRONTEND else IMPL_SCREENCAST
+    if interface not in interfaces:
+        return PortalObject(name, interfaces), None
+    result = runner.run(
+        [*NO_AUTO_START, "get-property", name, PORTAL_PATH, interface, *SCREENCAST_PROPERTIES],
+        timeout=BUSCTL_TIMEOUT,
+    )
+    failure = probe_failure(f"busctl get-property {name}", result)
+    if failure is not None:
+        return PortalObject(name, interfaces), failure
+    try:
+        properties = parse_screencast_properties(result.stdout)
+    except BusctlOutputError as exc:
+        return PortalObject(name, interfaces), ProbeFailure(
+            f"busctl get-property {name}", FailureKind.MALFORMED_OUTPUT, str(exc)
+        )
+    return PortalObject(name, interfaces, properties), None
+
+
+def _mutter(runner: CommandRunner) -> tuple[PortalObject, ProbeFailure | None]:
+    result = runner.run(
+        [
+            *NO_AUTO_START,
+            "get-property",
+            MUTTER_SCREENCAST,
+            "/org/gnome/Mutter/ScreenCast",
+            MUTTER_SCREENCAST,
+            "Version",
+        ],
+        timeout=BUSCTL_TIMEOUT,
+    )
+    failure = probe_failure(f"busctl get-property {MUTTER_SCREENCAST}", result)
+    if failure is not None:
+        return PortalObject(MUTTER_SCREENCAST), failure
+    try:
+        version = parse_integer_property(result.stdout)
+    except BusctlOutputError as exc:
+        return PortalObject(MUTTER_SCREENCAST), ProbeFailure(
+            f"busctl get-property {MUTTER_SCREENCAST}", FailureKind.MALFORMED_OUTPUT, str(exc)
+        )
+    return PortalObject(MUTTER_SCREENCAST, screencast=ScreenCastProperties(version=version)), None

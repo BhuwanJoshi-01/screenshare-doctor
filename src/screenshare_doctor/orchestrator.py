@@ -7,6 +7,7 @@ import shutil
 from collections.abc import Callable, Mapping
 
 from screenshare_doctor import __version__
+from screenshare_doctor.collectors.dbus import collect_dbus
 from screenshare_doctor.collectors.environment import check_session_paths, read_session_environment
 from screenshare_doctor.collectors.logind import collect_logind
 from screenshare_doctor.collectors.packages import collect_packages
@@ -74,4 +75,15 @@ def inspect_services(
         packages=packages,
         services=services,
         probe_failures=(*session_failures, *package_failures, *service_failures),
+    )
+
+
+def inspect_dbus(runner: CommandRunner) -> Snapshot:
+    """The portal names on the session bus and what the running ones expose."""
+    dbus, failures = collect_dbus(runner)
+    return Snapshot(
+        tool_version=__version__,
+        created_at=utc_timestamp(),
+        dbus=dbus,
+        probe_failures=failures,
     )
