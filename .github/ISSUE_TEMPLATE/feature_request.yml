@@ -1,0 +1,40 @@
+name: Feature request
+description: Suggest a check, an app profile, a desktop or an output format
+labels: ["type: feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem do you have?
+      description: The app, the desktop and the symptom, not the solution yet.
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: How do you work around it today?
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does this come up?
+      options:
+        - Once
+        - Now and then
+        - Every week or more
+  - type: textarea
+    id: interface
+    attributes:
+      label: What would you like the tool to do?
+      description: The command you would run and the output you would expect.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Sources
+      description: Upstream docs, bug reports or code that show the behaviour is real. Checks are only added with a source.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Scope and alternatives
