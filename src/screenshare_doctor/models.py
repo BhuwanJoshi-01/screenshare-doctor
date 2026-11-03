@@ -422,6 +422,9 @@ class PortalFiles:
     descriptor_directories: tuple[str, ...] = ()
     descriptors: tuple[PortalDescriptor, ...] = ()
     unreadable: tuple[str, ...] = ()
+    variables_from: str = "user manager"
+    """Whose ``XDG_CURRENT_DESKTOP`` and directory variables were used: the ``user
+    manager`` (the portal's own) or, when it could not be asked, ``this shell``."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -436,9 +439,9 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session``, ``packages``, ``services`` and ``dbus`` are ``None`` when the command
-    did not look at them. Portal and PipeWire facts join this record as their collectors are
-    added.
+    ``session``, ``packages``, ``services``, ``dbus`` and ``portal_files`` are ``None``
+    when the command did not look at them. PipeWire facts join this record as their
+    collector is added.
     """
 
     tool_version: str
@@ -448,6 +451,7 @@ class Snapshot:
     packages: PackageFacts | None = None
     services: ServiceFacts | None = None
     dbus: DbusFacts | None = None
+    portal_files: PortalFiles | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()

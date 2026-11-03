@@ -64,6 +64,7 @@ def collect_portal_files(
     *,
     read: Callable[[str], bytes | None] = read_capped,
     list_dir: Callable[[str], tuple[str, ...]] = list_portal_files,
+    variables_from: str = "user manager",
 ) -> tuple[PortalFiles, tuple[ProbeFailure, ...]]:
     """Every portals.conf candidate and .portal file the frontend would consider."""
     failures: list[ProbeFailure] = []
@@ -111,6 +112,7 @@ def collect_portal_files(
         descriptor_directories=descriptor_dirs,
         descriptors=tuple(descriptors),
         unreadable=tuple(unreadable),
+        variables_from=variables_from,
     )
     return found, tuple(failures)
 

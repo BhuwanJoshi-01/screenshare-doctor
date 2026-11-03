@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from screenshare_doctor.collectors.dbus import (
     BUS_NAMES,
     BUSCTL,
@@ -13,7 +15,10 @@ from screenshare_doctor.collectors.dbus import (
     SCREENCAST,
     SCREENCAST_PROPERTIES,
 )
-from tests.fakes import FakeRunner, read_fixture
+from screenshare_doctor.collectors.logind import SESSION_PROPERTIES
+from screenshare_doctor.collectors.packages import DPKG_FORMAT, PACKAGES
+from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
+from tests.fakes import FIXTURES, FakeRunner, read_fixture
 
 BUS_DAEMON = (
     *BUSCTL,
@@ -89,3 +94,65 @@ def script_gnome_bus(runner: FakeRunner) -> None:
         stdout=read_fixture("busctl", "screencast-props-gnome-backend.json"),
     )
     runner.script(*MUTTER_VERSION, stdout=read_fixture("busctl", "mutter-screencast-version.json"))
+
+
+def script_gnome_machine(runner: FakeRunner, *, uid: int) -> None:
+    """Every command of the real Ubuntu 26.04 GNOME machine: logind, dpkg, systemd, D-Bus."""
+    runner.script(
+        "loginctl", "--no-pager", "show-user", str(uid), "-p", "Display",
+        stdout=read_fixture("loginctl", "show-user-display-gnome.txt"),
+    )  # fmt: skip
+    show_session = ["loginctl", "--no-pager", "show-session", "63"]
+    show_session += [part for name in SESSION_PROPERTIES for part in ("-p", name)]
+    runner.script(*show_session, stdout=read_fixture("loginctl", "show-session-gnome-wayland.txt"))
+    runner.script(
+        "dpkg-query", "-W", "-f", DPKG_FORMAT, *PACKAGES,
+        stdout=read_fixture("packages", "dpkg-ubuntu-gnome.stdout"),
+        stderr=read_fixture("packages", "dpkg-ubuntu-gnome.stderr"),
+        returncode=1,
+    )  # fmt: skip
+    show = ["systemctl", "--user", "--no-pager", "show"]
+    show += [part for name in UNIT_PROPERTIES for part in ("-p", name)]
+    runner.script(*show, *UNITS, stdout=read_fixture("systemctl", "show-units-ubuntu-gnome.txt"))
+    runner.script(
+        "systemctl", "--user", "--no-pager", "show-environment",
+        stdout=read_fixture("systemctl", "show-environment-ubuntu-gnome.txt"),
+    )  # fmt: skip
+    script_gnome_bus(runner)
+
+
+GNOME_PORTAL_FILES = {
+    "/usr/share/xdg-desktop-portal/gnome-portals.conf": "gnome-portals.conf",
+    "/usr/share/xdg-desktop-portal/portals/gnome.portal": "gnome.portal",
+    "/usr/share/xdg-desktop-portal/portals/gtk.portal": "gtk.portal",
+    "/usr/share/xdg-desktop-portal/portals/gnome-keyring.portal": "gnome-keyring.portal",
+}
+"""The portal files of the real machine, by path, and their fixtures."""
+
+
+def gnome_file_access(
+    extra: dict[str, bytes] | None = None,
+) -> tuple[Callable[[str], bytes | None], Callable[[str], tuple[str, ...]]]:
+    """``read`` and ``list_dir`` functions that see the real machine's portal files only."""
+    files = {
+        path: (FIXTURES / "portals" / name).read_bytes()
+        for path, name in GNOME_PORTAL_FILES.items()
+    }
+    files.update(extra or {})
+
+    def read(path: str) -> bytes | None:
+        return files.get(path)
+
+    def list_dir(directory: str) -> tuple[str, ...]:
+        prefix = directory.rstrip("/") + "/"
+        return tuple(
+            sorted(
+                path[len(prefix) :]
+                for path in files
+                if path.startswith(prefix)
+                and "/" not in path[len(prefix) :]
+                and path.endswith(".portal")
+            )
+        )
+
+    return read, list_dir

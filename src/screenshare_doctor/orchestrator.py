@@ -8,10 +8,20 @@ from collections.abc import Callable, Mapping
 
 from screenshare_doctor import __version__
 from screenshare_doctor.collectors.dbus import collect_dbus
-from screenshare_doctor.collectors.environment import check_session_paths, read_session_environment
+from screenshare_doctor.collectors.environment import (
+    check_session_paths,
+    read_session_environment,
+    read_xdg_directories,
+)
 from screenshare_doctor.collectors.logind import collect_logind
 from screenshare_doctor.collectors.packages import collect_packages
+from screenshare_doctor.collectors.portal_config import (
+    collect_portal_files,
+    list_portal_files,
+    read_capped,
+)
 from screenshare_doctor.collectors.services import collect_services
+from screenshare_doctor.desktops import parse_desktop_list
 from screenshare_doctor.models import ProbeFailure, SessionFacts, Snapshot, utc_timestamp
 from screenshare_doctor.runner import CommandRunner
 
@@ -86,4 +96,58 @@ def inspect_dbus(runner: CommandRunner) -> Snapshot:
         created_at=utc_timestamp(),
         dbus=dbus,
         probe_failures=failures,
+    )
+
+
+def inspect_routes(
+    runner: CommandRunner,
+    *,
+    environ: Mapping[str, str] = os.environ,
+    uid: int | None = None,
+    stat: Callable[[str], os.stat_result] = os.stat,
+    which: Callable[[str], str | None] = shutil.which,
+    exists: Callable[[str], bool] = _exists,
+    read: Callable[[str], bytes | None] = read_capped,
+    list_dir: Callable[[str], tuple[str, ...]] = list_portal_files,
+) -> Snapshot:
+    """Everything a route explanation needs: the frontend's version (packages), its
+    environment (user manager), its files, and the bus to check the prediction against.
+
+    The portal's own variables come from the user manager; when it cannot be asked, the
+    shell's are used and the snapshot says so.
+    """
+    session, session_failures = collect_session(runner, environ=environ, uid=uid, stat=stat)
+    packages, package_failures = collect_packages(runner, which=which, exists=exists)
+    services, service_failures = collect_services(runner)
+    if services.activation_environment is not None and services.activation_directories is not None:
+        current_desktop = services.activation_environment.current_desktop
+        directories = services.activation_directories
+        variables_from = "user manager"
+    else:
+        current_desktop = session.environment.current_desktop
+        directories = read_xdg_directories(environ)
+        variables_from = "this shell"
+    portal_files, file_failures = collect_portal_files(
+        parse_desktop_list(current_desktop).names,
+        directories,
+        read=read,
+        list_dir=list_dir,
+        variables_from=variables_from,
+    )
+    dbus, dbus_failures = collect_dbus(runner)
+    return Snapshot(
+        tool_version=__version__,
+        created_at=utc_timestamp(),
+        session=session,
+        packages=packages,
+        services=services,
+        dbus=dbus,
+        portal_files=portal_files,
+        probe_failures=(
+            *session_failures,
+            *package_failures,
+            *service_failures,
+            *file_failures,
+            *dbus_failures,
+        ),
     )
