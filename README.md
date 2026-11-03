@@ -49,6 +49,11 @@ What works already (see the [command reference](docs/cli.md)):
 - **Shareable reports.** User names, home paths and window titles are redacted before any output is written,
   JSON included. No network access, no telemetry.
 
+## Tested on
+
+GNOME 50.1 on Ubuntu 26.04 (Wayland). KDE Plasma and Hyprland are next; until then their checks rest on upstream
+sources and synthetic fixtures. See the [support matrix](docs/support-matrix.md) and [privacy](docs/privacy.md).
+
 ## Alternatives
 
 - [PortalDoctor](https://github.com/SetraTheXX/Portal-Doctor) offers thorough read-only portal, D-Bus and PipeWire
