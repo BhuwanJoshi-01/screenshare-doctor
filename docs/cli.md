@@ -53,3 +53,56 @@ logind      session 63: wayland, user, seat0, active
   X11), a nested compositor, a socket that no longer exists, logind and the environment disagreeing.
 
 **Exit code**: 0 when a Wayland or X11 session was found, 3 when there is none or it cannot be told.
+
+## `check services`
+
+```bash
+screenshare-doctor check services
+```
+
+Shows, for each part of the stack, whether its package is installed and the state of its user service, then the
+environment the user manager starts portals in:
+
+```text
+screenshare-doctor 0.1.0: services
+
+Component         Package               User service
+portal frontend   1.21.1+ds-1ubuntu3.1  running (static)
+GNOME backend     50.0-0ubuntu1         running (static)
+GTK backend       1.15.3-2ubuntu1       running (static)
+KDE backend       not installed         no unit
+wlr backend       not installed         no unit
+Hyprland backend  not installed         no unit
+PipeWire          1.6.2-1ubuntu1.2      socket: running (enabled); service: running (enabled)
+WirePlumber       0.5.13-1ubuntu1.1     running (enabled)
+Packages from dpkg.
+Portals are started on demand: "not running" is normal until an app asks for one.
+
+Activation environment (what portals started by the user manager see):
+  XDG_CURRENT_DESKTOP  ubuntu:GNOME  (same as this shell)
+  XDG_SESSION_TYPE     wayland       (same as this shell)
+  WAYLAND_DISPLAY      wayland-0     (same as this shell)
+  DISPLAY              :0            (same as this shell)
+```
+
+(Real output from Ubuntu 26.04 with GNOME 50.1.)
+
+**What it reads**
+
+- The package database, with a query command only: `dpkg-query -W`, `rpm -q` or `pacman -Q`, for
+  `xdg-desktop-portal`, its gnome, gtk, kde, wlr and hyprland backends, `pipewire` and `wireplumber`. A package
+  manager is used only when its program and its database both exist. Without one, the portal programs are looked
+  for in `/usr/libexec`, `/usr/lib` and `/usr/local/libexec`; then "unknown" may mean "not installed".
+- The user manager: `systemctl --user show` for the units of those components (Plasma 6 calls its backend
+  `plasma-xdg-desktop-portal-kde.service`) and `systemctl --user show-environment`. Of the environment, only the
+  session variables listed under [`check session`](#check-session) are kept; everything else is discarded unread.
+
+Nothing is started, stopped or reloaded.
+
+**Why the activation environment matters**: portals are D-Bus services started by the user manager, so they read
+`XDG_CURRENT_DESKTOP` and `WAYLAND_DISPLAY` from its environment, not from your terminal. A compositor that does not
+export its variables to the manager (`dbus-update-activation-environment --systemd …`, `systemctl --user
+import-environment …`) leaves the portal unable to pick the right backend, even though everything looks right in
+the shell. When the tool runs in the desktop, each value is compared with the shell's.
+
+**Exit code**: 0, also when systemd or a package manager is missing; what could not be read is listed.
