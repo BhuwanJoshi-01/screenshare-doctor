@@ -144,6 +144,52 @@ def utc_timestamp() -> str:
 
 
 @dataclass(frozen=True, slots=True)
+class SessionEnvironment:
+    """The allowlisted session variables of the tool's own process; ``None`` means unset.
+
+    Only these variables are read: the rest of the environment can hold tokens and
+    passwords. Values are kept as they were found (``ubuntu:GNOME``, not ``gnome``), so a
+    report shows what the portal saw. ``dbus_session_bus_address`` loses its ``guid=``
+    part, and the SSH variables are reduced to ``ssh``: whether any of them is set.
+    """
+
+    session_type: str | None = None
+    current_desktop: str | None = None
+    session_desktop: str | None = None
+    desktop_session: str | None = None
+    wayland_display: str | None = None
+    display: str | None = None
+    runtime_dir: str | None = None
+    session_id: str | None = None
+    dbus_session_bus_address: str | None = None
+    ssh: bool = False
+
+
+class PathState(StrEnum):
+    """What was found at a path the session depends on."""
+
+    SOCKET = "socket"
+    DIRECTORY = "directory"
+    OTHER = "other"
+    """Something exists, but not the kind of file expected there."""
+    MISSING = "missing"
+    UNREADABLE = "unreadable"
+    NOT_CHECKED = "not_checked"
+    """The path could not be worked out, e.g. ``WAYLAND_DISPLAY`` is unset."""
+
+
+@dataclass(frozen=True, slots=True)
+class SessionPaths:
+    """The runtime directory and display sockets the session variables point to."""
+
+    runtime_dir: PathState = PathState.NOT_CHECKED
+    wayland_socket: PathState = PathState.NOT_CHECKED
+    wayland_socket_path: str | None = None
+    x11_socket: PathState = PathState.NOT_CHECKED
+    x11_socket_path: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
