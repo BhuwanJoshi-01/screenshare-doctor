@@ -107,6 +107,10 @@ jobs:
       - name: Report logic tests (node)
         working-directory: extension
         run: node --test
+      - name: Command runner tests (gjs)
+        run: |
+          sudo apt-get install -y -qq gjs > /dev/null
+          gjs -m extension/tests/cli.gjs.js
       - name: The test report is the current sample report
         run: cmp docs/sample-reports/gnome-healthy.json extension/tests/healthy.json
       - name: Settings schema
@@ -115,8 +119,8 @@ jobs:
           glib-compile-schemas --strict --dry-run extension/*/schemas
       - name: Shell scripts
         run: |
-          bash -n scripts/pack-extension.sh
-          shellcheck -x -S warning scripts/pack-extension.sh
+          for f in scripts/*.sh; do bash -n "$f"; done
+          shellcheck -x -S warning scripts/*.sh
       - name: Extension package
         run: scripts/pack-extension.sh
       - name: extensions.gnome.org review checks (Shexli)
