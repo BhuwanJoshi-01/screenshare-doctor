@@ -3,6 +3,53 @@
 Every command is read-only; see [What it promises](../README.md#what-it-promises). Exit codes: 0 the command ran
 (whatever it found), 1 `--strict` failure, 2 usage or internal error, 3 required context missing, 130 Ctrl+C.
 
+## `doctor`
+
+```bash
+screenshare-doctor doctor            # every check, from the session to PipeWire
+screenshare-doctor doctor --strict   # exit 1 when a check fails (for scripts and CI)
+screenshare-doctor doctor --all      # also show findings that follow from another one
+```
+
+Runs every collector and [check](rules.md) and prints one line per finding; warnings, failures and unknowns add the
+reason, the next step and a command to check it afterwards:
+
+```text
+screenshare-doctor 0.1.0
+Session: Wayland | Desktop: GNOME | Portal: 1.21.1+ds-1ubuntu3.1
+
+PASS    SSD-SESSION-001    Wayland session
+PASS    SSD-SESSION-002    The Wayland display is reachable
+PASS    SSD-SESSION-003    The portal reads the desktop names ubuntu, gnome
+PASS    SSD-SESSION-004    Portals see the same desktop and display
+PASS    SSD-DBUS-001       The session bus answers
+PASS    SSD-PKG-001        xdg-desktop-portal 1.21.1+ds-1ubuntu3.1 is installed
+PASS    SSD-SERVICE-001    xdg-desktop-portal.service is active
+PASS    SSD-PORTAL-001     The portal frontend offers ScreenCast (version 5)
+PASS    SSD-PORTAL-002     ScreenCast goes to the gnome backend, which runs
+PASS    SSD-PORTAL-003     Every portal file found is read
+PASS    SSD-PORTAL-004     ScreenCast offers monitor, window, virtual
+PASS    SSD-DESKTOP-001    The setup matches GNOME's defaults
+PASS    SSD-COMPOSITOR-001 org.gnome.Mutter.ScreenCast is running
+PASS    SSD-PW-001         PipeWire 1.6.2 answers
+PASS    SSD-WP-001         WirePlumber is connected to PipeWire
+
+Summary: 15 pass, 0 warn, 0 fail, 0 unknown
+Nothing was started, changed or recorded; no screen-sharing request was made.
+```
+
+(Real output from Ubuntu 26.04 with GNOME 50.1.)
+
+It reads what `check services`, `check dbus` and `routes explain` read, under the same rules: only running services
+are contacted on D-Bus, with `--auto-start=no`, and PipeWire is only asked when it already runs.
+
+**Exit code**: 0 whatever the findings; with `--strict`, 1 when any check fails.
+
+## `rules list`, `rules explain CODE`
+
+`rules list` prints every check with its code and layer; `rules explain SSD-PORTAL-002` prints what that check looks
+at and how it decides. Unknown codes exit with 2.
+
 ## `check session`
 
 ```bash

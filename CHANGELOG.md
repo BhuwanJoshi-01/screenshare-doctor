@@ -46,3 +46,9 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   `portals.conf`, the ScreenCast route, the backend on the bus and (on GNOME)
   Mutter's screen-cast service with what the desktop ships by default. The
   defaults and their upstream sources are in `docs/desktops.md`.
+- `screenshare-doctor doctor [--strict] [--all]`: every check from the session
+  to PipeWire (15 checks, `SSD-*` codes, listed in `docs/rules.md`), with
+  evidence, the next step and a command to verify it. Findings that follow
+  from another are folded under their root cause. `--strict` exits 1 on any
+  failure.
+- `screenshare-doctor rules list` and `rules explain CODE`.
