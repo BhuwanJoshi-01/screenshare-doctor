@@ -1,0 +1,8 @@
+Id=2
+Seat=seat0
+Remote=no
+Desktop=KDE
+Type=wayland
+Class=user
+Active=yes
+State=active

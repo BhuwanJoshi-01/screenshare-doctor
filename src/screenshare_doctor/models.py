@@ -190,6 +190,25 @@ class SessionPaths:
 
 
 @dataclass(frozen=True, slots=True)
+class LogindSession:
+    """What systemd-logind (or elogind) says about one session; ``None`` means not reported.
+
+    ``session_type`` is logind's ``Type`` (``wayland``, ``x11``, ``tty``, ``mir``,
+    ``unspecified``), ``session_class`` its ``Class`` (``user``, ``greeter``,
+    ``manager``…).
+    """
+
+    id: str
+    session_type: str | None = None
+    session_class: str | None = None
+    desktop: str | None = None
+    remote: bool | None = None
+    active: bool | None = None
+    state: str | None = None
+    seat: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 

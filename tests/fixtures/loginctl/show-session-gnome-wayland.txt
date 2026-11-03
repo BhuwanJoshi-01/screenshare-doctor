@@ -1,0 +1,8 @@
+Id=63
+Seat=seat0
+Remote=no
+Desktop=
+Type=wayland
+Class=user
+Active=yes
+State=active
