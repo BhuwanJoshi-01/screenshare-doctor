@@ -13,7 +13,7 @@ import re
 import stat as stat_module
 from collections.abc import Callable, Mapping
 
-from screenshare_doctor.models import PathState, SessionEnvironment, SessionPaths
+from screenshare_doctor.models import PathState, SessionEnvironment, SessionPaths, XdgDirectories
 
 ALLOWLIST: tuple[str, ...] = (
     "XDG_SESSION_TYPE",
@@ -50,6 +50,34 @@ def read_session_environment(environ: Mapping[str, str] = os.environ) -> Session
         session_id=value("XDG_SESSION_ID"),
         dbus_session_bus_address=_without_guid(bus) if bus is not None else None,
         ssh=any(value(name) is not None for name in SSH_VARIABLES),
+    )
+
+
+XDG_DIRECTORY_VARIABLES: tuple[str, ...] = (
+    "HOME",
+    "XDG_CONFIG_HOME",
+    "XDG_CONFIG_DIRS",
+    "XDG_DATA_HOME",
+    "XDG_DATA_DIRS",
+    "XDG_DESKTOP_PORTAL_DIR",
+)
+"""The second, separate allowlist: the variables that decide where portals look for files."""
+
+
+def read_xdg_directories(environ: Mapping[str, str] = os.environ) -> XdgDirectories:
+    """The directory variables as found; empty values count as unset (as in GLib)."""
+
+    def value(name: str) -> str | None:
+        raw = environ.get(name)
+        return raw if raw else None
+
+    return XdgDirectories(
+        home=value("HOME"),
+        config_home=value("XDG_CONFIG_HOME"),
+        config_dirs=value("XDG_CONFIG_DIRS"),
+        data_home=value("XDG_DATA_HOME"),
+        data_dirs=value("XDG_DATA_DIRS"),
+        portal_dir=value("XDG_DESKTOP_PORTAL_DIR"),
     )
 
 

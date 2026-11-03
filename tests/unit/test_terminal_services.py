@@ -50,7 +50,7 @@ def _real_snapshot() -> Snapshot:
         ),
         services=ServiceFacts(
             parse_units(read_fixture("systemctl", "show-units-ubuntu-gnome.txt")),
-            parse_activation_environment(
+            *parse_activation_environment(
                 read_fixture("systemctl", "show-environment-ubuntu-gnome.txt")
             ),
         ),

@@ -282,17 +282,37 @@ class UserService:
 
 
 @dataclass(frozen=True, slots=True)
+class XdgDirectories:
+    """The variables that decide where the portal looks for its files; ``None`` = unset.
+
+    They must be the portal process's own, which is the user manager's environment,
+    not the shell's: Ubuntu's manager, for one, puts ``/usr/share/ubuntu`` first in
+    ``XDG_DATA_DIRS``. ``portal_dir`` is ``XDG_DESKTOP_PORTAL_DIR``, a test override
+    that replaces every other directory.
+    """
+
+    home: str | None = None
+    config_home: str | None = None
+    config_dirs: str | None = None
+    data_home: str | None = None
+    data_dirs: str | None = None
+    portal_dir: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class ServiceFacts:
     """The user services of the stack, and the environment the user manager starts them in.
 
     Portals are started on demand by the user manager, so they see *its* environment,
     not the shell's: ``activation_environment`` holds the same allowlisted variables
-    as the session environment, read from ``systemctl --user show-environment``.
-    ``None`` fields were not read (no systemd, or the user manager did not answer).
+    as the session environment, read from ``systemctl --user show-environment``, and
+    ``activation_directories`` the variables that decide where portals look for their
+    files. ``None`` fields were not read (no systemd, or the user manager did not answer).
     """
 
     services: tuple[UserService, ...] | None = None
     activation_environment: SessionEnvironment | None = None
+    activation_directories: XdgDirectories | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -348,24 +368,6 @@ class DbusFacts:
     reachable: bool | None = None
     names: tuple[BusName, ...] = ()
     objects: tuple[PortalObject, ...] = ()
-
-
-@dataclass(frozen=True, slots=True)
-class XdgDirectories:
-    """The variables that decide where the portal looks for its files; ``None`` = unset.
-
-    They must be the portal process's own, which is the user manager's environment,
-    not the shell's: Ubuntu's manager, for one, puts ``/usr/share/ubuntu`` first in
-    ``XDG_DATA_DIRS``. ``portal_dir`` is ``XDG_DESKTOP_PORTAL_DIR``, a test override
-    that replaces every other directory.
-    """
-
-    home: str | None = None
-    config_home: str | None = None
-    config_dirs: str | None = None
-    data_home: str | None = None
-    data_dirs: str | None = None
-    portal_dir: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
