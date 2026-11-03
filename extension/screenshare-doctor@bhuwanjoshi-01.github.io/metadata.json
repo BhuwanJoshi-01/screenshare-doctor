@@ -1,7 +1,7 @@
 {
   "uuid": "screenshare-doctor@bhuwanjoshi-01.github.io",
   "name": "Screenshare Doctor",
-  "description": "Shows in the top bar whether screen sharing can work on this desktop, and why not: the portal, its backend, PipeWire and the session, checked read-only by the screenshare-doctor command-line tool whenever you open the menu.\n\nRequires the screenshare-doctor tool from the project page (uv tool install screenshare-doctor). Nothing is started, changed or recorded; no screen-sharing request is made.",
+  "description": "Shows in the top bar whether screen sharing can work on this desktop, and why not: the portal, its backend, PipeWire and the session, checked read-only by the screenshare-doctor command-line tool whenever you open the menu.\n\nClipboard: the menu can copy a redacted report, or the install command, to the clipboard when you choose to; it never reads the clipboard.\n\nRequires the screenshare-doctor tool from the project page (uv tool install screenshare-doctor). Nothing is started, changed or recorded; no screen-sharing request is made.",
   "shell-version": [
     "46",
     "47",

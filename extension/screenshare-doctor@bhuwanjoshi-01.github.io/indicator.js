@@ -10,7 +10,13 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {findCli, runCli} from './cli.js';
 import {IDLE_ICON, parseReport, summarize} from './report.js';
 
-const GUIDE_URI = 'https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/troubleshooting.md';
+const PROJECT_URI = 'https://github.com/BhuwanJoshi-01/screenshare-doctor';
+const GUIDE_URI = `${PROJECT_URI}/blob/main/docs/troubleshooting.md`;
+const INSTALL_COMMAND = 'uv tool install screenshare-doctor';
+
+function copyToClipboard(text) {
+    St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, text);
+}
 
 function logFailure(e) {
     console.error(`[screenshare-doctor] ${e.message}`);
@@ -38,7 +44,21 @@ class DoctorIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._problems);
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addAction('Check again', () => this._refresh());
+        // Shown when the tool is installed.
+        this._actions = new PopupMenu.PopupMenuSection();
+        this._actions.addAction('Check again', () => this._refresh());
+        this._actions.addAction('Copy a report for a bug tracker', () => this._copyReport());
+        this.menu.addMenuItem(this._actions);
+        // Shown when it is not.
+        this._install = new PopupMenu.PopupMenuSection();
+        this._install.addAction(`Copy the install command (${INSTALL_COMMAND})`, () => {
+            copyToClipboard(INSTALL_COMMAND);
+        });
+        this._install.addAction('Open the project page', () => {
+            Gio.AppInfo.launch_default_for_uri_async(PROJECT_URI, null, null, null);
+        });
+        this._install.actor.visible = false;
+        this.menu.addMenuItem(this._install);
         this.menu.addAction('Open the troubleshooting guide', () => {
             Gio.AppInfo.launch_default_for_uri_async(GUIDE_URI, null, null, null);
         });
@@ -60,8 +80,11 @@ class DoctorIndicator extends PanelMenu.Button {
         if (this._running)
             return;
         const cli = findCli(this._settings.get_string('cli-path'));
+        this._install.actor.visible = cli === null;
+        this._actions.actor.visible = cli !== null;
         if (cli === null) {
             this._showError('screenshare-doctor is not installed');
+            this._context.label.text = 'The extension shows what the command-line tool finds.';
             return;
         }
         this._running = true;
@@ -83,6 +106,24 @@ class DoctorIndicator extends PanelMenu.Button {
         if (this._cancellable.is_cancelled())
             return;
         this._show(view);
+    }
+
+    // The Markdown report is redacted by the tool itself (home paths, names, secrets).
+    async _copyReport() {
+        const cli = findCli(this._settings.get_string('cli-path'));
+        if (cli === null)
+            return;
+        this._header.label.text = 'Writing the report…';
+        try {
+            copyToClipboard(await runCli(cli, ['report'], this._cancellable));
+            if (!this._cancellable.is_cancelled())
+                this._header.label.text = 'Report copied; read it before you share it';
+        } catch (e) {
+            if (!this._cancellable.is_cancelled()) {
+                this._header.label.text = `The report failed: ${e.message}`;
+                logFailure(e);
+            }
+        }
     }
 
     _show(view) {
