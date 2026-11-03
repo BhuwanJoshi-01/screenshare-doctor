@@ -1,0 +1,35 @@
+{
+  "symptoms": [
+    {
+      "id": "no-picker",
+      "title": "Clicking Share shows no screen or window picker",
+      "explanation": "The picker is drawn by the portal backend, so when it never appears the request did not get that far: the portal is not reachable, cannot start, has no backend for ScreenCast, or the backend cannot reach the compositor.",
+      "rules": ["SSD-SESSION-004", "SSD-SESSION-003", "SSD-DBUS-001", "SSD-PKG-001", "SSD-SERVICE-001", "SSD-PORTAL-001", "SSD-PORTAL-002", "SSD-PORTAL-003", "SSD-DESKTOP-001", "SSD-COMPOSITOR-001"]
+    },
+    {
+      "id": "black-screen",
+      "title": "The picker works, but viewers see a black or frozen frame",
+      "explanation": "Choosing a screen worked, so the portal and its backend answered; the frame travels from the compositor through PipeWire to the app, and one of those links is missing or the app reads it the wrong way.",
+      "rules": ["SSD-COMPOSITOR-001", "SSD-PW-001", "SSD-WP-001", "SSD-PORTAL-002", "SSD-SESSION-002", "SSD-DESKTOP-001"]
+    },
+    {
+      "id": "missing-window",
+      "title": "The window I want is not offered",
+      "explanation": "The list of windows comes from the portal backend and the compositor. Some backends offer whole screens only, and apps running through XWayland may only see X11 windows.",
+      "rules": ["SSD-PORTAL-004", "SSD-PORTAL-002", "SSD-DESKTOP-001", "SSD-SESSION-002"]
+    },
+    {
+      "id": "permission-denied",
+      "title": "The app says screen sharing was denied or is not allowed",
+      "explanation": "A denial comes from the portal: the request was cancelled, the backend refused it, or no backend answered and the app reports that as a denial.",
+      "rules": ["SSD-PORTAL-001", "SSD-PORTAL-002", "SSD-SESSION-004", "SSD-DESKTOP-001"],
+      "limitations": ["The portal's permission store and Flatpak permissions are not read by this version."]
+    },
+    {
+      "id": "app-only",
+      "title": "Only some apps' windows can be shared",
+      "explanation": "On Wayland every window is offered by the compositor through the portal; an app that only lists some windows usually runs through XWayland and looks for X11 windows itself.",
+      "rules": ["SSD-SESSION-002", "SSD-PORTAL-004", "SSD-PORTAL-002"]
+    }
+  ]
+}
