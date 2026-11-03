@@ -61,3 +61,14 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def read_fixture(*parts: str) -> str:
     """Text of a file under tests/fixtures/ (see the README next to each set)."""
     return FIXTURES.joinpath(*parts).read_text(encoding="utf-8")
+
+
+def read_env_fixture(name: str) -> dict[str, str]:
+    """Variables of tests/fixtures/session/<name>.env (``NAME=value`` lines, ``#`` comments)."""
+    variables: dict[str, str] = {}
+    for line in read_fixture("session", f"{name}.env").splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        name_part, _, value = line.partition("=")
+        variables[name_part.strip()] = value
+    return variables
