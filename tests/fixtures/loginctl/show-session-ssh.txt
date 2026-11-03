@@ -1,0 +1,8 @@
+Id=7
+Seat=
+Remote=yes
+Desktop=
+Type=tty
+Class=user
+Active=no
+State=online

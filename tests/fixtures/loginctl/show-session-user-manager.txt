@@ -1,0 +1,8 @@
+Id=1
+Seat=
+Remote=no
+Desktop=
+Type=unspecified
+Class=manager
+Active=yes
+State=active
