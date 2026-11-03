@@ -14,6 +14,7 @@ Hyprland), starting from the app and the symptom. Plain Python 3.11+, Typer and 
 uv sync                                    # create .venv with the dev tools
 uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest -q   # what CI runs
 uv run pytest -q --cov                     # with coverage
+SSD_INTEGRATION=1 uv run pytest -q tests/integration   # against this machine's real session (passive)
 ```
 
 ## Layout
@@ -69,14 +70,17 @@ tests/
                   gnome_file_access)
   fixtures/       real and synthetic captures, each set with a README saying which is which
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
-  contract/       JSON schema contract (every model field in docs/json-schema-v1.json) and the canary
+  integration/    opt-in (SSD_INTEGRATION=1): real session; bus names and active units unchanged by doctor
+  contract/       test_passive_harness.py: is_read_only() is THE definition of passive, every command
+                  is checked against it; JSON schema contract (every model field in docs/json-schema-v1.json) and the canary
                   test: planted secrets must reach no renderer
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
                   portal-routing.md (search order and the per-release selection rules),
                   desktops.md (the bundles in prose, with sources), rules.md (every SSD check),
                   apps-and-symptoms.md (troubleshoot profiles and their sources), json-output.md +
                   json-schema-v1.json (the frozen report format: change both or neither)
-.github/          CI, issue forms, PR template
+.github/          CI (lint, tests 3.11-3.14, package: wheel in an empty venv, audit), release.yml
+                  (maintainer-created release -> PyPI trusted publishing), issue forms, PR template
 ```
 
 The core (runner, privacy, models, CLI shell) was ported from gpu-stack-inspector; each project keeps its own
