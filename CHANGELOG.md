@@ -41,3 +41,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   other clients there are, and video node counts. `pw-dump` runs only when
   `pipewire.service` is already active, because connecting to a
   socket-activated PipeWire would start it.
+- `screenshare-doctor check desktop [--as gnome|kde|hyprland|wlroots]`:
+  compares the backend package, its `.portal` file, the desktop's
+  `portals.conf`, the ScreenCast route, the backend on the bus and (on GNOME)
+  Mutter's screen-cast service with what the desktop ships by default. The
+  defaults and their upstream sources are in `docs/desktops.md`.

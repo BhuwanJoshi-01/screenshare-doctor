@@ -19,7 +19,7 @@ from screenshare_doctor.models import (
     Snapshot,
     UserService,
 )
-from screenshare_doctor.reports.terminal import render_services
+from screenshare_doctor.reports.terminal import render_desktop, render_services
 from tests.fakes import read_fixture
 
 SHELL = SessionEnvironment(
@@ -203,3 +203,18 @@ def test_pipewire_skipped_and_silent() -> None:
     silent = _render(Snapshot(tool_version="0.1.0", created_at="x"))
     assert "answering" not in silent  # only the PipeWire table row, no daemon section
     assert "not asked" not in silent
+
+
+def test_desktop_without_a_bundle() -> None:
+    console = Console(width=200, color_system=None)
+    with console.capture() as capture:
+        render_desktop(
+            Snapshot(tool_version="0.1.0", created_at="x"),
+            None,
+            (),
+            "from XDG_CURRENT_DESKTOP of the user manager",
+            console,
+        )
+    out = capture.get()
+    assert "no expectations for this desktop" in out
+    assert "use --as" in out

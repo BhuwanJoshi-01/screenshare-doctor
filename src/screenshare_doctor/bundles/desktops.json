@@ -1,0 +1,102 @@
+{
+  "retrieved": "2026-11-03",
+  "note": "What each desktop ships for screen sharing. These are expectations to compare with, not verdicts: other working setups exist.",
+  "desktops": [
+    {
+      "family": "gnome",
+      "name": "GNOME",
+      "backend": "gnome",
+      "backend_bus_name": "org.freedesktop.impl.portal.desktop.gnome",
+      "backend_package": "xdg-desktop-portal-gnome",
+      "backend_unit": "xdg-desktop-portal-gnome.service",
+      "config_file": "gnome-portals.conf",
+      "config_shipped_by": "gnome-session",
+      "config_default": ["gnome", "gtk"],
+      "compositor_bus_name": "org.gnome.Mutter.ScreenCast",
+      "sources": [
+        {
+          "claim": "gnome-session installs gnome-portals.conf with default=gnome;gtk;",
+          "url": "https://gitlab.gnome.org/GNOME/gnome-session/-/blob/main/data/gnome-portals.conf",
+          "retrieved": "2026-11-03"
+        },
+        {
+          "claim": "xdg-desktop-portal-gnome provides the gnome backend and the xdg-desktop-portal-gnome.service user unit",
+          "url": "https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/tree/main/data",
+          "retrieved": "2026-11-03"
+        },
+        {
+          "claim": "the gnome backend implements ScreenCast through Mutter's org.gnome.Mutter.ScreenCast service",
+          "url": "https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/blob/main/src/gnomescreencast.c",
+          "retrieved": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "family": "kde",
+      "name": "KDE Plasma",
+      "backend": "kde",
+      "backend_bus_name": "org.freedesktop.impl.portal.desktop.kde",
+      "backend_package": "xdg-desktop-portal-kde",
+      "backend_unit": "plasma-xdg-desktop-portal-kde.service",
+      "config_file": "kde-portals.conf",
+      "config_shipped_by": "plasma-workspace",
+      "config_default": ["kde"],
+      "compositor_bus_name": null,
+      "sources": [
+        {
+          "claim": "plasma-workspace installs kde-portals.conf with default=kde",
+          "url": "https://invent.kde.org/plasma/plasma-workspace/-/blob/master/portal-configuration/kde-portals.conf",
+          "retrieved": "2026-11-03"
+        },
+        {
+          "claim": "xdg-desktop-portal-kde provides kde.portal (ScreenCast included, UseIn=KDE) and the plasma-xdg-desktop-portal-kde.service user unit",
+          "url": "https://invent.kde.org/plasma/xdg-desktop-portal-kde/-/tree/master/data",
+          "retrieved": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "family": "hyprland",
+      "name": "Hyprland",
+      "backend": "hyprland",
+      "backend_bus_name": "org.freedesktop.impl.portal.desktop.hyprland",
+      "backend_package": "xdg-desktop-portal-hyprland",
+      "backend_unit": "xdg-desktop-portal-hyprland.service",
+      "config_file": "hyprland-portals.conf",
+      "config_shipped_by": "hyprland",
+      "config_default": ["hyprland", "gtk"],
+      "compositor_bus_name": null,
+      "sources": [
+        {
+          "claim": "Hyprland installs hyprland-portals.conf with default=hyprland;gtk",
+          "url": "https://github.com/hyprwm/Hyprland/blob/main/assets/hyprland-portals.conf",
+          "retrieved": "2026-11-03"
+        },
+        {
+          "claim": "xdg-desktop-portal-hyprland provides hyprland.portal (Screenshot, ScreenCast, GlobalShortcuts, InputCapture) and the xdg-desktop-portal-hyprland.service user unit",
+          "url": "https://github.com/hyprwm/xdg-desktop-portal-hyprland",
+          "retrieved": "2026-11-03"
+        }
+      ]
+    },
+    {
+      "family": "wlroots",
+      "name": "a wlroots compositor (sway, river, Wayfire, labwc)",
+      "backend": "wlr",
+      "backend_bus_name": "org.freedesktop.impl.portal.desktop.wlr",
+      "backend_package": "xdg-desktop-portal-wlr",
+      "backend_unit": "xdg-desktop-portal-wlr.service",
+      "config_file": null,
+      "config_shipped_by": null,
+      "config_default": [],
+      "compositor_bus_name": null,
+      "sources": [
+        {
+          "claim": "xdg-desktop-portal-wlr provides wlr.portal (Screenshot, ScreenCast) and the xdg-desktop-portal-wlr.service user unit; its wlroots-portals.conf is a sample in contrib/, not installed",
+          "url": "https://github.com/emersion/xdg-desktop-portal-wlr",
+          "retrieved": "2026-11-03"
+        }
+      ]
+    }
+  ]
+}

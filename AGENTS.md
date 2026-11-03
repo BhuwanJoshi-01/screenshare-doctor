@@ -36,6 +36,9 @@ src/screenshare_doctor/
                   portal_config.py (candidate portals.conf + *.portal files, read-only, 64 KiB cap),
                   pipewire.py (pw-dump per object type, ONLY if pipewire.service is active: socket
                   activation would start it; reduced to counters + known client names)
+  bundles/        desktops.json (sourced defaults per desktop: backend, package, unit, portals.conf
+                  and who installs it, compositor service), __init__.py loader, check.py
+                  check_bundle(): six expectations, WARN for a different-but-valid setup
   screencast.py   names for the ScreenCast source-type and cursor-mode bit masks
   keyfile.py      GKeyFile rules (last duplicate wins, bad line = whole file ignored, ; lists)
   portal_files.py .portal / portals.conf judged like register_portal() and the config loader
@@ -45,7 +48,7 @@ src/screenshare_doctor/
                   Read docs/portal-routing.md before changing it.
   desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
   session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
-  reports/        terminal.py: render_session/services/dbus/route() (plain Text, never Rich markup
+  reports/        terminal.py: render_session/services/dbus/route/desktop() (plain Text, never Rich markup
                   from collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
@@ -60,7 +63,8 @@ tests/
   fixtures/       real and synthetic captures, each set with a README saying which is which
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
-                  portal-routing.md (search order and the per-release selection rules)
+                  portal-routing.md (search order and the per-release selection rules),
+                  desktops.md (the bundles in prose, with sources)
 .github/          CI, issue forms, PR template
 ```
 
