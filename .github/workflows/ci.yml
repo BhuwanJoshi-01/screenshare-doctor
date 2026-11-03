@@ -104,6 +104,11 @@ jobs:
           done
       - name: Extension metadata
         run: python3 -c "import json,glob; [json.load(open(f)) for f in glob.glob('extension/*/metadata.json')]"
+      - name: Report logic tests (node)
+        working-directory: extension
+        run: node --test
+      - name: The test report is the current sample report
+        run: cmp docs/sample-reports/gnome-healthy.json extension/tests/healthy.json
       - name: Settings schema
         run: |
           sudo apt-get install -y -qq libglib2.0-bin > /dev/null

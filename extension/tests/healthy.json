@@ -1,0 +1,941 @@
+{
+  "tool_version": "0.1.0",
+  "created_at": "2026-11-03T12:00:00Z",
+  "schema_version": 1,
+  "session": {
+    "environment": {
+      "session_type": "wayland",
+      "current_desktop": "ubuntu:GNOME",
+      "session_desktop": "ubuntu",
+      "desktop_session": "ubuntu",
+      "wayland_display": "wayland-0",
+      "display": ":0",
+      "runtime_dir": "/run/user/1000",
+      "session_id": null,
+      "dbus_session_bus_address": "unix:path=/run/user/1000/bus",
+      "ssh": false
+    },
+    "paths": {
+      "runtime_dir": "directory",
+      "wayland_socket": "socket",
+      "wayland_socket_path": "/run/user/1000/wayland-0",
+      "x11_socket": "socket",
+      "x11_socket_path": "/tmp/.X11-unix/X0"
+    },
+    "logind": {
+      "own": null,
+      "display": {
+        "id": "63",
+        "session_type": "wayland",
+        "session_class": "user",
+        "desktop": null,
+        "remote": false,
+        "active": true,
+        "state": "active",
+        "seat": "seat0"
+      },
+      "display_known": true
+    }
+  },
+  "packages": {
+    "source": "dpkg",
+    "packages": [
+      {
+        "name": "xdg-desktop-portal",
+        "state": "installed",
+        "version": "1.21.1+ds-1ubuntu3.1"
+      },
+      {
+        "name": "xdg-desktop-portal-gnome",
+        "state": "installed",
+        "version": "50.0-0ubuntu1"
+      },
+      {
+        "name": "xdg-desktop-portal-gtk",
+        "state": "installed",
+        "version": "1.15.3-2ubuntu1"
+      },
+      {
+        "name": "xdg-desktop-portal-kde",
+        "state": "not_installed",
+        "version": null
+      },
+      {
+        "name": "xdg-desktop-portal-wlr",
+        "state": "not_installed",
+        "version": null
+      },
+      {
+        "name": "xdg-desktop-portal-hyprland",
+        "state": "not_installed",
+        "version": null
+      },
+      {
+        "name": "pipewire",
+        "state": "installed",
+        "version": "1.6.2-1ubuntu1.2"
+      },
+      {
+        "name": "wireplumber",
+        "state": "installed",
+        "version": "0.5.13-1ubuntu1.1"
+      }
+    ]
+  },
+  "services": {
+    "services": [
+      {
+        "unit": "xdg-desktop-portal.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "static"
+      },
+      {
+        "unit": "xdg-desktop-portal-gnome.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "static"
+      },
+      {
+        "unit": "xdg-desktop-portal-gtk.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "static"
+      },
+      {
+        "unit": "plasma-xdg-desktop-portal-kde.service",
+        "load_state": "not-found",
+        "active_state": "inactive",
+        "sub_state": "dead",
+        "unit_file_state": null
+      },
+      {
+        "unit": "xdg-desktop-portal-wlr.service",
+        "load_state": "not-found",
+        "active_state": "inactive",
+        "sub_state": "dead",
+        "unit_file_state": null
+      },
+      {
+        "unit": "xdg-desktop-portal-hyprland.service",
+        "load_state": "not-found",
+        "active_state": "inactive",
+        "sub_state": "dead",
+        "unit_file_state": null
+      },
+      {
+        "unit": "pipewire.socket",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "enabled"
+      },
+      {
+        "unit": "pipewire.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "enabled"
+      },
+      {
+        "unit": "wireplumber.service",
+        "load_state": "loaded",
+        "active_state": "active",
+        "sub_state": "running",
+        "unit_file_state": "enabled"
+      }
+    ],
+    "activation_environment": {
+      "session_type": "wayland",
+      "current_desktop": "ubuntu:GNOME",
+      "session_desktop": "ubuntu",
+      "desktop_session": "ubuntu",
+      "wayland_display": "wayland-0",
+      "display": ":0",
+      "runtime_dir": "/run/user/1000",
+      "session_id": null,
+      "dbus_session_bus_address": "unix:path=/run/user/1000/bus",
+      "ssh": false
+    },
+    "activation_directories": {
+      "home": "~",
+      "config_home": null,
+      "config_dirs": "/etc/xdg/xdg-ubuntu:/etc/xdg",
+      "data_home": null,
+      "data_dirs": "/usr/share/ubuntu:/usr/share/gnome:~/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+      "portal_dir": null
+    }
+  },
+  "dbus": {
+    "reachable": true,
+    "names": [
+      {
+        "name": "org.freedesktop.portal.Desktop",
+        "running": true,
+        "activatable": true
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.gnome",
+        "running": true,
+        "activatable": true
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.gtk",
+        "running": true,
+        "activatable": true
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.kde",
+        "running": false,
+        "activatable": false
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.wlr",
+        "running": false,
+        "activatable": false
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.hyprland",
+        "running": false,
+        "activatable": false
+      },
+      {
+        "name": "org.gnome.Mutter.ScreenCast",
+        "running": true,
+        "activatable": false
+      }
+    ],
+    "objects": [
+      {
+        "name": "org.freedesktop.portal.Desktop",
+        "interfaces": [
+          "org.freedesktop.host.portal.Registry",
+          "org.freedesktop.portal.Account",
+          "org.freedesktop.portal.Background",
+          "org.freedesktop.portal.Camera",
+          "org.freedesktop.portal.Clipboard",
+          "org.freedesktop.portal.DynamicLauncher",
+          "org.freedesktop.portal.Email",
+          "org.freedesktop.portal.FileChooser",
+          "org.freedesktop.portal.GameMode",
+          "org.freedesktop.portal.GlobalShortcuts",
+          "org.freedesktop.portal.Inhibit",
+          "org.freedesktop.portal.InputCapture",
+          "org.freedesktop.portal.Location",
+          "org.freedesktop.portal.MemoryMonitor",
+          "org.freedesktop.portal.NetworkMonitor",
+          "org.freedesktop.portal.Notification",
+          "org.freedesktop.portal.OpenURI",
+          "org.freedesktop.portal.PowerProfileMonitor",
+          "org.freedesktop.portal.Print",
+          "org.freedesktop.portal.ProxyResolver",
+          "org.freedesktop.portal.Realtime",
+          "org.freedesktop.portal.RemoteDesktop",
+          "org.freedesktop.portal.ScreenCast",
+          "org.freedesktop.portal.Screenshot",
+          "org.freedesktop.portal.Secret",
+          "org.freedesktop.portal.Settings",
+          "org.freedesktop.portal.Trash",
+          "org.freedesktop.portal.Usb",
+          "org.freedesktop.portal.Wallpaper",
+          "org.freedesktop.portal.WebExtensions"
+        ],
+        "screencast": {
+          "version": 5,
+          "source_types": 7,
+          "cursor_modes": 7
+        }
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.gnome",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.Background",
+          "org.freedesktop.impl.portal.Clipboard",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.GlobalShortcuts",
+          "org.freedesktop.impl.portal.InputCapture",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.RemoteDesktop",
+          "org.freedesktop.impl.portal.ScreenCast",
+          "org.freedesktop.impl.portal.Screenshot",
+          "org.freedesktop.impl.portal.Settings",
+          "org.freedesktop.impl.portal.Usb",
+          "org.freedesktop.impl.portal.Wallpaper"
+        ],
+        "screencast": {
+          "version": 5,
+          "source_types": 7,
+          "cursor_modes": 7
+        }
+      },
+      {
+        "name": "org.freedesktop.impl.portal.desktop.gtk",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.Email",
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.Inhibit",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.Settings"
+        ],
+        "screencast": null
+      },
+      {
+        "name": "org.gnome.Mutter.ScreenCast",
+        "interfaces": null,
+        "screencast": {
+          "version": 4,
+          "source_types": null,
+          "cursor_modes": null
+        }
+      }
+    ]
+  },
+  "portal_files": {
+    "desktops": [
+      "ubuntu",
+      "gnome"
+    ],
+    "config_directories": [
+      "~/.config/xdg-desktop-portal",
+      "/etc/xdg/xdg-ubuntu/xdg-desktop-portal",
+      "/etc/xdg/xdg-desktop-portal",
+      "/etc/xdg-desktop-portal",
+      "~/.local/share/xdg-desktop-portal",
+      "/usr/share/ubuntu/xdg-desktop-portal",
+      "/usr/share/gnome/xdg-desktop-portal",
+      "~/.local/share/flatpak/exports/share/xdg-desktop-portal",
+      "/var/lib/flatpak/exports/share/xdg-desktop-portal",
+      "/usr/local/share/xdg-desktop-portal",
+      "/usr/share/xdg-desktop-portal",
+      "/var/lib/snapd/desktop/xdg-desktop-portal",
+      "/usr/share/xdg-desktop-portal"
+    ],
+    "configs": [
+      {
+        "path": "/usr/share/xdg-desktop-portal/gnome-portals.conf",
+        "preferred": [
+          [
+            "default",
+            [
+              "gnome",
+              "gtk"
+            ]
+          ],
+          [
+            "org.freedesktop.impl.portal.Secret",
+            [
+              "gnome-keyring"
+            ]
+          ]
+        ],
+        "duplicates": [],
+        "usable": true,
+        "error": null
+      },
+      {
+        "path": "/usr/share/xdg-desktop-portal/gnome-portals.conf",
+        "preferred": [
+          [
+            "default",
+            [
+              "gnome",
+              "gtk"
+            ]
+          ],
+          [
+            "org.freedesktop.impl.portal.Secret",
+            [
+              "gnome-keyring"
+            ]
+          ]
+        ],
+        "duplicates": [],
+        "usable": true,
+        "error": null
+      }
+    ],
+    "descriptor_directories": [
+      "~/.local/share/xdg-desktop-portal/portals",
+      "/usr/share/ubuntu/xdg-desktop-portal/portals",
+      "/usr/share/gnome/xdg-desktop-portal/portals",
+      "~/.local/share/flatpak/exports/share/xdg-desktop-portal/portals",
+      "/var/lib/flatpak/exports/share/xdg-desktop-portal/portals",
+      "/usr/local/share/xdg-desktop-portal/portals",
+      "/usr/share/xdg-desktop-portal/portals",
+      "/var/lib/snapd/desktop/xdg-desktop-portal/portals",
+      "/usr/share/xdg-desktop-portal/portals"
+    ],
+    "descriptors": [
+      {
+        "source": "gnome-keyring",
+        "path": "/usr/share/xdg-desktop-portal/portals/gnome-keyring.portal",
+        "dbus_name": "org.freedesktop.secrets",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Secret"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      },
+      {
+        "source": "gnome",
+        "path": "/usr/share/xdg-desktop-portal/portals/gnome.portal",
+        "dbus_name": "org.freedesktop.impl.portal.desktop.gnome",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.Background",
+          "org.freedesktop.impl.portal.Clipboard",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.GlobalShortcuts",
+          "org.freedesktop.impl.portal.InputCapture",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.RemoteDesktop",
+          "org.freedesktop.impl.portal.ScreenCast",
+          "org.freedesktop.impl.portal.Screenshot",
+          "org.freedesktop.impl.portal.Settings",
+          "org.freedesktop.impl.portal.Usb",
+          "org.freedesktop.impl.portal.Wallpaper"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      },
+      {
+        "source": "gtk",
+        "path": "/usr/share/xdg-desktop-portal/portals/gtk.portal",
+        "dbus_name": "org.freedesktop.impl.portal.desktop.gtk",
+        "interfaces": [
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Inhibit",
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.Email",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Settings"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      },
+      {
+        "source": "gnome-keyring",
+        "path": "/usr/share/xdg-desktop-portal/portals/gnome-keyring.portal",
+        "dbus_name": "org.freedesktop.secrets",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Secret"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      },
+      {
+        "source": "gnome",
+        "path": "/usr/share/xdg-desktop-portal/portals/gnome.portal",
+        "dbus_name": "org.freedesktop.impl.portal.desktop.gnome",
+        "interfaces": [
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.Background",
+          "org.freedesktop.impl.portal.Clipboard",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.GlobalShortcuts",
+          "org.freedesktop.impl.portal.InputCapture",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.RemoteDesktop",
+          "org.freedesktop.impl.portal.ScreenCast",
+          "org.freedesktop.impl.portal.Screenshot",
+          "org.freedesktop.impl.portal.Settings",
+          "org.freedesktop.impl.portal.Usb",
+          "org.freedesktop.impl.portal.Wallpaper"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      },
+      {
+        "source": "gtk",
+        "path": "/usr/share/xdg-desktop-portal/portals/gtk.portal",
+        "dbus_name": "org.freedesktop.impl.portal.desktop.gtk",
+        "interfaces": [
+          "org.freedesktop.impl.portal.FileChooser",
+          "org.freedesktop.impl.portal.AppChooser",
+          "org.freedesktop.impl.portal.Print",
+          "org.freedesktop.impl.portal.Notification",
+          "org.freedesktop.impl.portal.Inhibit",
+          "org.freedesktop.impl.portal.Access",
+          "org.freedesktop.impl.portal.Account",
+          "org.freedesktop.impl.portal.Email",
+          "org.freedesktop.impl.portal.DynamicLauncher",
+          "org.freedesktop.impl.portal.Lockdown",
+          "org.freedesktop.impl.portal.Settings"
+        ],
+        "use_in": [
+          "gnome"
+        ],
+        "error": null
+      }
+    ],
+    "unreadable": [],
+    "variables_from": "user manager"
+  },
+  "pipewire": {
+    "skipped": null,
+    "version": "1.6.2",
+    "clients": [
+      "Mutter",
+      "WirePlumber",
+      "gnome-shell",
+      "xdg-desktop-portal"
+    ],
+    "other_clients": 12,
+    "camera_sources": 1,
+    "other_video_sources": 0,
+    "video_streams": 0
+  },
+  "probe_failures": [],
+  "findings": [
+    {
+      "id": "SSD-SESSION-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "Wayland session",
+      "reason": "Decided from environment.",
+      "subject": "session",
+      "layer": "session",
+      "evidence": [
+        {
+          "source": "environment",
+          "key": "XDG_SESSION_TYPE",
+          "value": "wayland"
+        },
+        {
+          "source": "environment",
+          "key": "WAYLAND_DISPLAY",
+          "value": "wayland-0"
+        },
+        {
+          "source": "logind",
+          "key": "Type",
+          "value": "wayland"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-SESSION-002",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "The Wayland display is reachable",
+      "reason": "/run/user/1000/wayland-0 is a socket.",
+      "subject": "session",
+      "layer": "session",
+      "evidence": [
+        {
+          "source": "environment",
+          "key": "WAYLAND_DISPLAY",
+          "value": "wayland-0"
+        },
+        {
+          "source": "stat",
+          "key": "wayland socket",
+          "value": "socket"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-SESSION-003",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "The portal reads the desktop names ubuntu, gnome",
+      "reason": "From XDG_CURRENT_DESKTOP of the user manager.",
+      "subject": "session",
+      "layer": "session",
+      "evidence": [
+        {
+          "source": "environment of the user manager",
+          "key": "XDG_CURRENT_DESKTOP",
+          "value": "ubuntu:GNOME"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-SESSION-004",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "Portals see the same desktop and display",
+      "reason": "WAYLAND_DISPLAY and XDG_CURRENT_DESKTOP match between this session and the user manager.",
+      "subject": "session",
+      "layer": "session",
+      "evidence": [
+        {
+          "source": "user manager",
+          "key": "WAYLAND_DISPLAY",
+          "value": "wayland-0"
+        },
+        {
+          "source": "environment",
+          "key": "WAYLAND_DISPLAY",
+          "value": "wayland-0"
+        },
+        {
+          "source": "user manager",
+          "key": "XDG_CURRENT_DESKTOP",
+          "value": "ubuntu:GNOME"
+        },
+        {
+          "source": "environment",
+          "key": "XDG_CURRENT_DESKTOP",
+          "value": "ubuntu:GNOME"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-DBUS-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "The session bus answers",
+      "reason": "busctl --user reached the bus daemon.",
+      "subject": "session",
+      "layer": "dbus",
+      "evidence": [],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PKG-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "xdg-desktop-portal 1.21.1+ds-1ubuntu3.1 is installed",
+      "reason": "Reported by dpkg.",
+      "subject": "session",
+      "layer": "portal-frontend",
+      "evidence": [
+        {
+          "source": "dpkg",
+          "key": "xdg-desktop-portal",
+          "value": "installed"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-SERVICE-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "xdg-desktop-portal.service is active",
+      "reason": "Loaded and not failed; inactive is normal, it starts on demand.",
+      "subject": "session",
+      "layer": "portal-frontend",
+      "evidence": [
+        {
+          "source": "systemctl",
+          "key": "LoadState",
+          "value": "loaded"
+        },
+        {
+          "source": "systemctl",
+          "key": "ActiveState",
+          "value": "active"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PORTAL-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "The portal frontend offers ScreenCast (version 5)",
+      "reason": "org.freedesktop.portal.Desktop runs and exports org.freedesktop.portal.ScreenCast.",
+      "subject": "session",
+      "layer": "portal-frontend",
+      "evidence": [
+        {
+          "source": "busctl",
+          "key": "running",
+          "value": "true"
+        },
+        {
+          "source": "busctl",
+          "key": "activatable",
+          "value": "true"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PORTAL-002",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "ScreenCast goes to the gnome backend, which runs",
+      "reason": "Selected by /usr/share/xdg-desktop-portal/gnome-portals.conf.",
+      "subject": "session",
+      "layer": "portal-backend",
+      "evidence": [
+        {
+          "source": "route",
+          "key": "backend",
+          "value": "gnome"
+        },
+        {
+          "source": "route",
+          "key": "decided by",
+          "value": "/usr/share/xdg-desktop-portal/gnome-portals.conf"
+        },
+        {
+          "source": "busctl",
+          "key": "agreement",
+          "value": "consistent"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PORTAL-003",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "Every portal file found is read",
+      "reason": "2 configuration file(s) and 6 descriptor(s), none ignored.",
+      "subject": "session",
+      "layer": "portal-frontend",
+      "evidence": [],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PORTAL-004",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "ScreenCast offers monitor, window, virtual",
+      "reason": "The backend reports the window source type.",
+      "subject": "session",
+      "layer": "portal-backend",
+      "evidence": [
+        {
+          "source": "busctl",
+          "key": "AvailableSourceTypes",
+          "value": "7"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-DESKTOP-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "The setup matches GNOME's defaults",
+      "reason": "All 5 expectations hold.",
+      "subject": "session",
+      "layer": "portal-backend",
+      "evidence": [
+        {
+          "source": "GNOME default",
+          "key": "xdg-desktop-portal-gnome is installed",
+          "value": "version 50.0-0ubuntu1 (pass)"
+        },
+        {
+          "source": "GNOME default",
+          "key": "gnome.portal declares ScreenCast",
+          "value": "/usr/share/xdg-desktop-portal/portals/gnome.portal (pass)"
+        },
+        {
+          "source": "GNOME default",
+          "key": "gnome-portals.conf is installed",
+          "value": "/usr/share/xdg-desktop-portal/gnome-portals.conf (pass)"
+        },
+        {
+          "source": "GNOME default",
+          "key": "ScreenCast is routed to the gnome backend",
+          "value": "decided by /usr/share/xdg-desktop-portal/gnome-portals.conf (pass)"
+        },
+        {
+          "source": "GNOME default",
+          "key": "org.freedesktop.impl.portal.desktop.gnome runs or can be started",
+          "value": "running (pass)"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-COMPOSITOR-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "org.gnome.Mutter.ScreenCast is running",
+      "reason": "running",
+      "subject": "session",
+      "layer": "compositor",
+      "evidence": [
+        {
+          "source": "busctl",
+          "key": "org.gnome.Mutter.ScreenCast",
+          "value": "true"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-PW-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "PipeWire 1.6.2 answers",
+      "reason": "pw-dump reached the daemon.",
+      "subject": "session",
+      "layer": "pipewire",
+      "evidence": [
+        {
+          "source": "systemctl",
+          "key": "pipewire.service",
+          "value": "active"
+        },
+        {
+          "source": "systemctl",
+          "key": "pipewire.socket",
+          "value": "active"
+        },
+        {
+          "source": "pw-dump",
+          "key": "version",
+          "value": "1.6.2"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    },
+    {
+      "id": "SSD-WP-001",
+      "status": "pass",
+      "severity": "info",
+      "confidence": "high",
+      "summary": "WirePlumber is connected to PipeWire",
+      "reason": "It is in PipeWire's client list.",
+      "subject": "session",
+      "layer": "wireplumber",
+      "evidence": [
+        {
+          "source": "systemctl",
+          "key": "wireplumber.service",
+          "value": "active"
+        },
+        {
+          "source": "pw-dump",
+          "key": "WirePlumber client",
+          "value": "true"
+        }
+      ],
+      "recommended_action": null,
+      "verify_command": null,
+      "limitations": [],
+      "caused_by": null
+    }
+  ],
+  "redactions": [
+    {
+      "kind": "home_path",
+      "count": 7
+    }
+  ],
+  "summary": {
+    "session": "wayland",
+    "location": "desktop",
+    "desktop_family": "gnome",
+    "desktop_name": "gnome",
+    "portal_version": "1.21.1+ds-1ubuntu3.1",
+    "counts": {
+      "pass": 15,
+      "warn": 0,
+      "fail": 0,
+      "unknown": 0,
+      "not_applicable": 0,
+      "not_tested": 0
+    },
+    "worst": "pass"
+  }
+}
