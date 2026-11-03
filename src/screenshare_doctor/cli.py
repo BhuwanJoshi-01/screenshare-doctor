@@ -15,9 +15,9 @@ from rich.console import Console
 from screenshare_doctor import __version__
 from screenshare_doctor.exit_codes import ExitCode
 from screenshare_doctor.models import SessionFacts
-from screenshare_doctor.orchestrator import inspect_services, inspect_session
+from screenshare_doctor.orchestrator import inspect_dbus, inspect_services, inspect_session
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
-from screenshare_doctor.reports.terminal import render_services, render_session
+from screenshare_doctor.reports.terminal import render_dbus, render_services, render_session
 from screenshare_doctor.runner import SubprocessRunner
 from screenshare_doctor.session import SessionKind, assess_session
 
@@ -91,6 +91,21 @@ def check_services() -> None:
     """
     snapshot = inspect_services(SubprocessRunner())
     render_services(redact_snapshot(snapshot), Console(highlight=False))
+
+
+@check_app.command("dbus")
+def check_dbus() -> None:
+    """Show which portal services are on the session bus and what they offer for ScreenCast.
+
+    Asks the bus daemon which names run (NameHasOwner) or could start
+    (ListActivatableNames), then introspects only the running ones with busctl
+    --auto-start=no. A portal that is not running is reported, never started. Exits
+    with code 3 when the session bus cannot be reached.
+    """
+    snapshot = inspect_dbus(SubprocessRunner())
+    render_dbus(redact_snapshot(snapshot), Console(highlight=False))
+    if snapshot.dbus is None or snapshot.dbus.reachable is not True:
+        raise typer.Exit(ExitCode.CONTEXT_UNAVAILABLE)
 
 
 def main() -> None:
