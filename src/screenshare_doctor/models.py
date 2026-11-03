@@ -233,6 +233,38 @@ class SessionFacts:
     logind: LogindFacts = field(default_factory=LogindFacts)
 
 
+class PackageState(StrEnum):
+    """Whether a package is installed, as far as the package manager or the files tell."""
+
+    INSTALLED = "installed"
+    NOT_INSTALLED = "not_installed"
+    BROKEN = "broken"
+    """Half installed, unpacked but not configured, or flagged for reinstallation."""
+    UNKNOWN = "unknown"
+
+
+@dataclass(frozen=True, slots=True)
+class PackageInfo:
+    """One package of the screen-sharing stack; ``version`` as the package manager prints it."""
+
+    name: str
+    state: PackageState
+    version: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PackageFacts:
+    """The packages that were looked up and how.
+
+    ``source`` is the package manager that answered (``dpkg``, ``rpm``, ``pacman``),
+    ``files`` when only the installed programs could be looked for, or ``None`` when
+    nothing was checked.
+    """
+
+    source: str | None = None
+    packages: tuple[PackageInfo, ...] = ()
+
+
 @dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
