@@ -1,0 +1,45 @@
+name: Test report
+description: Tell us how it did on your desktop (it helps a lot, even when everything works)
+labels: ["needs: hardware-test"]
+body:
+  - type: markdown
+    attributes:
+      value: Don't paste user names, home paths, window titles or raw logs. The redacted report is enough.
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution and version
+      placeholder: e.g. Ubuntu 26.04, Arch, Fedora 44
+    validations:
+      required: true
+  - type: input
+    id: desktop
+    attributes:
+      label: Desktop and version
+      placeholder: e.g. GNOME 50.1, KDE Plasma 6.4, Hyprland 0.52
+    validations:
+      required: true
+  - type: textarea
+    id: apps
+    attributes:
+      label: Apps you tried
+      description: App, how it is installed (native, Flatpak, Snap), and whether sharing really works in it.
+      placeholder: |
+        Firefox 150 (native): works
+        Discord (Flatpak): black screen
+    validations:
+      required: true
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What gave the right answer?
+      options:
+        - label: doctor
+        - label: routes explain ScreenCast
+        - label: troubleshoot screenshare
+        - label: report (redacted, safe to share)
+        - label: GNOME extension
+  - type: textarea
+    id: notes
+    attributes:
+      label: What was wrong, missing or confusing?
