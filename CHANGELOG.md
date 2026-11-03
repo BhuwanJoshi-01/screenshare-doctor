@@ -52,3 +52,9 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   from another are folded under their root cause. `--strict` exits 1 on any
   failure.
 - `screenshare-doctor rules list` and `rules explain CODE`.
+- `screenshare-doctor troubleshoot screenshare [--app NAME] [--symptom
+  SYMPTOM] [--explain]`: the checks that explain one of five symptoms
+  (`no-picker`, `black-screen`, `missing-window`, `permission-denied`,
+  `app-only`), most likely cause first, with sourced hints for Firefox, the
+  Chromium family, Electron apps and OBS, and Flatpak detection
+  (`docs/apps-and-symptoms.md`).

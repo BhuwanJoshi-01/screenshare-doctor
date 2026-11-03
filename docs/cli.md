@@ -45,6 +45,22 @@ are contacted on D-Bus, with `--auto-start=no`, and PipeWire is only asked when 
 
 **Exit code**: 0 whatever the findings; with `--strict`, 1 when any check fails.
 
+## `troubleshoot screenshare`
+
+```bash
+screenshare-doctor troubleshoot screenshare --app firefox --symptom no-picker
+screenshare-doctor troubleshoot screenshare --app discord --symptom black-screen --explain
+```
+
+Runs the same checks as `doctor`, then shows the ones that explain the symptom, most likely cause first, the
+symptom's reasoning, sourced hints about the app, whether it is a Flatpak, other problems found and what is not
+checked. Symptoms and apps are listed in [Apps and symptoms](apps-and-symptoms.md). `--explain` adds every check's
+reason and explanation, passes included.
+
+The app name selects hints; the tool does not inspect the running app. An unknown app still gets the checks.
+
+**Exit code**: 0; 2 for an unknown symptom.
+
 ## `rules list`, `rules explain CODE`
 
 `rules list` prints every check with its code and layer; `rules explain SSD-PORTAL-002` prints what that check looks
