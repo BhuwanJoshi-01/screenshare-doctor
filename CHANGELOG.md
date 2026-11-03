@@ -8,3 +8,9 @@ All notable changes to this project are listed here. Versions follow
 
 Nothing released yet. The first release (0.1.0) will diagnose screen sharing
 read-only, on GNOME first, then KDE Plasma and Hyprland.
+
+- `screenshare-doctor --help` and `--version`. Exit codes: 0 when the
+  diagnosis ran (whatever it found), 1 for `--strict` failures, 2 for usage
+  errors and internal errors, 3 when required context (a graphical session)
+  is missing, 130 for Ctrl+C. Internal errors print one redacted line;
+  `SSD_DEBUG=1` shows the traceback.
