@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import stat
 from collections.abc import Callable
 
 from screenshare_doctor.collectors.dbus import (
@@ -18,7 +20,9 @@ from screenshare_doctor.collectors.dbus import (
 from screenshare_doctor.collectors.logind import SESSION_PROPERTIES
 from screenshare_doctor.collectors.packages import DPKG_FORMAT, PACKAGES
 from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
-from tests.fakes import FIXTURES, FakeRunner, read_fixture
+from screenshare_doctor.models import Snapshot
+from screenshare_doctor.orchestrator import inspect_routes
+from tests.fakes import FIXTURES, FakeRunner, read_env_fixture, read_fixture
 
 BUS_DAEMON = (
     *BUSCTL,
@@ -172,3 +176,25 @@ def gnome_file_access(
         )
 
     return read, list_dir
+
+
+def _stat_socket_or_dir(path: str) -> os.stat_result:
+    mode = stat.S_IFDIR if path.endswith("/1000") else stat.S_IFSOCK
+    return os.stat_result((mode, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+
+
+def gnome_snapshot(extra_files: dict[str, bytes] | None = None) -> Snapshot:
+    """A snapshot of the whole real GNOME machine, as ``inspect_routes`` collects it."""
+    runner = FakeRunner()
+    script_gnome_machine(runner, uid=1000)
+    read, list_dir = gnome_file_access(extra_files)
+    return inspect_routes(
+        runner,
+        environ=read_env_fixture("gnome-wayland-ubuntu"),
+        uid=1000,
+        stat=_stat_socket_or_dir,
+        which=lambda name: "/usr/bin/dpkg-query" if name == "dpkg-query" else None,
+        exists=lambda path: path == "/var/lib/dpkg/status",
+        read=read,
+        list_dir=list_dir,
+    )
