@@ -15,6 +15,7 @@ from screenshare_doctor.collectors.environment import (
 )
 from screenshare_doctor.collectors.logind import collect_logind
 from screenshare_doctor.collectors.packages import collect_packages
+from screenshare_doctor.collectors.pipewire import collect_pipewire
 from screenshare_doctor.collectors.portal_config import (
     collect_portal_files,
     list_portal_files,
@@ -22,7 +23,13 @@ from screenshare_doctor.collectors.portal_config import (
 )
 from screenshare_doctor.collectors.services import collect_services
 from screenshare_doctor.desktops import parse_desktop_list
-from screenshare_doctor.models import ProbeFailure, SessionFacts, Snapshot, utc_timestamp
+from screenshare_doctor.models import (
+    FailureKind,
+    ProbeFailure,
+    SessionFacts,
+    Snapshot,
+    utc_timestamp,
+)
 from screenshare_doctor.runner import CommandRunner
 
 
@@ -70,21 +77,35 @@ def inspect_services(
     which: Callable[[str], str | None] = shutil.which,
     exists: Callable[[str], bool] = _exists,
 ) -> Snapshot:
-    """The session, the installed packages and the user services, in one snapshot.
+    """The session, the installed packages, the user services and PipeWire, in one snapshot.
 
     The session is included so that the user manager's environment can be compared
-    with the shell's.
+    with the shell's. PipeWire is asked only when that cannot start it, which needs the
+    service state first.
     """
     session, session_failures = collect_session(runner, environ=environ, uid=uid, stat=stat)
     packages, package_failures = collect_packages(runner, which=which, exists=exists)
     services, service_failures = collect_services(runner)
+    systemd_missing = any(
+        f.probe == "systemctl --user show" and f.kind is FailureKind.NOT_FOUND
+        for f in service_failures
+    )
+    pipewire, pipewire_failures = collect_pipewire(
+        runner, services, systemd_missing=systemd_missing
+    )
     return Snapshot(
         tool_version=__version__,
         created_at=utc_timestamp(),
         session=session,
         packages=packages,
         services=services,
-        probe_failures=(*session_failures, *package_failures, *service_failures),
+        pipewire=pipewire,
+        probe_failures=(
+            *session_failures,
+            *package_failures,
+            *service_failures,
+            *pipewire_failures,
+        ),
     )
 
 

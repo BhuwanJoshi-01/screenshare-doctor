@@ -461,9 +461,8 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session``, ``packages``, ``services``, ``dbus`` and ``portal_files`` are ``None``
-    when the command did not look at them. PipeWire facts join this record as their
-    collector is added.
+    ``session``, ``packages``, ``services``, ``dbus``, ``portal_files`` and ``pipewire``
+    are ``None`` when the command did not look at them.
     """
 
     tool_version: str
@@ -474,6 +473,7 @@ class Snapshot:
     services: ServiceFacts | None = None
     dbus: DbusFacts | None = None
     portal_files: PortalFiles | None = None
+    pipewire: PipeWireFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()

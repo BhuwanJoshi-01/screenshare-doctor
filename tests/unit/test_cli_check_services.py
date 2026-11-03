@@ -15,6 +15,7 @@ from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
 from screenshare_doctor.privacy import RedactionContext, strip_control
 from screenshare_doctor.runner import CommandResult, Outcome
 from tests.fakes import FakeRunner, read_env_fixture, read_fixture
+from tests.scenarios import script_gnome_pipewire
 
 SHOW = ["systemctl", "--user", "--no-pager", "show"]
 SHOW += [part for name in UNIT_PROPERTIES for part in ("-p", name)]
@@ -68,6 +69,7 @@ def test_check_services_on_the_real_ubuntu_captures(
     )
     runner.script(*SHOW, stdout=read_fixture("systemctl", "show-units-ubuntu-gnome.txt"))
     runner.script(*SHOW_ENV, stdout=read_fixture("systemctl", "show-environment-ubuntu-gnome.txt"))
+    script_gnome_pipewire(runner)
     assert _run(monkeypatch, runner) == 0
     out = strip_control(capsys.readouterr().out)
     assert "portal frontend" in out
@@ -82,6 +84,9 @@ def test_without_systemd_it_still_exits_0(
     runner.script_result(CommandResult(SHOW_USER, Outcome.NOT_FOUND, error="No such file"))
     runner.script("dpkg-query", "-W", "-f", DPKG_FORMAT, *PACKAGES, stdout="pipewire\t1.6.2\tii \n")
     runner.script_result(CommandResult(tuple(SHOW), Outcome.NOT_FOUND, error="No such file"))
+    # Without systemd there is no socket activation, so PipeWire may be asked.
+    pw_core = ("pw-dump", "-N", "-i", "0", "PipeWire:Interface:Core")
+    runner.script_result(CommandResult(pw_core, Outcome.NOT_FOUND, error="No such file"))
     assert _run(monkeypatch, runner) == 0
     out = strip_control(capsys.readouterr().out)
     assert "systemctl --user show: systemctl was not found" in out
