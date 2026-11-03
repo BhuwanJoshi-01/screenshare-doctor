@@ -22,16 +22,25 @@ uv run pytest -q --cov                     # with coverage
 src/screenshare_doctor/
   cli.py          Typer app + main(): exit codes, redacted internal errors (SSD_DEBUG=1 for tracebacks)
   models.py       Status/Severity/Confidence, Layer, Evidence, Finding (codes SSD-<AREA>-<NNN>),
-                  ProbeFailure, Snapshot
+                  ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts, Snapshot
+  orchestrator.py collect_session()/inspect_session(): runs the collectors, builds the Snapshot
+                  (facts only; conclusions are recomputed from them)
+  collectors/     environment.py (allowlisted session variables, stat() of runtime dir and sockets),
+                  logind.py (loginctl show-user/show-session only; ids checked before use)
+  desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
+  session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
+  reports/        terminal.py (plain Text, never Rich markup from collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
   privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()
   exit_codes.py   ExitCode: 0 ok, 1 strict, 2 error, 3 context unavailable, 130 interrupted
 tests/
   conftest.py     autouse no_network guard (UNIX sockets allowed); HYPOTHESIS_PROFILE=thorough
-  fakes.py        FakeRunner: scripted commands only, anything else fails the test; read_fixture()
+  fakes.py        FakeRunner: scripted commands only, anything else fails the test; read_fixture(),
+                  read_env_fixture()
+  fixtures/       real and synthetic captures, each set with a README saying which is which
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
-docs/roadmap.md   requirement IDs WLD-001 … and what v0.1 includes
+docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference)
 .github/          CI, issue forms, PR template
 ```
 
