@@ -209,6 +209,22 @@ class LogindSession:
 
 
 @dataclass(frozen=True, slots=True)
+class LogindFacts:
+    """The sessions logind reported for the user running the tool.
+
+    ``own`` is the session named by ``XDG_SESSION_ID``. ``display`` is the user's
+    graphical session (logind's ``Display``); it is the same session when the tool runs
+    in a terminal of the desktop, and the only one known when it runs from the user
+    manager. ``display_known`` is true when logind answered the question, so a ``None``
+    ``display`` then means "no graphical session" rather than "not asked".
+    """
+
+    own: LogindSession | None = None
+    display: LogindSession | None = None
+    display_known: bool = False
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
