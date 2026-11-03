@@ -54,8 +54,9 @@ src/screenshare_doctor/
   rules/          engine.py (Registry, evaluate, root_causes), catalog.py (module order as data),
                   session.py, portal.py, desktop.py, pipewire.py: the SSD-* checks (docs/rules.md lists
                   them; a test fails if one is missing there)
-  reports/        terminal.py: render_session/services/dbus/route/desktop(); findings.py: doctor report
-                  (plain Text, never Rich markup from collected data)
+  reports/        terminal.py: render_session/services/dbus/route/desktop(); findings.py: doctor report;
+                  troubleshoot.py; json_report.py (+ derived summary); markdown.py (escaped, cell_code)
+                  (terminal: plain Text, never Rich markup from collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
   privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()
@@ -68,10 +69,13 @@ tests/
                   gnome_file_access)
   fixtures/       real and synthetic captures, each set with a README saying which is which
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
+  contract/       JSON schema contract (every model field in docs/json-schema-v1.json) and the canary
+                  test: planted secrets must reach no renderer
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference),
                   portal-routing.md (search order and the per-release selection rules),
                   desktops.md (the bundles in prose, with sources), rules.md (every SSD check),
-                  apps-and-symptoms.md (troubleshoot profiles and their sources)
+                  apps-and-symptoms.md (troubleshoot profiles and their sources), json-output.md +
+                  json-schema-v1.json (the frozen report format: change both or neither)
 .github/          CI, issue forms, PR template
 ```
 

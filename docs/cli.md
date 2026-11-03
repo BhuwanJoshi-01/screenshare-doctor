@@ -43,7 +43,21 @@ Nothing was started, changed or recorded; no screen-sharing request was made.
 It reads what `check services`, `check dbus` and `routes explain` read, under the same rules: only running services
 are contacted on D-Bus, with `--auto-start=no`, and PipeWire is only asked when it already runs.
 
-**Exit code**: 0 whatever the findings; with `--strict`, 1 when any check fails.
+`--format json` prints the whole redacted report instead ([JSON output](json-output.md)).
+
+**Exit code**: 0 whatever the findings; with `--strict`, 1 when any check fails (with either format).
+
+## `report`
+
+```bash
+screenshare-doctor report                                   # Markdown, printed so you can read it first
+screenshare-doctor report --output screenshare-report.md    # write it to a file (never overwrites without --force)
+screenshare-doctor report --format json --output report.json
+```
+
+A redacted, issue-ready report of every check: a table of the checks, a section per problem with its evidence, next
+step and verify command, the key facts, what could not be checked and what was redacted. Values are escaped so they
+cannot turn into HTML or break a table. The file named with `--output` is the only thing the tool ever writes.
 
 ## `troubleshoot screenshare`
 
