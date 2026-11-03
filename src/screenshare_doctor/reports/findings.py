@@ -73,7 +73,7 @@ def render_findings(snapshot: Snapshot, console: Console, *, show_all: bool = Fa
     shown = snapshot.findings if show_all else root_causes(snapshot.findings)
     hidden = len(snapshot.findings) - len(shown)
     for finding in shown:
-        _render_one(finding, console)
+        render_finding(finding, console)
     if hidden:
         console.print()
         console.print(
@@ -112,7 +112,8 @@ def render_findings(snapshot: Snapshot, console: Console, *, show_all: bool = Fa
         console.print(Text(redactions, style="dim"))
 
 
-def _render_one(finding: Finding, console: Console) -> None:
+def render_finding(finding: Finding, console: Console, *, details: bool = False) -> None:
+    """One line, plus reason, next step and check for problems (or always with ``details``)."""
     label = _LABEL[finding.status]
     summary = finding.summary
     if finding.caused_by:
@@ -124,7 +125,7 @@ def _render_one(finding: Finding, console: Console) -> None:
             summary,
         )
     )
-    if finding.status not in _DETAILED:
+    if finding.status not in _DETAILED and not details:
         return
     indent = " " * 27
     console.print(Text(f"{indent}{finding.reason}"))
