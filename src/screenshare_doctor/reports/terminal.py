@@ -20,6 +20,7 @@ from screenshare_doctor.models import (
     PackageInfo,
     PackageState,
     PathState,
+    PortalFiles,
     PortalObject,
     ScreenCastProperties,
     ServiceFacts,
@@ -28,6 +29,19 @@ from screenshare_doctor.models import (
     SessionPaths,
     Snapshot,
     UserService,
+)
+from screenshare_doctor.portal_paths import config_candidates
+from screenshare_doctor.routes import (
+    Agreement,
+    PortalBehaviour,
+    Route,
+    RouteKind,
+    RouteObservation,
+    Rule,
+    observe_route,
+    parse_portal_version,
+    public_interface,
+    resolve_route,
 )
 from screenshare_doctor.screencast import cursor_mode_names, source_type_names
 from screenshare_doctor.session import Location, SessionAssessment, SessionKind, assess_session
@@ -366,6 +380,146 @@ def _describe_screencast(properties: ScreenCastProperties) -> str:
         modes = cursor_mode_names(properties.cursor_modes)
         parts.append("cursor: " + (", ".join(modes) if modes else "none"))
     return "; ".join(parts)
+
+
+_AGREEMENT = {
+    Agreement.CONSISTENT: "consistent with the prediction",
+    Agreement.STARTS_ON_DEMAND: (
+        "not running now; the bus can start it on demand (normal for portals)"
+    ),
+    Agreement.CANNOT_START: "not running, and the bus cannot start it: requests will fail",
+    Agreement.MISSING_INTERFACE: "running, but it does not implement the interface",
+    Agreement.NOT_OFFERED: "the frontend does not offer the interface",
+    Agreement.OFFERED_WITHOUT_BACKEND: (
+        "the frontend offers the interface although no backend was predicted"
+    ),
+    Agreement.NOT_CHECKED: (
+        "not checked (the backend's bus name is not probed, or the bus did not answer)"
+    ),
+}
+
+
+def portal_version(snapshot: Snapshot) -> str | None:
+    """The installed xdg-desktop-portal version, when the package manager reported it."""
+    for package in (snapshot.packages or PackageFacts()).packages:
+        if package.name == "xdg-desktop-portal" and package.state is PackageState.INSTALLED:
+            return package.version
+    return None
+
+
+def render_route(snapshot: Snapshot, interface: str, console: Console) -> Route:
+    """Explain the predicted backend for ``interface`` (an ``impl`` name); returns the route."""
+    files = snapshot.portal_files or PortalFiles()
+    version = portal_version(snapshot)
+    behaviour = PortalBehaviour(parse_portal_version(version))
+    route = resolve_route(interface, files, behaviour)
+    observation = observe_route(route, snapshot.dbus)
+    short = interface.rsplit(".", 1)[-1]
+    console.print(
+        Text(f"screenshare-doctor {snapshot.tool_version}: route for {short}", style="bold")
+    )
+    console.print()
+    console.print(_row("Interface", f"{short} ({public_interface(interface)})"))
+    console.print(_row("Predicted", _predicted(route)))
+    console.print(_row("Decided by", _decided_by(route, files)))
+    console.print(_row("Portal", _behaviour_line(version, behaviour)))
+    console.print(_row("Desktops", _desktops_line(files)))
+    console.print(_row("On D-Bus", _observed(route, observation)))
+    if route.trace:
+        console.print()
+        console.print(Text("How it was decided:", style="bold"))
+        for number, step in enumerate(route.trace, start=1):
+            console.print(Text(f"  {number}. {step}"))
+    if files.config_directories:
+        console.print()
+        console.print(Text("Configuration search order (highest priority first):", style="bold"))
+        for line in _search_lines(files):
+            console.print(Text(f"  {line}"))
+    if route.uncertain:
+        console.print()
+        console.print(Text("The prediction may be wrong because:", style="bold"))
+        for reason in route.uncertain:
+            console.print(Text(f"  - {reason}"))
+    _render_failures(snapshot, console)
+    return route
+
+
+def _predicted(route: Route) -> str:
+    if route.kind is RouteKind.DISABLED:
+        return "none: a configuration disables this interface"
+    if route.backend is None:
+        return "none: no installed backend implements it, so apps cannot use it"
+    return f"{route.backend.source} ({route.backend.dbus_name})"
+
+
+def _decided_by(route: Route, files: PortalFiles) -> str:
+    if route.rule is Rule.USE_IN:
+        return (
+            "the deprecated UseIn key of the backend's .portal file (no portals.conf entry matched)"
+        )
+    if route.rule is Rule.GTK_FALLBACK:
+        return "the last-resort gtk fallback (nothing else matched)"
+    if route.rule is Rule.NO_MATCH:
+        return "nothing: no configuration entry or fallback matched"
+    conf = next((c for c in files.configs if c.path == route.config), None)
+    key = route.interface if route.rule in {Rule.INTERFACE, Rule.NONE} else "default"
+    if conf is not None:
+        entries = dict(conf.preferred)
+        if route.rule is Rule.NONE and route.interface not in entries:
+            key = "default"
+        if key in entries:
+            return f"{key}={';'.join(entries[key])} in {conf.path}"
+    return f"{key} in {route.config}"
+
+
+def _behaviour_line(version: str | None, behaviour: PortalBehaviour) -> str:
+    if version is None:
+        return (
+            "xdg-desktop-portal version unknown; the newest rules (1.21.1 and later) were applied"
+        )
+    effective = behaviour.effective
+    if behaviour.falls_through:
+        rules = "1.21.1 and later"
+    elif behaviour.all_descriptor_dirs:
+        rules = "1.20.1 to 1.21.0"
+    elif behaviour.ordered_lists:
+        rules = "1.19 to 1.20.0"
+    elif behaviour.reads_config:
+        rules = "1.17 and 1.18"
+    else:
+        rules = "before 1.17"
+    shown = ".".join(str(part) for part in effective)
+    return f"xdg-desktop-portal {version} (selection rules of {rules}; read as {shown})"
+
+
+def _desktops_line(files: PortalFiles) -> str:
+    names = ", ".join(files.desktops) if files.desktops else "none"
+    whose = "the user manager" if files.variables_from == "user manager" else files.variables_from
+    return f"{names} (XDG_CURRENT_DESKTOP of {whose})"
+
+
+def _observed(route: Route, observation: RouteObservation) -> str:
+    text = _AGREEMENT[observation.agreement]
+    if observation.agreement is Agreement.CONSISTENT and route.backend is not None:
+        return f"{route.backend.source} is running and implements it; the frontend offers it"
+    return text
+
+
+def _search_lines(files: PortalFiles) -> list[str]:
+    by_path = {conf.path: conf for conf in files.configs}
+    unreadable = set(files.unreadable)
+    lines: list[str] = []
+    for index, directory in enumerate(files.config_directories, start=1):
+        found = []
+        for path in config_candidates(directory, files.desktops):
+            name = path.rsplit("/", 1)[1]
+            if path in unreadable:
+                found.append(f"{name} (unreadable)")
+            elif path in by_path:
+                conf = by_path[path]
+                found.append(name if conf.usable else f"{name} (ignored: {conf.error})")
+        lines.append(f"{index:>2}. {directory}: {', '.join(found) if found else 'nothing'}")
+    return lines
 
 
 def redaction_line(snapshot: Snapshot) -> str | None:
