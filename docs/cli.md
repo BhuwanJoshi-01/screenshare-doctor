@@ -106,3 +106,52 @@ import-environment …`) leaves the portal unable to pick the right backend, eve
 the shell. When the tool runs in the desktop, each value is compared with the shell's.
 
 **Exit code**: 0, also when systemd or a package manager is missing; what could not be read is listed.
+
+## `check dbus`
+
+```bash
+screenshare-doctor check dbus
+```
+
+Shows which portal services are on the session bus, whether the bus could start them, and what the running ones
+offer for screen sharing:
+
+```text
+screenshare-doctor 0.1.0: D-Bus
+
+Session bus reachable
+
+Component          Running  Can start  ScreenCast
+portal frontend    yes      yes        version 5; sources: monitor, window, virtual; cursor: hidden, embedded, metadata
+GNOME backend      yes      yes        version 5; sources: monitor, window, virtual; cursor: hidden, embedded, metadata
+GTK backend        yes      yes        not implemented
+KDE backend        no       no         -
+wlr backend        no       no         -
+Hyprland backend   no       no         -
+Mutter ScreenCast  yes      no         version 4
+Only services that were already running were contacted; nothing was started.
+```
+
+(Real output from Ubuntu 26.04 with GNOME 50.1.)
+
+**What it reads**, in this order, with `busctl --user --json=short`:
+
+1. The bus daemon (`org.freedesktop.DBus`), which never starts a service to answer: `ListActivatableNames` once (of
+   the list, only the names below are kept), then `NameHasOwner` for `org.freedesktop.portal.Desktop`, the gnome,
+   gtk, kde, wlr and hyprland backends (`org.freedesktop.impl.portal.desktop.*`) and `org.gnome.Mutter.ScreenCast`.
+2. Only for names that are running, and always with `--auto-start=no`: `Introspect` on
+   `/org/freedesktop/portal/desktop`, and, where the ScreenCast interface exists, its `version`,
+   `AvailableSourceTypes` and `AvailableCursorModes`. For GNOME, the `Version` of Mutter's ScreenCast service.
+
+A service that is not running is reported as such; `--auto-start=no` means even one that stopped between the two
+steps fails instead of being started.
+
+**Reading the result**
+
+- *Running / Can start*: portals normally start on demand, so "no / yes" is fine. "no / no" for your desktop's
+  backend means nothing can start it: the backend is not installed or its D-Bus service file is missing.
+- *ScreenCast*: the frontend only offers ScreenCast when a backend implements it. Sources are the specification's
+  monitor, window and virtual; a backend without "window" cannot share single windows. "not implemented" is a
+  fact from introspection; "unknown" means it could not be read (see the list below the table).
+
+**Exit code**: 0 when the session bus answered, 3 when it could not be reached.

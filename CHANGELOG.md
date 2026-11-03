@@ -25,3 +25,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   there is no package manager), the state of their user services, and the
   environment the user manager starts portals in, compared with the shell's.
   Query commands only; nothing is started.
+- `screenshare-doctor check dbus`: which portal services run on the session
+  bus or could start, and the ScreenCast version, source types and cursor
+  modes of the running ones. Only the bus daemon and already-running services
+  are asked, with `busctl --auto-start=no`, so nothing is started. Exits 3
+  when the session bus cannot be reached.

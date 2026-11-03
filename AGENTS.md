@@ -23,17 +23,20 @@ src/screenshare_doctor/
   cli.py          Typer app + main(): exit codes, redacted internal errors (SSD_DEBUG=1 for tracebacks)
   models.py       Status/Severity/Confidence, Layer, Evidence, Finding (codes SSD-<AREA>-<NNN>),
                   ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts,
-                  PackageFacts, ServiceFacts, Snapshot
-  orchestrator.py collect_session(), inspect_session(), inspect_services(): run the collectors and
-                  build the Snapshot (facts only; conclusions are recomputed from them)
+                  PackageFacts, ServiceFacts, BusName/PortalObject/DbusFacts, Snapshot
+  orchestrator.py collect_session(), inspect_session(), inspect_services(), inspect_dbus(): run the
+                  collectors and build the Snapshot (facts only; conclusions are recomputed)
   collectors/     environment.py (allowlisted session variables, stat() of runtime dir and sockets),
                   logind.py (loginctl show-user/show-session only; ids checked before use),
                   packages.py (dpkg-query -W / rpm -q / pacman -Q; manager needs program AND database;
-                  files fallback), services.py (systemctl --user show / show-environment, allowlisted)
+                  files fallback), services.py (systemctl --user show / show-environment, allowlisted),
+                  dbus.py (bus daemon: ListActivatableNames + NameHasOwner; then ONLY running names,
+                  always busctl --auto-start=no: Introspect, ScreenCast properties)
+  screencast.py   names for the ScreenCast source-type and cursor-mode bit masks
   desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
   session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
-  reports/        terminal.py: render_session(), render_services() (plain Text, never Rich markup from
-                  collected data)
+  reports/        terminal.py: render_session(), render_services(), render_dbus() (plain Text, never
+                  Rich markup from collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
   privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()
@@ -42,6 +45,7 @@ tests/
   conftest.py     autouse no_network guard (UNIX sockets allowed); HYPOTHESIS_PROFILE=thorough
   fakes.py        FakeRunner: scripted commands only, anything else fails the test; read_fixture(),
                   read_env_fixture()
+  scenarios.py    whole machines scripted from real captures (script_gnome_bus)
   fixtures/       real and synthetic captures, each set with a README saying which is which
   unit/           unit tests on fixtures (no session, D-Bus or PipeWire needed)
 docs/             roadmap.md (requirement IDs WLD-001 …), cli.md (command reference)
