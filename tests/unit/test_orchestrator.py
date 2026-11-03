@@ -4,8 +4,10 @@ import os
 import stat
 
 from screenshare_doctor import __version__
+from screenshare_doctor.collectors.packages import DPKG_FORMAT, PACKAGES
+from screenshare_doctor.collectors.services import UNIT_PROPERTIES, UNITS
 from screenshare_doctor.models import FailureKind, PathState, SessionEnvironment
-from screenshare_doctor.orchestrator import collect_session, inspect_session
+from screenshare_doctor.orchestrator import collect_session, inspect_services, inspect_session
 from screenshare_doctor.privacy import RedactionContext, redact_snapshot
 from screenshare_doctor.runner import CommandResult, Outcome
 from tests.fakes import FakeRunner, read_env_fixture, read_fixture
@@ -80,3 +82,41 @@ def test_session_facts_survive_redaction() -> None:
     assert redacted.session.environment.runtime_dir == "~/.run"
     assert redacted.session.paths.wayland_socket_path == "~/.run/wl"
     assert "alice" not in repr(redacted)
+
+
+def test_inspect_services_collects_session_packages_and_services() -> None:
+    runner = _gnome_runner()
+    runner.script(
+        "dpkg-query",
+        "-W",
+        "-f",
+        DPKG_FORMAT,
+        *PACKAGES,
+        stdout=read_fixture("packages", "dpkg-ubuntu-gnome.stdout"),
+        stderr=read_fixture("packages", "dpkg-ubuntu-gnome.stderr"),
+        returncode=1,
+    )
+    show = ["systemctl", "--user", "--no-pager", "show"]
+    show += [part for name in UNIT_PROPERTIES for part in ("-p", name)]
+    runner.script(*show, *UNITS, stdout=read_fixture("systemctl", "show-units-ubuntu-gnome.txt"))
+    runner.script(
+        "systemctl",
+        "--user",
+        "--no-pager",
+        "show-environment",
+        stdout=read_fixture("systemctl", "show-environment-ubuntu-gnome.txt"),
+    )
+    snapshot = inspect_services(
+        runner,
+        environ=read_env_fixture("gnome-wayland-ubuntu"),
+        uid=1000,
+        stat=_socket_stat,
+        which=lambda name: "/usr/bin/dpkg-query" if name == "dpkg-query" else None,
+        exists=lambda path: path == "/var/lib/dpkg/status",
+    )
+    assert snapshot.probe_failures == ()
+    assert snapshot.session is not None
+    assert snapshot.packages is not None
+    assert snapshot.packages.source == "dpkg"
+    assert snapshot.services is not None
+    assert snapshot.services.activation_environment is not None

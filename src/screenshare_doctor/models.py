@@ -307,14 +307,17 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session`` is ``None`` when the command did not look at the session. Portal and
-    PipeWire facts join this record as their collectors are added.
+    ``session``, ``packages`` and ``services`` are ``None`` when the command did not
+    look at them. Portal and PipeWire facts join this record as their collectors are
+    added.
     """
 
     tool_version: str
     created_at: str
     schema_version: int = SCHEMA_VERSION
     session: SessionFacts | None = None
+    packages: PackageFacts | None = None
+    services: ServiceFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()
