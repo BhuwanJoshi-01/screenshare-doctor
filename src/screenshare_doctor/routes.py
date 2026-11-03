@@ -355,3 +355,18 @@ def observe_route(route: Route, dbus: DbusFacts | None) -> RouteObservation:
     if bus_name.running and implements and offers is not False:
         return RouteObservation(Agreement.CONSISTENT, **facts)
     return RouteObservation(Agreement.NOT_CHECKED, **facts)
+
+
+_SHORT_INTERFACE = re.compile(r"[A-Za-z][A-Za-z0-9]*", re.ASCII)
+
+
+def normalize_interface(name: str) -> str | None:
+    """The backend interface for ``ScreenCast``, ``org.freedesktop.portal.ScreenCast`` or
+    ``org.freedesktop.impl.portal.ScreenCast``; ``None`` for anything else."""
+    for prefix in ("org.freedesktop.impl.portal.", "org.freedesktop.portal."):
+        if name.startswith(prefix):
+            name = name[len(prefix) :]
+            break
+    if not _SHORT_INTERFACE.fullmatch(name):
+        return None
+    return f"org.freedesktop.impl.portal.{name}"

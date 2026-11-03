@@ -10,13 +10,14 @@ from screenshare_doctor.models import FailureKind, PathState, SessionEnvironment
 from screenshare_doctor.orchestrator import (
     collect_session,
     inspect_dbus,
+    inspect_routes,
     inspect_services,
     inspect_session,
 )
 from screenshare_doctor.privacy import RedactionContext, redact_snapshot
 from screenshare_doctor.runner import CommandResult, Outcome
 from tests.fakes import FakeRunner, read_env_fixture, read_fixture
-from tests.scenarios import script_gnome_bus
+from tests.scenarios import gnome_file_access, script_gnome_bus, script_gnome_machine
 
 SHOW_USER = ("loginctl", "--no-pager", "show-user", "1000", "-p", "Display")
 SHOW_63 = ("loginctl", "--no-pager", "show-session", "63")
@@ -136,3 +137,59 @@ def test_inspect_dbus_on_the_real_gnome_bus() -> None:
     assert snapshot.dbus is not None
     assert snapshot.dbus.reachable is True
     assert snapshot.session is None
+
+
+def test_inspect_routes_on_the_real_machine() -> None:
+    runner = FakeRunner()
+    script_gnome_machine(runner, uid=1000)
+    read, list_dir = gnome_file_access()
+    snapshot = inspect_routes(
+        runner,
+        environ=read_env_fixture("gnome-wayland-ubuntu"),
+        uid=1000,
+        stat=_socket_stat,
+        which=lambda name: "/usr/bin/dpkg-query" if name == "dpkg-query" else None,
+        exists=lambda path: path == "/var/lib/dpkg/status",
+        read=read,
+        list_dir=list_dir,
+    )
+    assert snapshot.probe_failures == ()
+    files = snapshot.portal_files
+    assert files is not None
+    assert files.variables_from == "user manager"
+    assert files.desktops == ("ubuntu", "gnome")
+    assert files.config_directories[1] == "/etc/xdg/xdg-ubuntu/xdg-desktop-portal"
+    assert [c.path for c in files.configs] == [
+        "/usr/share/xdg-desktop-portal/gnome-portals.conf"
+    ] * 2
+
+
+def test_inspect_routes_falls_back_to_the_shell_without_systemd() -> None:
+    runner = FakeRunner()
+    runner.script_result(CommandResult(SHOW_USER, Outcome.NOT_FOUND, error="No such file"))
+    runner.script("dpkg-query", "-W", "-f", DPKG_FORMAT, *PACKAGES, stdout="")
+    show = ["systemctl", "--user", "--no-pager", "show"]
+    show += [part for name in UNIT_PROPERTIES for part in ("-p", name)]
+    runner.script_result(CommandResult((*show, *UNITS), Outcome.NOT_FOUND, error="No such file"))
+    runner.script_result(
+        CommandResult(
+            ("busctl", "--user", "--no-pager", "--json=short", "call", "org.freedesktop.DBus",
+             "/org/freedesktop/DBus", "org.freedesktop.DBus", "ListActivatableNames"),
+            Outcome.NOT_FOUND,
+            error="No such file",
+        )
+    )  # fmt: skip
+    read, list_dir = gnome_file_access()
+    snapshot = inspect_routes(
+        runner,
+        environ={"XDG_CURRENT_DESKTOP": "GNOME", "HOME": "/home/u"},
+        uid=1000,
+        stat=_socket_stat,
+        which=lambda name: None,
+        exists=lambda path: False,
+        read=read,
+        list_dir=list_dir,
+    )
+    assert snapshot.portal_files is not None
+    assert snapshot.portal_files.variables_from == "this shell"
+    assert snapshot.portal_files.desktops == ("gnome",)

@@ -30,3 +30,9 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   modes of the running ones. Only the bus daemon and already-running services
   are asked, with `busctl --auto-start=no`, so nothing is started. Exits 3
   when the session bus cannot be reached.
+- `screenshare-doctor routes explain [INTERFACE]`: which backend
+  xdg-desktop-portal picks for ScreenCast (or any interface), the entry and
+  file that decide it, every configuration directory in search order, and
+  whether the bus agrees. Applies the selection rules of the installed portal
+  version (they changed in 1.17, 1.19, 1.20.1 and 1.21.1; see
+  `docs/portal-routing.md`).
