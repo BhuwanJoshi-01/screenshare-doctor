@@ -8,13 +8,17 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from screenshare_doctor.collectors.environment import read_session_environment
+from screenshare_doctor.collectors.environment import (
+    read_session_environment,
+    read_xdg_directories,
+)
 from screenshare_doctor.models import (
     FailureKind,
     ProbeFailure,
     ServiceFacts,
     SessionEnvironment,
     UserService,
+    XdgDirectories,
 )
 from screenshare_doctor.runner import CommandRunner, probe_failure
 
@@ -66,19 +70,19 @@ def parse_units(text: str, units: Sequence[str] = UNITS) -> tuple[UserService, .
     return tuple(services)
 
 
-def parse_activation_environment(text: str) -> SessionEnvironment:
-    """The allowlisted session variables from ``systemctl --user show-environment``.
+def parse_activation_environment(text: str) -> tuple[SessionEnvironment, XdgDirectories]:
+    """The allowlisted variables from ``systemctl --user show-environment``.
 
     The output is the user manager's whole environment and can hold secrets; it is
-    turned into a mapping only to look the allowlisted names up, and nothing else of it
-    is kept.
+    turned into a mapping only to look the allowlisted names up (session variables and
+    XDG directories), and nothing else of it is kept.
     """
     variables: dict[str, str] = {}
     for line in text.splitlines():
         name, equals, value = line.partition("=")
         if equals and name:
             variables[name] = value
-    return read_session_environment(variables)
+    return read_session_environment(variables), read_xdg_directories(variables)
 
 
 SYSTEMCTL_TIMEOUT = 5.0
@@ -113,4 +117,5 @@ def collect_services(
     failure = probe_failure("systemctl --user show-environment", result)
     if failure is not None:
         return ServiceFacts(services=services), (failure,)
-    return ServiceFacts(services, parse_activation_environment(result.stdout)), ()
+    environment, directories = parse_activation_environment(result.stdout)
+    return ServiceFacts(services, environment, directories), ()

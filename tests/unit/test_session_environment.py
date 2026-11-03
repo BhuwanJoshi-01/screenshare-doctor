@@ -6,8 +6,8 @@ from collections.abc import Iterator, Mapping
 
 import pytest
 
-from screenshare_doctor.collectors.environment import read_session_environment
-from screenshare_doctor.models import SessionEnvironment
+from screenshare_doctor.collectors.environment import read_session_environment, read_xdg_directories
+from screenshare_doctor.models import SessionEnvironment, XdgDirectories
 from tests.fakes import read_env_fixture
 
 
@@ -131,4 +131,20 @@ def test_variables_outside_the_allowlist_are_never_read() -> None:
         "SSH_CONNECTION",
         "SSH_CLIENT",
         "SSH_TTY",
+    }
+
+
+def test_xdg_directories_are_read_from_their_own_allowlist() -> None:
+    environ = _GuardedEnviron(
+        {"HOME": "/home/u", "XDG_DATA_DIRS": "/usr/share", "XDG_CONFIG_HOME": "", "TOKEN": "x"}
+    )
+    dirs = read_xdg_directories(environ)
+    assert dirs == XdgDirectories(home="/home/u", data_dirs="/usr/share")
+    assert environ.looked_up == {
+        "HOME",
+        "XDG_CONFIG_HOME",
+        "XDG_CONFIG_DIRS",
+        "XDG_DATA_HOME",
+        "XDG_DATA_DIRS",
+        "XDG_DESKTOP_PORTAL_DIR",
     }

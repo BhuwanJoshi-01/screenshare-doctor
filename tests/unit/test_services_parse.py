@@ -10,7 +10,7 @@ from screenshare_doctor.collectors.services import (
     parse_activation_environment,
     parse_units,
 )
-from screenshare_doctor.models import SessionEnvironment, UserService
+from screenshare_doctor.models import SessionEnvironment, UserService, XdgDirectories
 from tests.fakes import read_fixture
 
 
@@ -54,7 +54,7 @@ def test_unit_without_a_block_has_no_states() -> None:
 
 
 def test_real_activation_environment_keeps_only_the_allowlist() -> None:
-    env = parse_activation_environment(
+    env, _ = parse_activation_environment(
         read_fixture("systemctl", "show-environment-ubuntu-gnome.txt")
     )
     assert env == SessionEnvironment(
@@ -71,14 +71,17 @@ def test_real_activation_environment_keeps_only_the_allowlist() -> None:
 
 
 def test_activation_environment_never_keeps_secrets() -> None:
-    env = parse_activation_environment("GITHUB_TOKEN=ghp_canary\nXDG_CURRENT_DESKTOP=Hyprland\n")
+    env, dirs = parse_activation_environment(
+        "GITHUB_TOKEN=ghp_canary\nXDG_CURRENT_DESKTOP=Hyprland\n"
+    )
     assert env.current_desktop == "Hyprland"
     assert "canary" not in repr(env)
+    assert "canary" not in repr(dirs)
 
 
 def test_hyprland_started_without_importing_its_environment() -> None:
     # The classic Hyprland mistake: the user manager never learned the desktop's variables.
-    env = parse_activation_environment("HOME=/home/x\nPATH=/usr/bin\n")
+    env, _ = parse_activation_environment("HOME=/home/x\nPATH=/usr/bin\n")
     assert env.current_desktop is None
     assert env.wayland_display is None
 
@@ -87,3 +90,17 @@ def test_hyprland_started_without_importing_its_environment() -> None:
 def test_parsers_never_raise(text: str) -> None:
     assert len(parse_units(text)) == len(UNITS)
     parse_activation_environment(text)
+
+
+def test_real_activation_directories() -> None:
+    _, dirs = parse_activation_environment(
+        read_fixture("systemctl", "show-environment-ubuntu-gnome.txt")
+    )
+    assert dirs == XdgDirectories(
+        home="/home/user",
+        config_dirs="/etc/xdg/xdg-ubuntu:/etc/xdg",
+        data_dirs=(
+            "/usr/share/ubuntu:/usr/share/gnome:/home/user/.local/share/flatpak/exports/share:"
+            "/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop"
+        ),
+    )

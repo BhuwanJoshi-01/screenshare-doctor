@@ -282,17 +282,37 @@ class UserService:
 
 
 @dataclass(frozen=True, slots=True)
+class XdgDirectories:
+    """The variables that decide where the portal looks for its files; ``None`` = unset.
+
+    They must be the portal process's own, which is the user manager's environment,
+    not the shell's: Ubuntu's manager, for one, puts ``/usr/share/ubuntu`` first in
+    ``XDG_DATA_DIRS``. ``portal_dir`` is ``XDG_DESKTOP_PORTAL_DIR``, a test override
+    that replaces every other directory.
+    """
+
+    home: str | None = None
+    config_home: str | None = None
+    config_dirs: str | None = None
+    data_home: str | None = None
+    data_dirs: str | None = None
+    portal_dir: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class ServiceFacts:
     """The user services of the stack, and the environment the user manager starts them in.
 
     Portals are started on demand by the user manager, so they see *its* environment,
     not the shell's: ``activation_environment`` holds the same allowlisted variables
-    as the session environment, read from ``systemctl --user show-environment``.
-    ``None`` fields were not read (no systemd, or the user manager did not answer).
+    as the session environment, read from ``systemctl --user show-environment``, and
+    ``activation_directories`` the variables that decide where portals look for their
+    files. ``None`` fields were not read (no systemd, or the user manager did not answer).
     """
 
     services: tuple[UserService, ...] | None = None
     activation_environment: SessionEnvironment | None = None
+    activation_directories: XdgDirectories | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -348,6 +368,60 @@ class DbusFacts:
     reachable: bool | None = None
     names: tuple[BusName, ...] = ()
     objects: tuple[PortalObject, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class PortalDescriptor:
+    """A ``<source>.portal`` file: which backend implements which interfaces.
+
+    ``source`` is the file name without ``.portal``; it is the name ``portals.conf``
+    refers to. ``error`` says why the portal frontend would skip the file (unreadable,
+    no valid ``DBusName``, an interface outside ``org.freedesktop.impl.portal.*``…);
+    ``None`` means it is usable.
+    """
+
+    source: str
+    path: str
+    dbus_name: str | None = None
+    interfaces: tuple[str, ...] = ()
+    use_in: tuple[str, ...] | None = None
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PortalsConf:
+    """One ``portals.conf`` or ``<desktop>-portals.conf`` file.
+
+    ``preferred`` holds the ``[preferred]`` keys in file order with their backend lists
+    (a key set twice keeps its last value; ``duplicates`` names such keys). ``usable``
+    is ``False`` when the portal would ignore the file: unreadable, invalid, or without
+    a ``[preferred]`` group; ``error`` then says why.
+    """
+
+    path: str
+    preferred: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    duplicates: tuple[str, ...] = ()
+    usable: bool = True
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PortalFiles:
+    """The portal configuration as found on disk, in the frontend's search order.
+
+    ``desktops`` are the names the lookup used (from the portal's
+    ``XDG_CURRENT_DESKTOP``). ``configs`` are the candidate files that exist,
+    highest priority first; ``descriptors`` every ``.portal`` file found, in load order
+    (duplicates included: the first file of a name wins). ``unreadable`` lists files
+    that exist but could not be read, so nothing is concluded from their absence.
+    """
+
+    desktops: tuple[str, ...] = ()
+    config_directories: tuple[str, ...] = ()
+    configs: tuple[PortalsConf, ...] = ()
+    descriptor_directories: tuple[str, ...] = ()
+    descriptors: tuple[PortalDescriptor, ...] = ()
+    unreadable: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
