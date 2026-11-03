@@ -7,14 +7,18 @@ from __future__ import annotations
 
 import os
 import sys
+from enum import StrEnum
 from typing import Annotated
 
 import typer
 from rich.console import Console
 
 from screenshare_doctor import __version__
+from screenshare_doctor.bundles import bundle_for
+from screenshare_doctor.bundles.check import check_bundle
+from screenshare_doctor.desktops import DesktopFamily, identify_desktop
 from screenshare_doctor.exit_codes import ExitCode
-from screenshare_doctor.models import SessionFacts
+from screenshare_doctor.models import SessionEnvironment, SessionFacts
 from screenshare_doctor.orchestrator import (
     inspect_dbus,
     inspect_routes,
@@ -24,6 +28,7 @@ from screenshare_doctor.orchestrator import (
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
 from screenshare_doctor.reports.terminal import (
     render_dbus,
+    render_desktop,
     render_route,
     render_services,
     render_session,
@@ -117,6 +122,49 @@ def check_dbus() -> None:
     render_dbus(redact_snapshot(snapshot), Console(highlight=False))
     if snapshot.dbus is None or snapshot.dbus.reachable is not True:
         raise typer.Exit(ExitCode.CONTEXT_UNAVAILABLE)
+
+
+class BundleChoice(StrEnum):
+    GNOME = "gnome"
+    KDE = "kde"
+    HYPRLAND = "hyprland"
+    WLROOTS = "wlroots"
+
+
+@check_app.command("desktop")
+def check_desktop(
+    as_desktop: Annotated[
+        BundleChoice | None,
+        typer.Option(
+            "--as",
+            help="Compare with this desktop's defaults instead of the detected one.",
+        ),
+    ] = None,
+) -> None:
+    """Compare the screen-sharing setup with what this desktop ships by default.
+
+    Checks the desktop's backend package, its .portal file, the desktop's portals.conf,
+    the ScreenCast route, whether the backend can run, and the compositor service it
+    needs. The defaults come with their sources (docs/desktops.md); a different setup is
+    a warning, not a failure, because it can be a deliberate choice.
+    """
+    snapshot = inspect_routes(SubprocessRunner())
+    redacted = redact_snapshot(snapshot)
+    if as_desktop is not None:
+        family = DesktopFamily(as_desktop.value)
+        how = "chosen with --as"
+    else:
+        activation = snapshot.services.activation_environment if snapshot.services else None
+        env = activation or (
+            snapshot.session.environment if snapshot.session else SessionEnvironment()
+        )
+        identity = identify_desktop(env)
+        family = identity.family
+        whose = "the user manager" if activation is not None else "this shell"
+        how = f"from {identity.source} of {whose}" if identity.source else "not detected"
+    bundle = bundle_for(family)
+    expectations = check_bundle(bundle, snapshot) if bundle is not None else ()
+    render_desktop(redacted, bundle, expectations, how, Console(highlight=False))
 
 
 routes_app = typer.Typer(

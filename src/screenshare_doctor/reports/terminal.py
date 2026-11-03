@@ -10,6 +10,8 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
+from screenshare_doctor.bundles import DesktopBundle
+from screenshare_doctor.bundles.check import Expectation
 from screenshare_doctor.collectors.dbus import FRONTEND, MUTTER_SCREENCAST
 from screenshare_doctor.desktops import DesktopFamily, DesktopIdentity, identify_desktop
 from screenshare_doctor.models import (
@@ -29,6 +31,7 @@ from screenshare_doctor.models import (
     SessionFacts,
     SessionPaths,
     Snapshot,
+    Status,
     UserService,
 )
 from screenshare_doctor.portal_paths import config_candidates
@@ -552,6 +555,59 @@ def _search_lines(files: PortalFiles) -> list[str]:
                 found.append(name if conf.usable else f"{name} (ignored: {conf.error})")
         lines.append(f"{index:>2}. {directory}: {', '.join(found) if found else 'nothing'}")
     return lines
+
+
+_STATUS_LABEL = {
+    Status.PASS: "PASS",
+    Status.WARN: "WARN",
+    Status.FAIL: "FAIL",
+    Status.UNKNOWN: "UNKNOWN",
+    Status.NOT_APPLICABLE: "N/A",
+    Status.NOT_TESTED: "NOT TESTED",
+}
+_STATUS_STYLE = {Status.PASS: "green", Status.WARN: "yellow", Status.FAIL: "red bold"}
+
+
+def render_desktop(
+    snapshot: Snapshot,
+    bundle: DesktopBundle | None,
+    expectations: tuple[Expectation, ...],
+    how: str,
+    console: Console,
+) -> None:
+    """The desktop bundle's expectations, one line each, with the detail below."""
+    console.print(Text(f"screenshare-doctor {snapshot.tool_version}: desktop", style="bold"))
+    console.print()
+    if bundle is None:
+        console.print(_row("Desktop", f"no expectations for this desktop ({how})"))
+        console.print(
+            Text(
+                "Bundles exist for GNOME, KDE Plasma, Hyprland and wlroots compositors; "
+                "use --as to compare with one of them.",
+                style="dim",
+            )
+        )
+        _render_failures(snapshot, console)
+        return
+    console.print(_row("Desktop", f"{bundle.name} ({how})"))
+    console.print()
+    for expectation in expectations:
+        label = _STATUS_LABEL[expectation.status]
+        console.print(
+            Text.assemble(
+                (f"{label:<8}", _STATUS_STYLE.get(expectation.status, "dim")),
+                expectation.summary,
+            )
+        )
+        console.print(Text(f"        {expectation.detail}", style="dim"))
+    console.print()
+    console.print(
+        Text(
+            "These are the desktop's defaults; a WARN can be a deliberate, working choice.",
+            style="dim",
+        )
+    )
+    _render_failures(snapshot, console)
 
 
 def redaction_line(snapshot: Snapshot) -> str | None:
