@@ -9,7 +9,14 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from screenshare_doctor.collectors.environment import read_session_environment
-from screenshare_doctor.models import SessionEnvironment, UserService
+from screenshare_doctor.models import (
+    FailureKind,
+    ProbeFailure,
+    ServiceFacts,
+    SessionEnvironment,
+    UserService,
+)
+from screenshare_doctor.runner import CommandRunner, probe_failure
 
 UNITS: tuple[str, ...] = (
     "xdg-desktop-portal.service",
@@ -72,3 +79,38 @@ def parse_activation_environment(text: str) -> SessionEnvironment:
         if equals and name:
             variables[name] = value
     return read_session_environment(variables)
+
+
+SYSTEMCTL_TIMEOUT = 5.0
+
+
+def collect_services(
+    runner: CommandRunner, *, units: Sequence[str] = UNITS
+) -> tuple[ServiceFacts, tuple[ProbeFailure, ...]]:
+    """Unit states, then the manager's environment; stops at the first failure.
+
+    Both commands talk to the same user manager, so when the first cannot reach it (no
+    systemd, no user session bus) the second would only repeat the same error.
+    """
+    argv = ["systemctl", "--user", "--no-pager", "show"]
+    for name in UNIT_PROPERTIES:
+        argv += ["-p", name]
+    result = runner.run([*argv, *units], timeout=SYSTEMCTL_TIMEOUT)
+    failure = probe_failure("systemctl --user show", result)
+    if failure is not None:
+        return ServiceFacts(), (failure,)
+    services = parse_units(result.stdout, units)
+    if all(service.load_state is None for service in services):
+        return ServiceFacts(), (
+            ProbeFailure(
+                "systemctl --user show", FailureKind.MALFORMED_OUTPUT, "no unit was described"
+            ),
+        )
+
+    result = runner.run(
+        ["systemctl", "--user", "--no-pager", "show-environment"], timeout=SYSTEMCTL_TIMEOUT
+    )
+    failure = probe_failure("systemctl --user show-environment", result)
+    if failure is not None:
+        return ServiceFacts(services=services), (failure,)
+    return ServiceFacts(services, parse_activation_environment(result.stdout)), ()
