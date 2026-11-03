@@ -31,6 +31,7 @@ from screenshare_doctor.orchestrator import (
 )
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
 from screenshare_doctor.reports.findings import render_findings
+from screenshare_doctor.reports.json_report import render_json
 from screenshare_doctor.reports.terminal import (
     render_dbus,
     render_desktop,
@@ -82,8 +83,16 @@ def cli(
     """Global options (the help text comes from HELP)."""
 
 
+class OutputFormat(StrEnum):
+    TEXT = "text"
+    JSON = "json"
+
+
 @app.command()
 def doctor(
+    output_format: Annotated[
+        OutputFormat, typer.Option("--format", "-f", help="text for people, json for scripts.")
+    ] = OutputFormat.TEXT,
     strict: Annotated[
         bool,
         typer.Option("--strict", help="Exit with code 1 when any check fails."),
@@ -95,12 +104,19 @@ def doctor(
 ) -> None:
     """Run every check, from the session to PipeWire, and explain what needs attention.
 
+    --format json prints the whole redacted report (docs/json-schema-v1.json) for
+    scripts and the GNOME extension.
+
     Passive: reads session variables, the package database, the user manager, portal
     files, the session bus (only already-running services are contacted, with
     --auto-start=no) and a running PipeWire. Nothing is started, changed or recorded.
     """
     snapshot = diagnose(inspect_all(SubprocessRunner()))
-    render_findings(redact_snapshot(snapshot), Console(highlight=False), show_all=show_all)
+    redacted = redact_snapshot(snapshot)
+    if output_format is OutputFormat.JSON:
+        typer.echo(render_json(redacted), nl=False)
+    else:
+        render_findings(redacted, Console(highlight=False), show_all=show_all)
     if strict and any(f.status is Status.FAIL for f in snapshot.findings):
         raise typer.Exit(ExitCode.STRICT_FAILURE)
 
