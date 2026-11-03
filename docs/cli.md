@@ -78,6 +78,13 @@ WirePlumber       0.5.13-1ubuntu1.1     running (enabled)
 Packages from dpkg.
 Portals are started on demand: "not running" is normal until an app asks for one.
 
+PipeWire    1.6.2, answering
+            WirePlumber connected
+            xdg-desktop-portal connected
+            compositor clients: Mutter, gnome-shell
+            other clients: 12 (not named)
+            video: 1 camera, 0 other source(s) such as screen casts, 0 stream(s)
+
 Activation environment (what portals started by the user manager see):
   XDG_CURRENT_DESKTOP  ubuntu:GNOME  (same as this shell)
   XDG_SESSION_TYPE     wayland       (same as this shell)
@@ -96,6 +103,12 @@ Activation environment (what portals started by the user manager see):
 - The user manager: `systemctl --user show` for the units of those components (Plasma 6 calls its backend
   `plasma-xdg-desktop-portal-kde.service`) and `systemctl --user show-environment`. Of the environment, only the
   session variables listed under [`check session`](#check-session) are kept; everything else is discarded unread.
+
+- PipeWire, with `pw-dump -N -i 0 PipeWire:Interface:Core`, `…:Client` and `…:Node`, **only when
+  `pipewire.service` is active** (or there is no systemd). With systemd, `pipewire.socket` starts the daemon on the
+  first connection, so asking a stopped PipeWire would start it; the output then says it was not asked and why.
+  Of the dump only the version, the names of WirePlumber, the portal and the compositor, a count of other clients and
+  counts of video nodes are kept; application names, media titles and device names are discarded while parsing.
 
 Nothing is started, stopped or reloaded.
 

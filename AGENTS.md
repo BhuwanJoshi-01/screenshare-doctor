@@ -24,7 +24,7 @@ src/screenshare_doctor/
   models.py       Status/Severity/Confidence, Layer, Evidence, Finding (codes SSD-<AREA>-<NNN>),
                   ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts,
                   PackageFacts, ServiceFacts, BusName/PortalObject/DbusFacts, XdgDirectories,
-                  PortalDescriptor/PortalsConf/PortalFiles, Snapshot
+                  PortalDescriptor/PortalsConf/PortalFiles, PipeWireFacts, Snapshot
   orchestrator.py collect_session(), inspect_session/services/dbus/routes(): run the collectors and
                   build the Snapshot (facts only; conclusions are recomputed)
   collectors/     environment.py (allowlisted session variables, stat() of runtime dir and sockets),
@@ -33,7 +33,9 @@ src/screenshare_doctor/
                   files fallback), services.py (systemctl --user show / show-environment, allowlisted),
                   dbus.py (bus daemon: ListActivatableNames + NameHasOwner; then ONLY running names,
                   always busctl --auto-start=no: Introspect, ScreenCast properties)
-                  portal_config.py (candidate portals.conf + *.portal files, read-only, 64 KiB cap)
+                  portal_config.py (candidate portals.conf + *.portal files, read-only, 64 KiB cap),
+                  pipewire.py (pw-dump per object type, ONLY if pipewire.service is active: socket
+                  activation would start it; reduced to counters + known client names)
   screencast.py   names for the ScreenCast source-type and cursor-mode bit masks
   keyfile.py      GKeyFile rules (last duplicate wins, bad line = whole file ignored, ; lists)
   portal_files.py .portal / portals.conf judged like register_portal() and the config loader
@@ -70,6 +72,8 @@ copy on purpose.
 - **Passive by default.** No portal request, no screen picker, no capture, no service start/restart/stop, no
   config edits. D-Bus: check `NameHasOwner` first and query with `busctl --user --auto-start=no` so a stopped
   portal is never activated by a property read.
+- Never connect to a socket-activated service that is not running: `pw-dump` only runs when
+  `pipewire.service` is active.
 - No `sudo`, no network access.
 - Subprocesses: argument lists only (no `shell=True`), always a timeout and an output cap, always through the
   command runner so tests can fake them.
