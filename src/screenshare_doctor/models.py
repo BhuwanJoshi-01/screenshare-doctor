@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
 
@@ -225,6 +225,15 @@ class LogindFacts:
 
 
 @dataclass(frozen=True, slots=True)
+class SessionFacts:
+    """Everything collected about the session: variables, paths and logind's view."""
+
+    environment: SessionEnvironment = field(default_factory=SessionEnvironment)
+    paths: SessionPaths = field(default_factory=SessionPaths)
+    logind: LogindFacts = field(default_factory=LogindFacts)
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
@@ -236,12 +245,14 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    Session, portal and PipeWire facts join this record as their collectors are added.
+    ``session`` is ``None`` when the command did not look at the session. Portal and
+    PipeWire facts join this record as their collectors are added.
     """
 
     tool_version: str
     created_at: str
     schema_version: int = SCHEMA_VERSION
+    session: SessionFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()
