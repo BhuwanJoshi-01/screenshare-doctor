@@ -428,6 +428,28 @@ class PortalFiles:
 
 
 @dataclass(frozen=True, slots=True)
+class PipeWireFacts:
+    """What the PipeWire daemon reported, reduced to what screen sharing needs.
+
+    ``skipped`` says why PipeWire was not asked (connecting to a socket-activated
+    daemon that is not running would start it); the other fields are then ``None``.
+    ``clients`` are the connected clients whose names matter here (WirePlumber, the
+    portal, the compositor); any other client is only counted in ``other_clients``,
+    because application names say what the user is doing. ``camera_sources`` are
+    ``Video/Source`` nodes of a camera API (v4l2, libcamera); ``other_video_sources``
+    are the rest, such as a running screen cast.
+    """
+
+    skipped: str | None = None
+    version: str | None = None
+    clients: tuple[str, ...] | None = None
+    other_clients: int | None = None
+    camera_sources: int | None = None
+    other_video_sources: int | None = None
+    video_streams: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
@@ -439,9 +461,8 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session``, ``packages``, ``services``, ``dbus`` and ``portal_files`` are ``None``
-    when the command did not look at them. PipeWire facts join this record as their
-    collector is added.
+    ``session``, ``packages``, ``services``, ``dbus``, ``portal_files`` and ``pipewire``
+    are ``None`` when the command did not look at them.
     """
 
     tool_version: str
@@ -452,6 +473,7 @@ class Snapshot:
     services: ServiceFacts | None = None
     dbus: DbusFacts | None = None
     portal_files: PortalFiles | None = None
+    pipewire: PipeWireFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()

@@ -36,3 +36,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   whether the bus agrees. Applies the selection rules of the installed portal
   version (they changed in 1.17, 1.19, 1.20.1 and 1.21.1; see
   `docs/portal-routing.md`).
+- `check services` also shows the PipeWire daemon: version, whether
+  WirePlumber, xdg-desktop-portal and the compositor are connected, how many
+  other clients there are, and video node counts. `pw-dump` runs only when
+  `pipewire.service` is already active, because connecting to a
+  socket-activated PipeWire would start it.

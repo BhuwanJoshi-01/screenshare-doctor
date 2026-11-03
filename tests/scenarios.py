@@ -119,6 +119,22 @@ def script_gnome_machine(runner: FakeRunner, *, uid: int) -> None:
         stdout=read_fixture("systemctl", "show-environment-ubuntu-gnome.txt"),
     )  # fmt: skip
     script_gnome_bus(runner)
+    script_gnome_pipewire(runner)
+
+
+PW_DUMP_FIXTURES = {
+    "PipeWire:Interface:Core": "pw-dump-core-ubuntu.json",
+    "PipeWire:Interface:Client": "pw-dump-clients-ubuntu.json",
+    "PipeWire:Interface:Node": "pw-dump-nodes-ubuntu.json",
+}
+
+
+def script_gnome_pipewire(runner: FakeRunner) -> None:
+    """The reduced real pw-dump answers of the GNOME machine."""
+    for object_type, fixture in PW_DUMP_FIXTURES.items():
+        runner.script(
+            "pw-dump", "-N", "-i", "0", object_type, stdout=read_fixture("pipewire", fixture)
+        )
 
 
 GNOME_PORTAL_FILES = {

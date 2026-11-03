@@ -1,0 +1,1 @@
+[{"id":0,"type":"PipeWire:Interface:Core","version":4,"permissions":["r","x","m"],"info":{"cookie":0,"user-name":"user","host-name":"host","version":"1.6.2","name":"pipewire-0","change-mask":["props"],"props":{"config.name":"pipewire.conf","core.daemon":true,"core.name":"pipewire-0"}}}]
