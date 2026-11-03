@@ -27,6 +27,9 @@ What works already (see the [command reference](docs/cli.md)):
   running, and whether portals will see the same desktop variables as your shell.
 - `screenshare-doctor check dbus` shows which portal services are on the session bus and what they offer for
   screen sharing, without starting any of them.
+- `screenshare-doctor routes explain ScreenCast` names the backend the portal picks, the line of the
+  `portals.conf` that decides it, and whether the bus agrees, using the rules of your portal version
+  ([how routing works](docs/portal-routing.md)).
 
 ## What it promises
 

@@ -155,3 +155,48 @@ steps fails instead of being started.
   fact from introspection; "unknown" means it could not be read (see the list below the table).
 
 **Exit code**: 0 when the session bus answered, 3 when it could not be reached.
+
+## `routes explain`
+
+```bash
+screenshare-doctor routes explain              # ScreenCast
+screenshare-doctor routes explain Screenshot   # or org.freedesktop.portal.Screenshot
+```
+
+Predicts which backend xdg-desktop-portal uses for an interface, says which entry in which file decided it, and
+checks the prediction on the session bus:
+
+```text
+screenshare-doctor 0.1.0: route for ScreenCast
+
+Interface   ScreenCast (org.freedesktop.portal.ScreenCast)
+Predicted   gnome (org.freedesktop.impl.portal.desktop.gnome)
+Decided by  default=gnome;gtk in /usr/share/xdg-desktop-portal/gnome-portals.conf
+Portal      xdg-desktop-portal 1.21.1+ds-1ubuntu3.1 (selection rules of 1.21.1 and later; read as 1.21.1)
+Desktops    ubuntu, gnome (XDG_CURRENT_DESKTOP of the user manager)
+On D-Bus    gnome is running and implements it; the frontend offers it
+
+How it was decided:
+  1. /usr/share/xdg-desktop-portal/gnome-portals.conf: gnome is listed and implements org.freedesktop.impl.portal.ScreenCast
+
+Configuration search order (highest priority first):
+   1. ~/.config/xdg-desktop-portal: nothing
+   2. /etc/xdg/xdg-ubuntu/xdg-desktop-portal: nothing
+   …
+  11. /usr/share/xdg-desktop-portal: gnome-portals.conf
+  12. /var/lib/snapd/desktop/xdg-desktop-portal: nothing
+  13. /usr/share/xdg-desktop-portal: gnome-portals.conf
+```
+
+(Real output from Ubuntu 26.04 with GNOME 50.1, shortened.)
+
+**What it reads**: everything `check services` and `check dbus` read, plus the candidate `portals.conf` files and
+the `*.portal` descriptors in the frontend's search directories, read-only and at most 64 KiB each. The desktop
+names and directories are the user manager's; without systemd the shell's are used and the output says so.
+
+**How it decides**: with the rules of the installed xdg-desktop-portal version, which changed several times; see
+[How a portal request finds its backend](portal-routing.md). If the version is unknown, the newest rules are used
+and the output says the prediction may be wrong. Files the portal would ignore (unreadable, no `[preferred]`
+group, an invalid value) are listed with the reason.
+
+**Exit code**: 0, whatever the prediction; 2 when the argument is not a portal interface name.
