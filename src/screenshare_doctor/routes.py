@@ -27,8 +27,9 @@ import re
 from dataclasses import dataclass
 from enum import StrEnum
 
+from screenshare_doctor.collectors.dbus import FRONTEND
 from screenshare_doctor.desktops import ascii_lower
-from screenshare_doctor.models import PortalDescriptor, PortalFiles, PortalsConf
+from screenshare_doctor.models import DbusFacts, PortalDescriptor, PortalFiles, PortalsConf
 from screenshare_doctor.portal_paths import DATADIR, SUBDIR, config_candidates, join
 
 GTK_BUS_NAME = "org.freedesktop.impl.portal.desktop.gtk"
@@ -278,3 +279,79 @@ def _first_listed(
         trace.append(f"{path}: {name} is listed and implements {interface}")
         return candidate
     return None
+
+
+class Agreement(StrEnum):
+    """How the predicted route compares with what is on the session bus."""
+
+    CONSISTENT = "consistent"
+    """The predicted backend runs and implements the interface, and the frontend offers it."""
+    STARTS_ON_DEMAND = "starts_on_demand"
+    """The backend is not running but the bus can start it: normal for portals."""
+    CANNOT_START = "cannot_start"
+    """The backend is neither running nor activatable: requests will fail."""
+    MISSING_INTERFACE = "missing_interface"
+    """The running backend does not implement the interface its descriptor promises."""
+    NOT_OFFERED = "not_offered"
+    """The frontend does not offer the public interface although a backend was predicted."""
+    OFFERED_WITHOUT_BACKEND = "offered_without_backend"
+    """The frontend offers the interface although no backend was predicted."""
+    NOT_CHECKED = "not_checked"
+    """The backend's bus name is not one the tool probes, or the bus was not reachable."""
+
+
+@dataclass(frozen=True, slots=True)
+class RouteObservation:
+    """The predicted route next to the bus facts it can be checked against."""
+
+    agreement: Agreement
+    backend_running: bool | None = None
+    backend_activatable: bool | None = None
+    backend_implements: bool | None = None
+    frontend_offers: bool | None = None
+
+
+def public_interface(impl_interface: str) -> str:
+    """``org.freedesktop.portal.ScreenCast`` for ``org.freedesktop.impl.portal.ScreenCast``."""
+    return impl_interface.replace(".impl.portal.", ".portal.", 1)
+
+
+def observe_route(route: Route, dbus: DbusFacts | None) -> RouteObservation:
+    """Compare a prediction with the bus: configured is not the same as working."""
+    if dbus is None or dbus.reachable is not True:
+        return RouteObservation(Agreement.NOT_CHECKED)
+    objects = {portal.name: portal for portal in dbus.objects}
+    frontend = objects.get(FRONTEND)
+    offers: bool | None = None
+    if frontend is not None and frontend.interfaces is not None:
+        offers = public_interface(route.interface) in frontend.interfaces
+    if route.backend is None:
+        if offers:
+            return RouteObservation(Agreement.OFFERED_WITHOUT_BACKEND, frontend_offers=True)
+        return RouteObservation(Agreement.CONSISTENT, frontend_offers=offers)
+    names = {name.name: name for name in dbus.names}
+    bus_name = names.get(route.backend.dbus_name or "")
+    if bus_name is None:
+        return RouteObservation(Agreement.NOT_CHECKED, frontend_offers=offers)
+    implements: bool | None = None
+    backend_object = objects.get(bus_name.name)
+    if backend_object is not None and backend_object.interfaces is not None:
+        implements = route.interface in backend_object.interfaces
+    facts = {
+        "backend_running": bus_name.running,
+        "backend_activatable": bus_name.activatable,
+        "backend_implements": implements,
+        "frontend_offers": offers,
+    }
+    if bus_name.running is False:
+        if bus_name.activatable:
+            return RouteObservation(Agreement.STARTS_ON_DEMAND, **facts)
+        if bus_name.activatable is False:
+            return RouteObservation(Agreement.CANNOT_START, **facts)
+    if implements is False:
+        return RouteObservation(Agreement.MISSING_INTERFACE, **facts)
+    if offers is False and bus_name.running:
+        return RouteObservation(Agreement.NOT_OFFERED, **facts)
+    if bus_name.running and implements and offers is not False:
+        return RouteObservation(Agreement.CONSISTENT, **facts)
+    return RouteObservation(Agreement.NOT_CHECKED, **facts)
