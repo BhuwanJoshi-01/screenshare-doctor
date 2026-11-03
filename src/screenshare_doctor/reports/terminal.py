@@ -20,6 +20,7 @@ from screenshare_doctor.models import (
     PackageInfo,
     PackageState,
     PathState,
+    PipeWireFacts,
     PortalFiles,
     PortalObject,
     ScreenCastProperties,
@@ -237,6 +238,7 @@ def render_services(snapshot: Snapshot, console: Console) -> None:
             style="dim",
         )
     )
+    _render_pipewire(snapshot.pipewire, console)
     console.print()
     console.print(
         Text("Activation environment (what portals started by the user manager see):", style="bold")
@@ -251,6 +253,36 @@ def render_services(snapshot: Snapshot, console: Console) -> None:
         for name, attribute in _ACTIVATION_VARIABLES:
             console.print(Text(_activation_line(name, attribute, activation, shell, width)))
     _render_failures(snapshot, console)
+
+
+def _render_pipewire(pipewire: PipeWireFacts | None, console: Console) -> None:
+    if pipewire is None:
+        return
+    console.print()
+    if pipewire.skipped is not None:
+        console.print(_row("PipeWire", f"not asked: {pipewire.skipped}"))
+        return
+    if pipewire.version is None and pipewire.clients is None:
+        console.print(_row("PipeWire", "no answer (see below)"))
+        return
+    console.print(_row("PipeWire", f"{pipewire.version or 'version unknown'}, answering"))
+    clients = set(pipewire.clients or ())
+    session_manager = "connected" if "WirePlumber" in clients else "not connected"
+    console.print(_row("", f"WirePlumber {session_manager}"))
+    portal = "connected" if "xdg-desktop-portal" in clients else "not connected"
+    console.print(_row("", f"xdg-desktop-portal {portal}"))
+    compositors = sorted(clients & {"gnome-shell", "Mutter", "kwin_wayland"})
+    if compositors:
+        console.print(_row("", f"compositor clients: {', '.join(compositors)}"))
+    console.print(_row("", f"other clients: {pipewire.other_clients} (not named)"))
+    console.print(
+        _row(
+            "",
+            f"video: {pipewire.camera_sources} camera, "
+            f"{pipewire.other_video_sources} other source(s) such as screen casts, "
+            f"{pipewire.video_streams} stream(s)",
+        )
+    )
 
 
 def _package_cell(package: PackageInfo | None) -> str:

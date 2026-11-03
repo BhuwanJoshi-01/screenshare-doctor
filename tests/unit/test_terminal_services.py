@@ -11,6 +11,7 @@ from screenshare_doctor.models import (
     PackageFacts,
     PackageInfo,
     PackageState,
+    PipeWireFacts,
     ProbeFailure,
     ServiceFacts,
     SessionEnvironment,
@@ -145,3 +146,60 @@ def test_nothing_collected_lists_the_failures() -> None:
     assert "not read (see below)" in out
     assert "systemctl --user show: systemctl was not found" in out
     assert all(_line(out, label).endswith("unknown") for label in ("portal frontend", "PipeWire"))
+
+
+def test_pipewire_section_on_the_real_machine() -> None:
+    snapshot = Snapshot(
+        tool_version="0.1.0",
+        created_at="x",
+        pipewire=PipeWireFacts(
+            version="1.6.2",
+            clients=("Mutter", "WirePlumber", "gnome-shell", "xdg-desktop-portal"),
+            other_clients=12,
+            camera_sources=1,
+            other_video_sources=0,
+            video_streams=0,
+        ),
+    )
+    out = _render(snapshot)
+    assert "PipeWire    1.6.2, answering" in out
+    assert "WirePlumber connected" in out
+    assert "xdg-desktop-portal connected" in out
+    assert "compositor clients: Mutter, gnome-shell" in out
+    assert "other clients: 12 (not named)" in out
+    assert "video: 1 camera, 0 other source(s) such as screen casts, 0 stream(s)" in out
+    assert out.index("PipeWire    ") < out.index("Activation environment")
+
+
+def test_pipewire_without_session_manager() -> None:
+    snapshot = Snapshot(
+        tool_version="0.1.0",
+        created_at="x",
+        pipewire=PipeWireFacts(
+            version="1.4.0",
+            clients=(),
+            other_clients=0,
+            camera_sources=0,
+            other_video_sources=0,
+            video_streams=0,
+        ),
+    )
+    out = _render(snapshot)
+    assert "WirePlumber not connected" in out
+    assert "xdg-desktop-portal not connected" in out
+    assert "compositor clients" not in out
+
+
+def test_pipewire_skipped_and_silent() -> None:
+    skipped = PipeWireFacts(
+        skipped="pipewire.service is not running (inactive); connecting would start it"
+    )
+    assert "PipeWire    not asked: pipewire.service is not running" in _render(
+        Snapshot(tool_version="0.1.0", created_at="x", pipewire=skipped)
+    )
+    assert "PipeWire    no answer (see below)" in _render(
+        Snapshot(tool_version="0.1.0", created_at="x", pipewire=PipeWireFacts())
+    )
+    silent = _render(Snapshot(tool_version="0.1.0", created_at="x"))
+    assert "answering" not in silent  # only the PipeWire table row, no daemon section
+    assert "not asked" not in silent
