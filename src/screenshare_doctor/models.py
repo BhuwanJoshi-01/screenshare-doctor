@@ -351,6 +351,24 @@ class DbusFacts:
 
 
 @dataclass(frozen=True, slots=True)
+class XdgDirectories:
+    """The variables that decide where the portal looks for its files; ``None`` = unset.
+
+    They must be the portal process's own, which is the user manager's environment,
+    not the shell's: Ubuntu's manager, for one, puts ``/usr/share/ubuntu`` first in
+    ``XDG_DATA_DIRS``. ``portal_dir`` is ``XDG_DESKTOP_PORTAL_DIR``, a test override
+    that replaces every other directory.
+    """
+
+    home: str | None = None
+    config_home: str | None = None
+    config_dirs: str | None = None
+    data_home: str | None = None
+    data_dirs: str | None = None
+    portal_dir: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class PortalDescriptor:
     """A ``<source>.portal`` file: which backend implements which interfaces.
 
