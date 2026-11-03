@@ -9,10 +9,12 @@ permission error. The cause can sit in the app, the way it was launched (native,
 xdg-desktop-portal routing, the desktop's portal backend, PipeWire, WirePlumber or the compositor. Screenshare
 Doctor starts from **the app and the symptom** and tells you which layer is most likely at fault, with the evidence:
 
+![troubleshoot output for Discord with no picker on GNOME: every portal check passes except SSD-PORTAL-002, ScreenCast is disabled by a portals.conf in the user's config folder, and the running portal still uses its old configuration until it is restarted; the most likely cause is named with the restart command.](docs/images/troubleshoot.svg)
+
 ```bash
 screenshare-doctor troubleshoot screenshare --app firefox --symptom no-picker
 screenshare-doctor routes explain ScreenCast     # which portal backend handles screen sharing, and why
-screenshare-doctor report --format markdown --output screenshare-report.md   # redacted, safe to paste
+screenshare-doctor report --output screenshare-report.md   # redacted, safe to paste
 ```
 
 GNOME comes first, then KDE Plasma and Hyprland. A desktop is listed as supported only after a test on a real
@@ -62,6 +64,14 @@ sources and synthetic fixtures. See the [support matrix](docs/support-matrix.md)
   and PipeWire.
 
 Screenshare Doctor focuses on the **app-centred workflow** and on validated GNOME, KDE and Hyprland coverage.
+
+## Documentation
+
+[Command reference](docs/cli.md) · [Troubleshooting](docs/troubleshooting.md) · [Checks](docs/rules.md) ·
+[Portal routing](docs/portal-routing.md) · [Desktop defaults](docs/desktops.md) ·
+[Apps and symptoms](docs/apps-and-symptoms.md) · [Privacy](docs/privacy.md) · [Support matrix](docs/support-matrix.md) ·
+[JSON output](docs/json-output.md) · [Architecture](docs/architecture.md) · [Sample reports](docs/sample-reports/) ·
+[Roadmap](docs/roadmap.md)
 
 ## License
 
