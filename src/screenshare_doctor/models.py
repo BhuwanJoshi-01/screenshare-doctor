@@ -296,6 +296,32 @@ class ServiceFacts:
 
 
 @dataclass(frozen=True, slots=True)
+class BusName:
+    """A well-known name on the session bus.
+
+    ``running``: the name has an owner right now (``NameHasOwner``). ``activatable``: a
+    D-Bus service file can start it on demand (``ListActivatableNames``). ``None`` means
+    the bus was not asked or did not answer.
+    """
+
+    name: str
+    running: bool | None = None
+    activatable: bool | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class DbusFacts:
+    """What the session bus said, read without starting any service.
+
+    ``reachable`` is ``False`` when the session bus itself did not answer, ``None``
+    when it was not tried.
+    """
+
+    reachable: bool | None = None
+    names: tuple[BusName, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
