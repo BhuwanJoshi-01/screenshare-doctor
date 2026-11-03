@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import functools
+import json
 import sys
+from pathlib import Path
 
 import pytest
 
 from screenshare_doctor import cli, orchestrator
 from screenshare_doctor.privacy import RedactionContext, strip_control
 from screenshare_doctor.rules.catalog import builtin_rules
+from tests.contract.test_json_schema import validate
 from tests.fakes import FIXTURES, FakeRunner, read_env_fixture
 from tests.scenarios import gnome_file_access, script_gnome_machine, stat_socket_or_dir
 
@@ -110,3 +113,51 @@ def test_every_rule_is_documented() -> None:
     docs = (FIXTURES.parent.parent / "docs" / "rules.md").read_text(encoding="utf-8")
     for rule in builtin_rules():
         assert f"`{rule.id}`" in docs, rule.id
+
+
+def test_doctor_json_is_valid_and_redacted(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert _run(monkeypatch, "doctor", "--format", "json") == 0
+    document = json.loads(capsys.readouterr().out)
+    assert validate(document) == []
+    assert document["summary"]["worst"] == "pass"
+    assert "/home/user/" not in json.dumps(document)
+
+
+def test_doctor_json_with_strict_still_prints_the_report(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert _run(monkeypatch, "doctor", "-f", "json", "--strict", extra_files=DISABLED) == 1
+    assert json.loads(capsys.readouterr().out)["summary"]["counts"]["fail"] >= 1
+
+
+def test_report_prints_markdown_by_default(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert _run(monkeypatch, "report") == 0
+    out = capsys.readouterr().out
+    assert out.startswith("# Screen sharing report\n")
+    assert "/home/user/" not in out
+
+
+def test_report_writes_a_file_and_refuses_to_overwrite(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    target = tmp_path / "report.json"
+    assert _run(monkeypatch, "report", "--format", "json", "--output", str(target)) == 0
+    assert validate(json.loads(target.read_text(encoding="utf-8"))) == []
+    err = capsys.readouterr().err
+    assert f"Wrote {target}." in err
+    assert "Read it before you share it." in err
+    assert _run(monkeypatch, "report", "-o", str(target)) == 2
+    assert "exists; use --force" in capsys.readouterr().err
+    assert _run(monkeypatch, "report", "-o", str(target), "--force") == 0
+    assert target.read_text(encoding="utf-8").startswith("# Screen sharing report")
+
+
+def test_report_dash_prints(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert _run(monkeypatch, "report", "-f", "json", "-o", "-") == 0
+    assert json.loads(capsys.readouterr().out)["schema_version"] == 1

@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import sys
 from enum import StrEnum
+from pathlib import Path
 from typing import Annotated
 
 import typer
@@ -31,7 +32,10 @@ from screenshare_doctor.orchestrator import (
 )
 from screenshare_doctor.privacy import RedactionContext, Redactor, redact_snapshot
 from screenshare_doctor.reports.findings import render_findings
+from screenshare_doctor.reports.json_report import render_json
+from screenshare_doctor.reports.markdown import render_markdown
 from screenshare_doctor.reports.terminal import (
+    redaction_line,
     render_dbus,
     render_desktop,
     render_route,
@@ -82,8 +86,16 @@ def cli(
     """Global options (the help text comes from HELP)."""
 
 
+class OutputFormat(StrEnum):
+    TEXT = "text"
+    JSON = "json"
+
+
 @app.command()
 def doctor(
+    output_format: Annotated[
+        OutputFormat, typer.Option("--format", "-f", help="text for people, json for scripts.")
+    ] = OutputFormat.TEXT,
     strict: Annotated[
         bool,
         typer.Option("--strict", help="Exit with code 1 when any check fails."),
@@ -95,14 +107,64 @@ def doctor(
 ) -> None:
     """Run every check, from the session to PipeWire, and explain what needs attention.
 
+    --format json prints the whole redacted report (docs/json-schema-v1.json) for
+    scripts and the GNOME extension.
+
     Passive: reads session variables, the package database, the user manager, portal
     files, the session bus (only already-running services are contacted, with
     --auto-start=no) and a running PipeWire. Nothing is started, changed or recorded.
     """
     snapshot = diagnose(inspect_all(SubprocessRunner()))
-    render_findings(redact_snapshot(snapshot), Console(highlight=False), show_all=show_all)
+    redacted = redact_snapshot(snapshot)
+    if output_format is OutputFormat.JSON:
+        typer.echo(render_json(redacted), nl=False)
+    else:
+        render_findings(redacted, Console(highlight=False), show_all=show_all)
     if strict and any(f.status is Status.FAIL for f in snapshot.findings):
         raise typer.Exit(ExitCode.STRICT_FAILURE)
+
+
+class ReportFormat(StrEnum):
+    MARKDOWN = "markdown"
+    JSON = "json"
+
+
+@app.command()
+def report(
+    report_format: Annotated[
+        ReportFormat, typer.Option("--format", "-f", help="Report format.")
+    ] = ReportFormat.MARKDOWN,
+    output: Annotated[
+        Path | None,
+        typer.Option(
+            "--output",
+            "-o",
+            metavar="FILE",
+            help="Write the report to FILE instead of printing it ('-' prints).",
+        ),
+    ] = None,
+    force: Annotated[bool, typer.Option("--force", help="Overwrite FILE if it exists.")] = False,
+) -> None:
+    """Write a redacted report of every check, to paste into a bug tracker.
+
+    By default the report is printed, so it can be read before it is shared. The file
+    named with --output is the only thing this tool ever writes.
+    """
+    to_file = output is not None and str(output) != "-"
+    if to_file and output is not None and output.exists() and not force:
+        typer.echo(f"{output} exists; use --force to overwrite it.", err=True)
+        raise typer.Exit(ExitCode.ERROR)
+    redacted = redact_snapshot(diagnose(inspect_all(SubprocessRunner())))
+    if report_format is ReportFormat.JSON:
+        rendered = render_json(redacted)
+    else:
+        rendered = render_markdown(redacted)
+    if to_file and output is not None:
+        output.write_text(rendered, encoding="utf-8")
+        note = redaction_line(redacted) or "Nothing needed redacting"
+        typer.echo(f"Wrote {output}. {note}. Read it before you share it.", err=True)
+    else:
+        typer.echo(rendered, nl=False)
 
 
 troubleshoot_app = typer.Typer(

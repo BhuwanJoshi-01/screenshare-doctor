@@ -1,0 +1,1184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/json-schema-v1.json",
+  "title": "screenshare-doctor report, schema version 1",
+  "description": "Output of screenshare-doctor doctor --format json and report --format json. Fields are never removed or renamed within schema version 1; null means not collected or not reported.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tool_version",
+    "created_at",
+    "schema_version",
+    "session",
+    "packages",
+    "services",
+    "dbus",
+    "portal_files",
+    "pipewire",
+    "probe_failures",
+    "findings",
+    "redactions",
+    "summary"
+  ],
+  "properties": {
+    "tool_version": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "session": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/session"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "packages": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/packages"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "services": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/services"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dbus": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/dbus"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "portal_files": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/portal_files"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pipewire": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/pipewire"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "probe_failures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/probe_failure"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "redactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/redaction_count"
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    }
+  },
+  "$defs": {
+    "bus_name": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "running",
+        "activatable"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "running": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "activatable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "dbus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reachable",
+        "names",
+        "objects"
+      ],
+      "properties": {
+        "reachable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/bus_name"
+          }
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/portal_object"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "key",
+        "value"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "failure_kind": {
+      "type": "string",
+      "enum": [
+        "not_found",
+        "permission_denied",
+        "timeout",
+        "nonzero_exit",
+        "malformed_output",
+        "os_error",
+        "probe_error"
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "severity",
+        "confidence",
+        "summary",
+        "reason",
+        "subject",
+        "layer",
+        "evidence",
+        "recommended_action",
+        "verify_command",
+        "limitations",
+        "caused_by"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^SSD-[A-Z]+-[0-9]{3}$"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "layer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/layer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "recommended_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verify_command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caused_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^SSD-[A-Z]+-[0-9]{3}$"
+        }
+      }
+    },
+    "layer": {
+      "type": "string",
+      "enum": [
+        "session",
+        "dbus",
+        "portal-frontend",
+        "portal-backend",
+        "compositor",
+        "pipewire",
+        "wireplumber",
+        "app"
+      ]
+    },
+    "logind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "own",
+        "display",
+        "display_known"
+      ],
+      "properties": {
+        "own": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/logind_session"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/logind_session"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_known": {
+          "type": "boolean"
+        }
+      }
+    },
+    "logind_session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "session_type",
+        "session_class",
+        "desktop",
+        "remote",
+        "active",
+        "state",
+        "seat"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "session_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "session_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "desktop": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "remote": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "active": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "seat": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "state",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/package_state"
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "package_state": {
+      "type": "string",
+      "enum": [
+        "installed",
+        "not_installed",
+        "broken",
+        "unknown"
+      ]
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "packages"
+      ],
+      "properties": {
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/package"
+          }
+        }
+      }
+    },
+    "path_state": {
+      "type": "string",
+      "enum": [
+        "socket",
+        "directory",
+        "other",
+        "missing",
+        "unreadable",
+        "not_checked"
+      ]
+    },
+    "pipewire": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skipped",
+        "version",
+        "clients",
+        "other_clients",
+        "camera_sources",
+        "other_video_sources",
+        "video_streams"
+      ],
+      "properties": {
+        "skipped": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "clients": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "other_clients": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "camera_sources": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "other_video_sources": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "video_streams": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "portal_descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "path",
+        "dbus_name",
+        "interfaces",
+        "use_in",
+        "error"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "dbus_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "use_in": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "portal_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "desktops",
+        "config_directories",
+        "configs",
+        "descriptor_directories",
+        "descriptors",
+        "unreadable",
+        "variables_from"
+      ],
+      "properties": {
+        "desktops": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "config_directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "configs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/portals_conf"
+          }
+        },
+        "descriptor_directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "descriptors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/portal_descriptor"
+          }
+        },
+        "unreadable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "variables_from": {
+          "type": "string"
+        }
+      }
+    },
+    "portal_object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "interfaces",
+        "screencast"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "interfaces": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "screencast": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/screencast_properties"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "portals_conf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "preferred",
+        "duplicates",
+        "usable",
+        "error"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "preferred": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          }
+        },
+        "duplicates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "usable": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "probe_failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe",
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "probe": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/failure_kind"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "redaction_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "count"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "screencast_properties": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "source_types",
+        "cursor_modes"
+      ],
+      "properties": {
+        "version": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "source_types": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "cursor_modes": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "services",
+        "activation_environment",
+        "activation_directories"
+      ],
+      "properties": {
+        "services": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/user_service"
+          }
+        },
+        "activation_environment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/session_environment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activation_directories": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/xdg_directories"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "environment",
+        "paths",
+        "logind"
+      ],
+      "properties": {
+        "environment": {
+          "$ref": "#/$defs/session_environment"
+        },
+        "paths": {
+          "$ref": "#/$defs/session_paths"
+        },
+        "logind": {
+          "$ref": "#/$defs/logind"
+        }
+      }
+    },
+    "session_environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_type",
+        "current_desktop",
+        "session_desktop",
+        "desktop_session",
+        "wayland_display",
+        "display",
+        "runtime_dir",
+        "session_id",
+        "dbus_session_bus_address",
+        "ssh"
+      ],
+      "properties": {
+        "session_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "current_desktop": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "session_desktop": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "desktop_session": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wayland_display": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime_dir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dbus_session_bus_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ssh": {
+          "type": "boolean"
+        }
+      }
+    },
+    "session_paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_dir",
+        "wayland_socket",
+        "wayland_socket_path",
+        "x11_socket",
+        "x11_socket_path"
+      ],
+      "properties": {
+        "runtime_dir": {
+          "$ref": "#/$defs/path_state"
+        },
+        "wayland_socket": {
+          "$ref": "#/$defs/path_state"
+        },
+        "wayland_socket_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "x11_socket": {
+          "$ref": "#/$defs/path_state"
+        },
+        "x11_socket_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "warn",
+        "fail",
+        "unknown",
+        "not_applicable",
+        "not_tested"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "location",
+        "desktop_family",
+        "desktop_name",
+        "portal_version",
+        "counts",
+        "worst"
+      ],
+      "properties": {
+        "session": {
+          "anyOf": [
+            {
+              "enum": [
+                "wayland",
+                "x11",
+                "none",
+                "unknown"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location": {
+          "anyOf": [
+            {
+              "enum": [
+                "desktop",
+                "ssh",
+                "console",
+                "elsewhere"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "desktop_family": {
+          "anyOf": [
+            {
+              "enum": [
+                "gnome",
+                "kde",
+                "hyprland",
+                "wlroots",
+                "other",
+                "unknown"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "desktop_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "portal_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pass",
+            "warn",
+            "fail",
+            "unknown",
+            "not_applicable",
+            "not_tested"
+          ],
+          "properties": {
+            "pass": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "warn": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fail": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unknown": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "not_applicable": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "not_tested": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "worst": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/status"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "user_service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit",
+        "load_state",
+        "active_state",
+        "sub_state",
+        "unit_file_state"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string"
+        },
+        "load_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "active_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sub_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "unit_file_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "xdg_directories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "home",
+        "config_home",
+        "config_dirs",
+        "data_home",
+        "data_dirs",
+        "portal_dir"
+      ],
+      "properties": {
+        "home": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "config_home": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "config_dirs": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data_home": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data_dirs": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "portal_dir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

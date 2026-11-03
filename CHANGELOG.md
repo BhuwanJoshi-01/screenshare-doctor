@@ -58,3 +58,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   `app-only`), most likely cause first, with sourced hints for Firefox, the
   Chromium family, Electron apps and OBS, and Flatpak detection
   (`docs/apps-and-symptoms.md`).
+- `doctor --format json` and `report [--format markdown|json] [--output FILE]
+  [--force]`: the redacted report as an issue-ready Markdown document or as
+  JSON frozen in `docs/json-schema-v1.json`, with a derived `summary` (session,
+  desktop, portal version, counts, worst status). Contract tests keep the code
+  and the schema in step and prove that planted secrets reach no output.
