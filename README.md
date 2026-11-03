@@ -19,8 +19,12 @@ screenshare-doctor report --format markdown --output screenshare-report.md   # r
 GNOME comes first, then KDE Plasma and Hyprland. A desktop is listed as supported only after a test on a real
 session.
 
-What works already: `screenshare-doctor check session` tells Wayland, X11, SSH and no session apart and shows the
-desktop names the portal reads (see the [command reference](docs/cli.md)).
+What works already (see the [command reference](docs/cli.md)):
+
+- `screenshare-doctor check session` tells Wayland, X11, SSH and no session apart and shows the desktop names the
+  portal reads.
+- `screenshare-doctor check services` shows which portal backends, PipeWire and WirePlumber are installed and
+  running, and whether portals will see the same desktop variables as your shell.
 
 ## What it promises
 

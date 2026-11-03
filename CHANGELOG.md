@@ -20,3 +20,8 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   logind's view of the user's graphical session, with notes on anything that
   does not add up. Reads an allowlist of session variables, `stat()`s the
   sockets and runs `loginctl show-*` only. Exits 3 without a graphical session.
+- `screenshare-doctor check services`: the installed portal frontend, backends,
+  PipeWire and WirePlumber (from dpkg, rpm or pacman, or their programs when
+  there is no package manager), the state of their user services, and the
+  environment the user manager starts portals in, compared with the shell's.
+  Query commands only; nothing is started.

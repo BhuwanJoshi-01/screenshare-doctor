@@ -22,14 +22,18 @@ uv run pytest -q --cov                     # with coverage
 src/screenshare_doctor/
   cli.py          Typer app + main(): exit codes, redacted internal errors (SSD_DEBUG=1 for tracebacks)
   models.py       Status/Severity/Confidence, Layer, Evidence, Finding (codes SSD-<AREA>-<NNN>),
-                  ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts, Snapshot
-  orchestrator.py collect_session()/inspect_session(): runs the collectors, builds the Snapshot
-                  (facts only; conclusions are recomputed from them)
+                  ProbeFailure, SessionEnvironment/SessionPaths/LogindFacts/SessionFacts,
+                  PackageFacts, ServiceFacts, Snapshot
+  orchestrator.py collect_session(), inspect_session(), inspect_services(): run the collectors and
+                  build the Snapshot (facts only; conclusions are recomputed from them)
   collectors/     environment.py (allowlisted session variables, stat() of runtime dir and sockets),
-                  logind.py (loginctl show-user/show-session only; ids checked before use)
+                  logind.py (loginctl show-user/show-session only; ids checked before use),
+                  packages.py (dpkg-query -W / rpm -q / pacman -Q; manager needs program AND database;
+                  files fallback), services.py (systemctl --user show / show-environment, allowlisted)
   desktops.py     XDG_CURRENT_DESKTOP parsed exactly as xdg-desktop-portal does; desktop family
   session.py      assess_session(): session kind (wayland/x11/none/unknown) + where the tool runs
-  reports/        terminal.py (plain Text, never Rich markup from collected data)
+  reports/        terminal.py: render_session(), render_services() (plain Text, never Rich markup from
+                  collected data)
   runner.py       CommandRunner protocol, SubprocessRunner (no shell, timeout kills the process group,
                   capped output), probe_failure()
   privacy.py      strip_control(), RedactionContext, Redactor, redact_snapshot()

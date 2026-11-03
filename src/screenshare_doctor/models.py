@@ -266,6 +266,36 @@ class PackageFacts:
 
 
 @dataclass(frozen=True, slots=True)
+class UserService:
+    """One unit of the user's systemd manager, as ``systemctl --user show`` reports it.
+
+    ``load_state``: ``loaded``, ``not-found``, ``masked``…; ``active_state``: ``active``,
+    ``inactive``, ``failed``, ``activating``…; ``unit_file_state``: ``enabled``,
+    ``static``, ``disabled``, ``masked``… ``None`` means systemd did not say.
+    """
+
+    unit: str
+    load_state: str | None = None
+    active_state: str | None = None
+    sub_state: str | None = None
+    unit_file_state: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ServiceFacts:
+    """The user services of the stack, and the environment the user manager starts them in.
+
+    Portals are started on demand by the user manager, so they see *its* environment,
+    not the shell's: ``activation_environment`` holds the same allowlisted variables
+    as the session environment, read from ``systemctl --user show-environment``.
+    ``None`` fields were not read (no systemd, or the user manager did not answer).
+    """
+
+    services: tuple[UserService, ...] | None = None
+    activation_environment: SessionEnvironment | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RedactionCount:
     """How many values of one kind (``home_path``, ``secret_value``…) were redacted."""
 
@@ -277,14 +307,17 @@ class RedactionCount:
 class Snapshot:
     """Everything one run observed and concluded; the input of every renderer.
 
-    ``session`` is ``None`` when the command did not look at the session. Portal and
-    PipeWire facts join this record as their collectors are added.
+    ``session``, ``packages`` and ``services`` are ``None`` when the command did not
+    look at them. Portal and PipeWire facts join this record as their collectors are
+    added.
     """
 
     tool_version: str
     created_at: str
     schema_version: int = SCHEMA_VERSION
     session: SessionFacts | None = None
+    packages: PackageFacts | None = None
+    services: ServiceFacts | None = None
     probe_failures: tuple[ProbeFailure, ...] = ()
     findings: tuple[Finding, ...] = ()
     redactions: tuple[RedactionCount, ...] = ()
