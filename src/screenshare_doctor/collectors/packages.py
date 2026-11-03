@@ -8,9 +8,18 @@ the package manager says so; output that mentions neither state leaves it unknow
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+import shutil
+from collections.abc import Callable, Sequence
+from pathlib import Path
 
-from screenshare_doctor.models import PackageInfo, PackageState
+from screenshare_doctor.models import (
+    FailureKind,
+    PackageFacts,
+    PackageInfo,
+    PackageState,
+    ProbeFailure,
+)
+from screenshare_doctor.runner import CommandResult, CommandRunner, Outcome, probe_failure
 
 PACKAGES: tuple[str, ...] = (
     "xdg-desktop-portal",
@@ -119,3 +128,90 @@ def _in_order(
         else:
             result.append(PackageInfo(name, PackageState.UNKNOWN))
     return tuple(result)
+
+
+PACKAGE_TIMEOUT = 15.0
+"""Seconds; a cold rpm database can take a few."""
+
+MANAGERS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    ("dpkg", "dpkg-query", ("/var/lib/dpkg/status",)),
+    ("rpm", "rpm", ("/usr/lib/sysimage/rpm", "/var/lib/rpm")),
+    ("pacman", "pacman", ("/var/lib/pacman/local",)),
+)
+"""Name, query program and database paths. A manager counts only when its database
+exists too: an rpm binary on a Debian system (installed for alien) knows nothing."""
+
+PROGRAM_DIRS: tuple[str, ...] = ("/usr/libexec", "/usr/lib", "/usr/local/libexec")
+"""Where distributions put the portal programs (Debian and Fedora: libexec; Arch: lib)."""
+
+
+def _exists(path: str) -> bool:
+    return Path(path).exists()
+
+
+def collect_packages(
+    runner: CommandRunner,
+    *,
+    which: Callable[[str], str | None] = shutil.which,
+    exists: Callable[[str], bool] = _exists,
+    names: Sequence[str] = PACKAGES,
+) -> tuple[PackageFacts, tuple[ProbeFailure, ...]]:
+    """Ask the system's package manager; without one, look for the installed programs."""
+    for manager, program, databases in MANAGERS:
+        if which(program) is None or not any(exists(db) for db in databases):
+            continue
+        result = runner.run(_query(manager, names), timeout=PACKAGE_TIMEOUT)
+        packages = _parse(manager, result, names)
+        if packages is not None:
+            return PackageFacts(manager, packages), ()
+        failure = probe_failure(f"{program} query", result) or ProbeFailure(
+            f"{program} query", FailureKind.MALFORMED_OUTPUT, "no package was listed"
+        )
+        return _from_files(names, which, exists), (failure,)
+    return _from_files(names, which, exists), ()
+
+
+def _query(manager: str, names: Sequence[str]) -> list[str]:
+    if manager == "dpkg":
+        return ["dpkg-query", "-W", "-f", DPKG_FORMAT, *names]
+    if manager == "rpm":
+        return ["rpm", "-q", "--queryformat", RPM_FORMAT, *names]
+    return ["pacman", "-Q", *names]
+
+
+def _parse(
+    manager: str, result: CommandResult, names: Sequence[str]
+) -> tuple[PackageInfo, ...] | None:
+    """The parsed answer, or ``None`` when the command gave none.
+
+    All three exit non-zero when some names are not installed, so a non-zero exit is
+    accepted as long as the output answers for at least one name.
+    """
+    if result.outcome not in {Outcome.OK, Outcome.NONZERO}:
+        return None
+    if manager == "dpkg":
+        packages = parse_dpkg(result.stdout, result.stderr, names)
+    elif manager == "rpm":
+        packages = parse_rpm(result.stdout, names)
+    else:
+        packages = parse_pacman(result.stdout, result.stderr, names)
+    if all(p.state is PackageState.UNKNOWN for p in packages):
+        return None
+    return packages
+
+
+def _from_files(
+    names: Sequence[str], which: Callable[[str], str | None], exists: Callable[[str], bool]
+) -> PackageFacts:
+    """INSTALLED when the package's program is found, otherwise UNKNOWN (never "not
+    installed": the program may live somewhere this list does not know)."""
+    packages = []
+    for name in names:
+        if name.startswith("xdg-desktop-portal"):
+            found = any(exists(f"{directory}/{name}") for directory in PROGRAM_DIRS)
+        else:
+            found = which(name) is not None
+        packages.append(
+            PackageInfo(name, PackageState.INSTALLED if found else PackageState.UNKNOWN)
+        )
+    return PackageFacts("files", tuple(packages))
