@@ -169,9 +169,7 @@ def test_inspect_routes_on_the_real_machine() -> None:
     assert files.variables_from == "user manager"
     assert files.desktops == ("ubuntu", "gnome")
     assert files.config_directories[1] == "/etc/xdg/xdg-ubuntu/xdg-desktop-portal"
-    assert [c.path for c in files.configs] == [
-        "/usr/share/xdg-desktop-portal/gnome-portals.conf"
-    ] * 2
+    assert [c.path for c in files.configs] == ["/usr/share/xdg-desktop-portal/gnome-portals.conf"]
 
 
 def test_inspect_routes_falls_back_to_the_shell_without_systemd() -> None:
