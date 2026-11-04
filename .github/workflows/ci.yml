@@ -124,8 +124,21 @@ jobs:
       - name: Extension package
         run: scripts/pack-extension.sh
       - name: extensions.gnome.org review checks (Shexli)
+        # Shexli exits 0 whatever it finds, so its findings are checked here. The only one
+        # allowed is EGO-A-005, the manual review of the clipboard use declared in
+        # metadata.json (see docs/PUBLISHING.md); anything else fails the job.
         run: |
           python3 -m venv "$RUNNER_TEMP/shexli"
           # tree-sitter 0.26 segfaults inside shexli 0.2.1
           "$RUNNER_TEMP/shexli/bin/pip" install -q shexli "tree-sitter<0.26"
-          "$RUNNER_TEMP/shexli/bin/shexli" "$PWD/dist/screenshare-doctor@bhuwanjoshi-01.github.io.shell-extension.zip"
+          zip="$PWD/dist/screenshare-doctor@bhuwanjoshi-01.github.io.shell-extension.zip"
+          "$RUNNER_TEMP/shexli/bin/shexli" "$zip"
+          "$RUNNER_TEMP/shexli/bin/shexli" --format json "$zip" > "$RUNNER_TEMP/shexli.json"
+          python3 - "$RUNNER_TEMP/shexli.json" <<'PY'
+          import json, sys
+          findings = json.load(open(sys.argv[1]))["findings"]
+          unexpected = [f for f in findings if f["rule_id"] != "EGO-A-005"]
+          for f in unexpected:
+              print(f"::error::Shexli {f['rule_id']} ({f['severity']}): {f['message']}")
+          sys.exit(1 if unexpected else 0)
+          PY
