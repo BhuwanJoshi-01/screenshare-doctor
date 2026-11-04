@@ -8,11 +8,13 @@ from __future__ import annotations
 from rich.console import Console
 from rich.text import Text
 
-from screenshare_doctor.models import Snapshot
+from screenshare_doctor.models import Snapshot, Status
 from screenshare_doctor.reports.findings import headline, render_finding
 from screenshare_doctor.reports.terminal import redaction_line
 from screenshare_doctor.rules.engine import Registry
 from screenshare_doctor.troubleshoot.select import Troubleshooting
+
+_NOT_RUN = (Status.NOT_TESTED, Status.UNKNOWN)
 
 
 def render_troubleshooting(
@@ -43,11 +45,18 @@ def render_troubleshooting(
             rule = rules.get(finding.id)
             if rule is not None:
                 for paragraph in rule.explanation.split("\n\n"):
-                    console.print(Text(" " * 27 + " ".join(paragraph.split()), style="dim"))
+                    console.print(Text(" " * 30 + " ".join(paragraph.split()), style="dim"))
     console.print()
     if result.likely is not None:
         console.print(
             Text.assemble(("Most likely: ", "bold"), f"{result.likely.id}: {result.likely.summary}")
+        )
+    elif not_run := [f.id for f in result.relevant if f.status in _NOT_RUN]:
+        console.print(
+            Text(
+                f"{len(not_run)} of these checks could not run ({', '.join(not_run)}); the others "
+                "found no problem. Run them as their Next step says before looking at the app."
+            )
         )
     else:
         console.print(

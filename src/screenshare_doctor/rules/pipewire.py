@@ -263,6 +263,27 @@ def wireplumber(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding]:
             reason="PipeWire itself was not asked.",
             evidence=evidence,
         )
+    elif (
+        unit is not None
+        and unit.unit_file_state == "enabled"
+        and facts is not None
+        and facts.skipped is not None
+        and (socket := _unit(snapshot, "pipewire.socket")) is not None
+        and socket.active_state == "active"
+    ):
+        yield Finding(
+            id="SSD-WP-001",
+            status=Status.PASS,
+            severity=Severity.INFO,
+            confidence=Confidence.MEDIUM,
+            summary="WirePlumber starts with PipeWire",
+            reason=(
+                "wireplumber.service is enabled, which makes pipewire.service want it, and "
+                "PipeWire starts on demand through pipewire.socket."
+            ),
+            evidence=evidence,
+            limitations=("Neither was started to ask them, so a failing start is not ruled out.",),
+        )
     else:
         yield Finding(
             id="SSD-WP-001",

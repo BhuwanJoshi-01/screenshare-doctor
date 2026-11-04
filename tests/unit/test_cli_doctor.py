@@ -70,7 +70,7 @@ def test_strict_exits_1_only_on_failures(
     assert _run(monkeypatch, "doctor", "--strict") == 0
     assert _run(monkeypatch, "doctor", "--strict", extra_files=DISABLED) == 1
     out = strip_control(capsys.readouterr().out)
-    assert "FAIL    SSD-PORTAL-002     ScreenCast is disabled by a portals.conf" in out
+    assert "FAIL       SSD-PORTAL-002     ScreenCast is disabled by a portals.conf" in out
 
 
 def test_without_strict_failures_still_exit_0(monkeypatch: pytest.MonkeyPatch) -> None:
