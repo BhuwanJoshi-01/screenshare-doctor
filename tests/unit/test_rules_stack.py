@@ -305,7 +305,6 @@ def test_desktop_evidence_survives_redaction(real: Snapshot) -> None:
     assert desktop.evidence[4].value == "running (pass)"
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_wireplumber_that_starts_with_pipewire_passes() -> None:
     # Arch with Hyprland: PipeWire is socket-activated and wireplumber.service is enabled
     # (WantedBy=pipewire.service), so it starts together with PipeWire.
