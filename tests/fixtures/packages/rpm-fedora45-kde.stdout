@@ -1,0 +1,8 @@
+xdg-desktop-portal	1.22.1-2.fc45
+package xdg-desktop-portal-gnome is not installed
+xdg-desktop-portal-gtk	1.15.3-6.fc45
+xdg-desktop-portal-kde	6.8.2-1.fc45
+package xdg-desktop-portal-wlr is not installed
+package xdg-desktop-portal-hyprland is not installed
+pipewire	1.6.11-1.fc45
+wireplumber	0.5.19-1.fc45
