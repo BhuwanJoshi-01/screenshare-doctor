@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 
+import pytest
 from rich.console import Console
 
 from screenshare_doctor.collectors.pipewire import collect_pipewire
@@ -16,7 +17,7 @@ from screenshare_doctor.models import (
     Status,
 )
 from screenshare_doctor.orchestrator import diagnose
-from screenshare_doctor.reports.findings import headline, render_findings
+from screenshare_doctor.reports.findings import headline, render_finding, render_findings
 from tests.fakes import FakeRunner
 from tests.scenarios import gnome_snapshot, script_gnome_pipewire
 
@@ -94,3 +95,18 @@ def test_markup_in_findings_is_printed_literally() -> None:
 
 def test_headline_without_facts_is_empty() -> None:
     assert headline(Snapshot(tool_version="0.1.0", created_at="x")) == ""
+
+
+@pytest.mark.xfail(strict=True, reason="WLD-008")
+def test_not_tested_label_is_not_cut(capsys: pytest.CaptureFixture[str]) -> None:
+    # Seen on Hyprland: "NOT TESTED" did not fit the 8-character status column.
+    finding = Finding(
+        id="SSD-PORTAL-004",
+        status=Status.NOT_TESTED,
+        severity=Severity.LOW,
+        confidence=Confidence.HIGH,
+        summary="Window sharing was not checked: the portal is not running",
+        reason="r",
+    )
+    render_finding(finding, Console(width=120, highlight=False))
+    assert "NOT TESTED SSD-PORTAL-004" in capsys.readouterr().out
