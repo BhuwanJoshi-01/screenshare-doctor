@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from screenshare_doctor.models import (
     Confidence,
     Evidence,
+    FailureKind,
     Finding,
     Layer,
     PackageState,
@@ -24,6 +25,15 @@ def _unit(snapshot: Snapshot, name: str) -> UserService | None:
     if services is None or services.services is None:
         return None
     return next((s for s in services.services if s.unit == name and s.load_state), None)
+
+
+_UNUSABLE = (FailureKind.NOT_FOUND, FailureKind.PERMISSION_DENIED, FailureKind.MALFORMED_OUTPUT)
+"""pw-dump failures that say nothing about the daemon: the tool, not PipeWire, failed."""
+
+
+def _pw_dump_unusable(snapshot: Snapshot) -> FailureKind | None:
+    failure = next((f for f in snapshot.probe_failures if f.probe == "pw-dump"), None)
+    return failure.kind if failure is not None and failure.kind in _UNUSABLE else None
 
 
 def _package_missing(snapshot: Snapshot, name: str) -> bool:
@@ -123,6 +133,38 @@ def pipewire(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding]:
                 reason=facts.skipped,
                 evidence=evidence,
             )
+    elif (unusable := _pw_dump_unusable(snapshot)) is not None:
+        missing = unusable is FailureKind.NOT_FOUND
+        yield Finding(
+            id="SSD-PW-001",
+            status=Status.UNKNOWN,
+            severity=Severity.MEDIUM,
+            confidence=Confidence.MEDIUM,
+            summary=(
+                "PipeWire runs, but pw-dump is not installed to ask it"
+                if missing
+                else "PipeWire runs, but pw-dump's answer could not be used"
+            ),
+            reason=(
+                "pipewire.service is "
+                f"{service.active_state if service else 'in an unknown state'}; "
+                + (
+                    "whether the daemon answers is not known without pw-dump."
+                    if missing
+                    else "pw-dump failed (see the probe failures), which says nothing about "
+                    "the daemon itself."
+                )
+            ),
+            evidence=evidence,
+            recommended_action=(
+                "Install the package with pw-dump (pipewire-utils on Fedora, pipewire-bin on "
+                "Debian and Ubuntu, pipewire-tools on openSUSE; Arch ships it with pipewire), "
+                "then run the check again."
+                if missing
+                else None
+            ),
+            verify_command="pw-dump --version",
+        )
     elif service is not None and service.active_state == "active":
         yield Finding(
             id="SSD-PW-001",

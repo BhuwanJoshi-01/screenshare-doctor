@@ -213,7 +213,6 @@ def test_pipewire_running_but_silent() -> None:
     assert findings["SSD-PW-001"].status is Status.FAIL
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_pipewire_running_without_pw_dump_is_unknown() -> None:
     # Fedora 45 KDE: pw-dump is in pipewire-utils, which a minimal install leaves out.
     # A missing tool says nothing about the daemon, so this must not fail.
@@ -228,7 +227,6 @@ def test_pipewire_running_without_pw_dump_is_unknown() -> None:
     assert "pipewire-utils" in finding.recommended_action
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 @pytest.mark.parametrize("kind", [FailureKind.PERMISSION_DENIED, FailureKind.MALFORMED_OUTPUT])
 def test_pipewire_with_an_unusable_pw_dump_is_unknown(kind: FailureKind) -> None:
     failure = ProbeFailure("pw-dump", kind, "detail")
