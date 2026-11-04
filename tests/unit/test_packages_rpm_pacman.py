@@ -28,6 +28,21 @@ def test_rpm_fedora_capture() -> None:
     )
 
 
+def test_rpm_real_fedora45_kde_capture() -> None:
+    # rpm 6.1.0 on Fedora 45 with KDE Plasma 6.8.2 (validation VM), exit code 3.
+    packages = parse_rpm(read_fixture("packages", "rpm-fedora45-kde.stdout"))
+    assert packages == (
+        PackageInfo("xdg-desktop-portal", OK, "1.22.1-2.fc45"),
+        PackageInfo("xdg-desktop-portal-gnome", N),
+        PackageInfo("xdg-desktop-portal-gtk", OK, "1.15.3-6.fc45"),
+        PackageInfo("xdg-desktop-portal-kde", OK, "6.8.2-1.fc45"),
+        PackageInfo("xdg-desktop-portal-wlr", N),
+        PackageInfo("xdg-desktop-portal-hyprland", N),
+        PackageInfo("pipewire", OK, "1.6.11-1.fc45"),
+        PackageInfo("wireplumber", OK, "0.5.19-1.fc45"),
+    )
+
+
 def test_rpm_keeps_the_first_of_two_architectures() -> None:
     packages = parse_rpm("pipewire\t1.4.9-1\npipewire\t1.4.8-1\n", names=("pipewire",))
     assert packages == (PackageInfo("pipewire", OK, "1.4.9-1"),)
@@ -51,6 +66,24 @@ def test_pacman_arch_capture() -> None:
         PackageInfo("xdg-desktop-portal-hyprland", OK, "1.3.10-2"),
         PackageInfo("pipewire", OK, "1:1.4.9-1"),
         PackageInfo("wireplumber", OK, "0.5.12-1"),
+    )
+
+
+def test_pacman_real_arch_hyprland_capture() -> None:
+    # pacman 7.1.0 on Arch Linux with Hyprland 0.57.1 (validation VM), exit code 1.
+    packages = parse_pacman(
+        read_fixture("packages", "pacman-arch-hyprland-0.57.stdout"),
+        read_fixture("packages", "pacman-arch-hyprland-0.57.stderr"),
+    )
+    assert packages == (
+        PackageInfo("xdg-desktop-portal", OK, "1.22.1-2"),
+        PackageInfo("xdg-desktop-portal-gnome", N),
+        PackageInfo("xdg-desktop-portal-gtk", OK, "1.15.3-2"),
+        PackageInfo("xdg-desktop-portal-kde", N),
+        PackageInfo("xdg-desktop-portal-wlr", N),
+        PackageInfo("xdg-desktop-portal-hyprland", OK, "1.5.0-1"),
+        PackageInfo("pipewire", OK, "1:1.6.10-1"),
+        PackageInfo("wireplumber", OK, "0.5.18-1"),
     )
 
 
