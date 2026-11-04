@@ -4,6 +4,15 @@ All notable changes to this project are listed here. Versions follow
 [Semantic Versioning](https://semver.org/); the JSON report format has its own
 `schema_version` and changes only with a new major version of the schema.
 
+## Unreleased
+
+- GNOME Shell extension: follows the extensions.gnome.org best-practices guide
+  (a cancelled check is recognised by its error instead of state checks, the
+  menu signal uses `connectObject`, no redundant `try`/`catch`, shared helpers
+  instead of repeated code). The nested-shell test now opens the real menu and
+  checks that disabling the extension kills a running check; CI fails on any
+  Shexli finding other than the declared clipboard use.
+
 ## 0.1.0 (2026-11-04)
 
 The first release: diagnose screen sharing read-only, tested on real GNOME

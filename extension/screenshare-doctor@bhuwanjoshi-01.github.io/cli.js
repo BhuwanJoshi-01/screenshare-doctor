@@ -21,17 +21,19 @@ export function findCli(configured) {
     return GLib.file_test(local, GLib.FileTest.IS_EXECUTABLE) ? local : null;
 }
 
-/** Resolves to the tool's standard output; rejects with a readable Error. */
+/** Whether a run was rejected because its cancellable was cancelled. */
+export function isCancelled(error) {
+    return error instanceof GLib.Error && error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED);
+}
+
+/**
+ * Resolves to the tool's standard output; rejects with a readable Error, or with the
+ * cancellation error when `cancellable` is cancelled.
+ */
 export function runCli(path, args, cancellable, timeoutSeconds = TIMEOUT_SECONDS) {
     return new Promise((resolve, reject) => {
-        let proc;
-        try {
-            proc = Gio.Subprocess.new([path, ...args],
-                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
-        } catch (e) {
-            reject(e);
-            return;
-        }
+        const proc = Gio.Subprocess.new([path, ...args],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
         let timedOut = false;
         let timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, timeoutSeconds, () => {
             timedOut = true;
