@@ -21,8 +21,8 @@ Doctor starts from **the app and the symptom** and tells you which layer is most
 Needs Python 3.11 or newer and a Linux desktop session to diagnose.
 
 ```bash
-uv tool install git+https://github.com/BhuwanJoshi-01/screenshare-doctor   # until the PyPI release
-pipx install git+https://github.com/BhuwanJoshi-01/screenshare-doctor      # or with pipx
+uv tool install screenshare-doctor
+pipx install screenshare-doctor          # or with pipx
 ```
 
 ## Use
