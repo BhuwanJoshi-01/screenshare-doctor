@@ -1,62 +1,201 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Screenshare Doctor</title>
-  <meta name="description" content="Find out why screen sharing fails on your Linux Wayland desktop. Starts from the app and the symptom; read-only, open source.">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screenshare Doctor: find out why screen sharing fails on Linux Wayland</title>
+<meta name="description" content="Black screen, no picker, missing windows? Screenshare Doctor checks the portal, its backend, the compositor and PipeWire on GNOME, KDE Plasma and Hyprland, read-only, and names the layer at fault.">
+<link rel="canonical" href="https://bhuwanjoshi-01.github.io/screenshare-doctor/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Screenshare Doctor">
+<meta property="og:description" content="Find out why screen sharing fails on your Linux Wayland desktop: start from the app and the symptom, get the layer at fault and the fix.">
+<meta property="og:url" content="https://bhuwanjoshi-01.github.io/screenshare-doctor/">
+<meta property="og:image" content="https://bhuwanjoshi-01.github.io/screenshare-doctor/assets/social-card.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Screenshare Doctor: SMPTE colour bars beside the question why screen sharing fails on a Wayland desktop.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1b1d24">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/red-hat-display.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script src="main.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>Screenshare Doctor</h1>
-    <p class="tagline">Find out why screen sharing fails on your Linux Wayland desktop.</p>
-    <p class="links">
-      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor">Source on GitHub</a>
-      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/troubleshooting.md">Troubleshooting</a>
-      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/portal-routing.md">How routing works</a>
-      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/support-matrix.md">Tested on</a>
-    </p>
-  </header>
 
-  <main>
-    <section>
-      <p>You click <em>Share screen</em> and get no picker, a black frame or the wrong windows. The cause can sit in the
-        app, the xdg-desktop-portal routing, the desktop's portal backend, PipeWire, WirePlumber or the compositor.
-        Screenshare Doctor starts from <strong>the app and what you see</strong>, checks the whole chain without
-        touching it, and tells you which link is broken and how to check the fix.</p>
-      <figure>
-        <img src="assets/troubleshoot.svg" alt="troubleshoot output for Discord with no picker on GNOME: every portal check passes except SSD-PORTAL-002, ScreenCast is disabled by a portals.conf in the user's config folder, and the running portal still uses its old configuration until it is restarted; the most likely cause is named and the restart command shown.">
-        <figcaption>From the real captures of a GNOME 50 machine, with a copied Hyprland <code>portals.conf</code> in
-          <code>~/.config</code>.</figcaption>
+<header class="topbar">
+  <div class="wrap topbar-row">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><use href="assets/favicon.svg#mark"/></svg>
+      Screenshare Doctor
+    </a>
+    <nav aria-label="Page">
+      <a href="#signal">How it checks</a>
+      <a href="#extension">GNOME extension</a>
+      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="title">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <h1 id="title">Find out why screen sharing fails on your Wayland desktop</h1>
+        <p class="lede">You click Share screen and get a black frame, no picker or the wrong windows. Screenshare
+          Doctor starts from the app and what you see, checks every layer from the portal to PipeWire without
+          starting anything, and names the one at fault.</p>
+        <div class="command">
+          <code id="install-command">uv tool install git+https://github.com/BhuwanJoshi-01/screenshare-doctor</code>
+          <button class="copy" type="button" data-copy="install-command">Copy</button>
+        </div>
+<pre class="first-run"><code>screenshare-doctor troubleshoot screenshare --app firefox --symptom black-screen</code></pre>
+      </div>
+
+      <figure class="card" aria-label="A broadcast test card">
+        <div class="bars" aria-hidden="true">
+          <div class="bars-top"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="bars-mid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="bars-low"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="ident"><span>Screen sharing</span><span class="ident-state">no signal</span></p>
+        </div>
+        <figcaption>GNOME, KDE Plasma and Hyprland. Firefox, Chromium, Electron apps and OBS.</figcaption>
       </figure>
-    </section>
+    </div>
+  </section>
 
-    <section>
-      <h2>Install</h2>
-      <pre><code>uv tool install git+https://github.com/BhuwanJoshi-01/screenshare-doctor
-screenshare-doctor troubleshoot screenshare --app firefox --symptom no-picker
-screenshare-doctor doctor</code></pre>
-      <p>Needs Python 3.11 or newer on Linux.</p>
-    </section>
+  <section class="signal" id="signal" aria-labelledby="signal-title">
+    <div class="wrap">
+      <h2 id="signal-title">Follow the signal</h2>
+      <p class="section-lede">From your app to your viewers, a screen share passes through six layers. The
+        symptom tells Screenshare Doctor where to look first. Pick what you see and your desktop.</p>
 
-    <section class="promises">
-      <h2>What it promises</h2>
-      <ul>
-        <li><strong>Passive.</strong> No screen-sharing request, no picker, nothing recorded. A portal that is not
-          running is reported, not started; PipeWire is only asked when it already runs.</li>
-        <li><strong>The portal's own rules.</strong> <code>routes explain</code> follows xdg-desktop-portal's backend
-          selection for your version, then checks the prediction on D-Bus: configured is not the same as working.</li>
-        <li><strong>Unknown is not a pass.</strong> A check that could not run never shows as green.</li>
-        <li><strong>Shareable reports.</strong> Home paths, names, secrets and tokens are redacted before anything is
-          printed, and each report says what was removed.</li>
+      <div class="controls">
+        <fieldset class="choice">
+          <legend>What you see</legend>
+          <div class="choice-row" data-group="symptom"></div>
+        </fieldset>
+        <fieldset class="choice">
+          <legend>Your desktop</legend>
+          <div class="choice-row" data-group="desktop"></div>
+        </fieldset>
+      </div>
+
+      <div class="path-panel">
+        <ol class="path" aria-label="The layers of a screen share, from the app to the stream">
+          <li data-layer="app"><b>Your app</b><span data-field="app">asks to share</span></li>
+          <li data-layer="session"><b>Session</b><span data-field="session">Wayland, D-Bus</span></li>
+          <li data-layer="portal-frontend"><b>Portal</b><span>xdg-desktop-portal</span></li>
+          <li data-layer="portal-backend"><b>Backend</b><span data-field="backend"></span></li>
+          <li data-layer="compositor"><b>Compositor</b><span data-field="compositor"></span></li>
+          <li data-layer="pipewire"><b>PipeWire</b><span>carries the frames</span></li>
+          <li data-layer="wireplumber"><b>WirePlumber</b><span>links the stream</span></li>
+        </ol>
+
+        <div class="readout" aria-live="polite">
+          <p class="readout-title" data-field="symptom-title"></p>
+          <p class="readout-why" data-field="symptom-why"></p>
+          <p class="readout-label">Checked, most likely cause first</p>
+          <ol class="checks" data-field="checks"></ol>
+<pre class="readout-command"><code data-field="command"></code></pre>
+        </div>
+      </div>
+      <noscript><p>The layer diagram needs JavaScript; the <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/apps-and-symptoms.md">symptom guide</a> has the same content.</p></noscript>
+    </div>
+  </section>
+
+  <section class="output" aria-labelledby="output-title">
+    <div class="wrap output-grid">
+      <div>
+        <h2 id="output-title">The layer at fault, with the evidence</h2>
+        <p>A real case on GNOME: Discord shows no picker. Every portal check passes but one: a
+          <code>portals.conf</code> in the user’s config folder switches ScreenCast off, and the running portal
+          keeps its old configuration until it restarts. The report names the file, the line that decides it and
+          the command that fixes it.</p>
+        <p>Each check says whether a backend is <em>predicted</em> by your <code>portals.conf</code> files or
+          <em>observed</em> answering on D-Bus, so you can see a configuration that hasn’t taken effect yet.</p>
+<pre class="listing"><code>screenshare-doctor doctor                    # every check, session to PipeWire
+screenshare-doctor routes explain ScreenCast # which backend, and which line decides it
+screenshare-doctor check desktop             # your setup against the desktop’s defaults
+screenshare-doctor report --output report.md # redacted, ready for a bug tracker</code></pre>
+      </div>
+      <figure class="screen">
+        <img src="assets/troubleshoot.svg" width="1287" height="1099" loading="lazy" alt="troubleshoot output for Discord with no picker on GNOME: every portal check passes except SSD-PORTAL-002, ScreenCast is disabled by a portals.conf in the user's config folder; the most likely cause is named with the restart command.">
+      </figure>
+    </div>
+  </section>
+
+  <section class="promises" aria-labelledby="promises-title">
+    <div class="wrap">
+      <h2 id="promises-title">Passive by default</h2>
+      <ul class="promise-list">
+        <li><b>Nothing opens.</b> No screen-sharing request, no picker, no recording.</li>
+        <li><b>Nothing starts.</b> A portal that isn’t running is reported as such; D-Bus is asked with
+          auto-start off, and PipeWire only when it already runs.</li>
+        <li><b>Nothing changes.</b> No service is restarted, no file is edited, and <code>sudo</code> is never needed.</li>
+        <li><b>Unknown stays unknown.</b> A check that could not run is never shown as passing.</li>
+        <li><b>Safe to paste.</b> User names, home paths and window titles are redacted from every report, JSON
+          included. No network access, no telemetry.</li>
       </ul>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer>
-    <p>MIT licensed. Test reports from KDE Plasma, Hyprland and other desktops are very welcome on
-      <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/issues">GitHub</a>.</p>
-  </footer>
+  <section class="extension" id="extension" aria-labelledby="extension-title">
+    <div class="wrap extension-grid">
+      <div>
+        <h2 id="extension-title">In the GNOME top bar</h2>
+        <p>The GNOME Shell extension shows the result of the same checks whenever you open its menu, and copies a
+          redacted report when you ask. It runs nothing while the menu is closed. It needs the command-line tool
+          and supports GNOME 46 to 50.</p>
+        <p><a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/tree/main/extension">About the extension</a></p>
+      </div>
+      <figure class="menu-figure">
+        <div class="shell-bar" aria-hidden="true">
+          <span>Activities</span><span class="clock">Wed 10:42</span><span class="indicator" title="Screenshare Doctor"></span>
+        </div>
+        <div class="menu" role="img" aria-label="The extension's menu: Screen sharing will not work, 2 problems. FAIL SSD-PORTAL-002, ScreenCast is disabled by a portals.conf. FAIL SSD-DESKTOP-001, the setup differs from GNOME's defaults. Actions: check again, copy a report for a bug tracker.">
+          <p class="menu-head">Screen sharing will not work: 2 problem(s)</p>
+          <p class="menu-context">Wayland · GNOME — 13 pass, 2 fail</p>
+          <hr>
+          <p class="menu-item"><span class="tag tag-fail">FAIL</span> ScreenCast is disabled by a portals.conf</p>
+          <p class="menu-item"><span class="tag tag-fail">FAIL</span> The setup differs from GNOME’s defaults</p>
+          <hr>
+          <p class="menu-action">Check again</p>
+          <p class="menu-action">Copy a report for a bug tracker</p>
+        </div>
+        <figcaption>The menu for the sample report in the repository, drawn for this page.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="tested" aria-labelledby="tested-title">
+    <div class="wrap">
+      <h2 id="tested-title">Tested on real sessions</h2>
+      <p class="section-lede">A desktop is listed as supported only after a run on a real session; the defaults
+        for each come from the desktops’ own source files, with links.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Desktop</th><th scope="col">Where</th><th scope="col">Screen-cast backend</th><th scope="col">Result</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">GNOME 50.1</th><td>Ubuntu 26.04, laptop</td><td><code>xdg-desktop-portal-gnome</code></td><td>every check as documented</td></tr>
+            <tr><th scope="row">KDE Plasma 6.8.2</th><td>Fedora 45, VM</td><td><code>xdg-desktop-portal-kde</code></td><td>every check as documented</td></tr>
+            <tr><th scope="row">Hyprland 0.57.1</th><td>Arch Linux, VM</td><td><code>xdg-desktop-portal-hyprland</code></td><td>every check as documented</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">Using another setup? A <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/issues/new?template=test_report.yml">test report</a>
+        moves it up the <a href="https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/support-matrix.md">support matrix</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-row">
+    <p>The command-line tool is MIT licensed, the GNOME extension GPL-2.0-or-later. Made by
+      <a href="https://github.com/BhuwanJoshi-01">Bhuwan Joshi</a>. This page loads nothing from other sites.</p>
+    <p>Also by the same author: <a href="https://bhuwanjoshi-01.github.io/gpu-stack-inspector/">GPU Stack Inspector</a>
+      and <a href="https://bhuwanjoshi-01.github.io/worktree-shield/">Worktree Shield</a>.</p>
+  </div>
+</footer>
 </body>
 </html>
