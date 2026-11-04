@@ -19,211 +19,211 @@
         font-weight: 700;
     }
 
-    .terminal-3109612509-matrix {
+    .terminal-1315368669-matrix {
         font-family: Fira Code, monospace;
         font-size: 20px;
         line-height: 24.4px;
         font-variant-east-asian: full-width;
     }
 
-    .terminal-3109612509-title {
+    .terminal-1315368669-title {
         font-size: 18px;
         font-weight: bold;
         font-family: arial;
     }
 
-    .terminal-3109612509-r1 { fill: #c5c8c6 }
-.terminal-3109612509-r2 { fill: #c5c8c6;font-weight: bold }
-.terminal-3109612509-r3 { fill: #98a84b }
-.terminal-3109612509-r4 { fill: #cc555a;font-weight: bold }
-.terminal-3109612509-r5 { fill: #868887 }
+    .terminal-1315368669-r1 { fill: #c5c8c6 }
+.terminal-1315368669-r2 { fill: #c5c8c6;font-weight: bold }
+.terminal-1315368669-r3 { fill: #98a84b }
+.terminal-1315368669-r4 { fill: #cc555a;font-weight: bold }
+.terminal-1315368669-r5 { fill: #868887 }
     </style>
 
     <defs>
-    <clipPath id="terminal-3109612509-clip-terminal">
+    <clipPath id="terminal-1315368669-clip-terminal">
       <rect x="0" y="0" width="1267.8" height="1048.2" />
     </clipPath>
-    <clipPath id="terminal-3109612509-line-0">
+    <clipPath id="terminal-1315368669-line-0">
     <rect x="0" y="1.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-1">
+<clipPath id="terminal-1315368669-line-1">
     <rect x="0" y="25.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-2">
+<clipPath id="terminal-1315368669-line-2">
     <rect x="0" y="50.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-3">
+<clipPath id="terminal-1315368669-line-3">
     <rect x="0" y="74.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-4">
+<clipPath id="terminal-1315368669-line-4">
     <rect x="0" y="99.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-5">
+<clipPath id="terminal-1315368669-line-5">
     <rect x="0" y="123.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-6">
+<clipPath id="terminal-1315368669-line-6">
     <rect x="0" y="147.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-7">
+<clipPath id="terminal-1315368669-line-7">
     <rect x="0" y="172.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-8">
+<clipPath id="terminal-1315368669-line-8">
     <rect x="0" y="196.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-9">
+<clipPath id="terminal-1315368669-line-9">
     <rect x="0" y="221.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-10">
+<clipPath id="terminal-1315368669-line-10">
     <rect x="0" y="245.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-11">
+<clipPath id="terminal-1315368669-line-11">
     <rect x="0" y="269.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-12">
+<clipPath id="terminal-1315368669-line-12">
     <rect x="0" y="294.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-13">
+<clipPath id="terminal-1315368669-line-13">
     <rect x="0" y="318.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-14">
+<clipPath id="terminal-1315368669-line-14">
     <rect x="0" y="343.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-15">
+<clipPath id="terminal-1315368669-line-15">
     <rect x="0" y="367.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-16">
+<clipPath id="terminal-1315368669-line-16">
     <rect x="0" y="391.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-17">
+<clipPath id="terminal-1315368669-line-17">
     <rect x="0" y="416.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-18">
+<clipPath id="terminal-1315368669-line-18">
     <rect x="0" y="440.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-19">
+<clipPath id="terminal-1315368669-line-19">
     <rect x="0" y="465.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-20">
+<clipPath id="terminal-1315368669-line-20">
     <rect x="0" y="489.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-21">
+<clipPath id="terminal-1315368669-line-21">
     <rect x="0" y="513.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-22">
+<clipPath id="terminal-1315368669-line-22">
     <rect x="0" y="538.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-23">
+<clipPath id="terminal-1315368669-line-23">
     <rect x="0" y="562.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-24">
+<clipPath id="terminal-1315368669-line-24">
     <rect x="0" y="587.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-25">
+<clipPath id="terminal-1315368669-line-25">
     <rect x="0" y="611.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-26">
+<clipPath id="terminal-1315368669-line-26">
     <rect x="0" y="635.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-27">
+<clipPath id="terminal-1315368669-line-27">
     <rect x="0" y="660.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-28">
+<clipPath id="terminal-1315368669-line-28">
     <rect x="0" y="684.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-29">
+<clipPath id="terminal-1315368669-line-29">
     <rect x="0" y="709.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-30">
+<clipPath id="terminal-1315368669-line-30">
     <rect x="0" y="733.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-31">
+<clipPath id="terminal-1315368669-line-31">
     <rect x="0" y="757.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-32">
+<clipPath id="terminal-1315368669-line-32">
     <rect x="0" y="782.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-33">
+<clipPath id="terminal-1315368669-line-33">
     <rect x="0" y="806.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-34">
+<clipPath id="terminal-1315368669-line-34">
     <rect x="0" y="831.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-35">
+<clipPath id="terminal-1315368669-line-35">
     <rect x="0" y="855.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-36">
+<clipPath id="terminal-1315368669-line-36">
     <rect x="0" y="879.9" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-37">
+<clipPath id="terminal-1315368669-line-37">
     <rect x="0" y="904.3" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-38">
+<clipPath id="terminal-1315368669-line-38">
     <rect x="0" y="928.7" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-39">
+<clipPath id="terminal-1315368669-line-39">
     <rect x="0" y="953.1" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-40">
+<clipPath id="terminal-1315368669-line-40">
     <rect x="0" y="977.5" width="1268.8" height="24.65"/>
             </clipPath>
-<clipPath id="terminal-3109612509-line-41">
+<clipPath id="terminal-1315368669-line-41">
     <rect x="0" y="1001.9" width="1268.8" height="24.65"/>
             </clipPath>
     </defs>
 
-    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1285" height="1097.2" rx="8"/><text class="terminal-3109612509-title" fill="#c5c8c6" text-anchor="middle" x="642" y="27">screenshare-doctor</text>
+    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1285" height="1097.2" rx="8"/><text class="terminal-1315368669-title" fill="#c5c8c6" text-anchor="middle" x="642" y="27">screenshare-doctor</text>
             <g transform="translate(26,22)">
             <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
             <circle cx="22" cy="0" r="7" fill="#febc2e"/>
             <circle cx="44" cy="0" r="7" fill="#28c840"/>
             </g>
         
-    <g transform="translate(9, 41)" clip-path="url(#terminal-3109612509-clip-terminal)">
+    <g transform="translate(9, 41)" clip-path="url(#terminal-1315368669-clip-terminal)">
     
-    <g class="terminal-3109612509-matrix">
-    <text class="terminal-3109612509-r1" x="0" y="20" textLength="963.8" clip-path="url(#terminal-3109612509-line-0)">$&#160;screenshare-doctor&#160;troubleshoot&#160;screenshare&#160;--app&#160;discord&#160;--symptom&#160;no-picker</text><text class="terminal-3109612509-r1" x="1268.8" y="20" textLength="12.2" clip-path="url(#terminal-3109612509-line-0)">
-</text><text class="terminal-3109612509-r2" x="0" y="44.4" textLength="1244.4" clip-path="url(#terminal-3109612509-line-1)">screenshare-doctor&#160;0.1.0:&#160;Electron&#160;apps&#160;(Discord,&#160;Slack,&#160;Teams&#160;for&#160;Linux,&#160;Signal,&#160;VS&#160;Code…):&#160;Clicking&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="44.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-1)">
-</text><text class="terminal-3109612509-r2" x="0" y="68.8" textLength="463.6" clip-path="url(#terminal-3109612509-line-2)">Share&#160;shows&#160;no&#160;screen&#160;or&#160;window&#160;picker</text><text class="terminal-3109612509-r1" x="1268.8" y="68.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-2)">
-</text><text class="terminal-3109612509-r1" x="0" y="93.2" textLength="780.8" clip-path="url(#terminal-3109612509-line-3)">Session:&#160;Wayland&#160;|&#160;Desktop:&#160;GNOME&#160;|&#160;Portal:&#160;1.21.1+ds-1ubuntu3.1</text><text class="terminal-3109612509-r1" x="1268.8" y="93.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-3)">
-</text><text class="terminal-3109612509-r1" x="1268.8" y="117.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-4)">
-</text><text class="terminal-3109612509-r1" x="0" y="142" textLength="1244.4" clip-path="url(#terminal-3109612509-line-5)">The&#160;picker&#160;is&#160;drawn&#160;by&#160;the&#160;portal&#160;backend,&#160;so&#160;when&#160;it&#160;never&#160;appears&#160;the&#160;request&#160;did&#160;not&#160;get&#160;that&#160;far:&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="142" textLength="12.2" clip-path="url(#terminal-3109612509-line-5)">
-</text><text class="terminal-3109612509-r1" x="0" y="166.4" textLength="1244.4" clip-path="url(#terminal-3109612509-line-6)">the&#160;portal&#160;is&#160;not&#160;reachable,&#160;cannot&#160;start,&#160;has&#160;no&#160;backend&#160;for&#160;ScreenCast,&#160;or&#160;the&#160;backend&#160;cannot&#160;reach&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="166.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-6)">
-</text><text class="terminal-3109612509-r1" x="0" y="190.8" textLength="183" clip-path="url(#terminal-3109612509-line-7)">the&#160;compositor.</text><text class="terminal-3109612509-r1" x="1268.8" y="190.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-7)">
-</text><text class="terminal-3109612509-r1" x="1268.8" y="215.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-8)">
-</text><text class="terminal-3109612509-r2" x="0" y="239.6" textLength="402.6" clip-path="url(#terminal-3109612509-line-9)">Checked,&#160;most&#160;likely&#160;cause&#160;first:</text><text class="terminal-3109612509-r1" x="1268.8" y="239.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-9)">
-</text><text class="terminal-3109612509-r3" x="0" y="264" textLength="97.6" clip-path="url(#terminal-3109612509-line-10)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="264" textLength="231.8" clip-path="url(#terminal-3109612509-line-10)">SSD-SESSION-004&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="264" textLength="488" clip-path="url(#terminal-3109612509-line-10)">Portals&#160;see&#160;the&#160;same&#160;desktop&#160;and&#160;display</text><text class="terminal-3109612509-r1" x="1268.8" y="264" textLength="12.2" clip-path="url(#terminal-3109612509-line-10)">
-</text><text class="terminal-3109612509-r3" x="0" y="288.4" textLength="97.6" clip-path="url(#terminal-3109612509-line-11)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="288.4" textLength="231.8" clip-path="url(#terminal-3109612509-line-11)">SSD-SESSION-003&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="288.4" textLength="585.6" clip-path="url(#terminal-3109612509-line-11)">The&#160;portal&#160;reads&#160;the&#160;desktop&#160;names&#160;ubuntu,&#160;gnome</text><text class="terminal-3109612509-r1" x="1268.8" y="288.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-11)">
-</text><text class="terminal-3109612509-r3" x="0" y="312.8" textLength="97.6" clip-path="url(#terminal-3109612509-line-12)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="312.8" textLength="231.8" clip-path="url(#terminal-3109612509-line-12)">SSD-DBUS-001&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="312.8" textLength="280.6" clip-path="url(#terminal-3109612509-line-12)">The&#160;session&#160;bus&#160;answers</text><text class="terminal-3109612509-r1" x="1268.8" y="312.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-12)">
-</text><text class="terminal-3109612509-r3" x="0" y="337.2" textLength="97.6" clip-path="url(#terminal-3109612509-line-13)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="337.2" textLength="231.8" clip-path="url(#terminal-3109612509-line-13)">SSD-PKG-001&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="337.2" textLength="634.4" clip-path="url(#terminal-3109612509-line-13)">xdg-desktop-portal&#160;1.21.1+ds-1ubuntu3.1&#160;is&#160;installed</text><text class="terminal-3109612509-r1" x="1268.8" y="337.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-13)">
-</text><text class="terminal-3109612509-r3" x="0" y="361.6" textLength="97.6" clip-path="url(#terminal-3109612509-line-14)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="361.6" textLength="231.8" clip-path="url(#terminal-3109612509-line-14)">SSD-SERVICE-001&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="361.6" textLength="439.2" clip-path="url(#terminal-3109612509-line-14)">xdg-desktop-portal.service&#160;is&#160;active</text><text class="terminal-3109612509-r1" x="1268.8" y="361.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-14)">
-</text><text class="terminal-3109612509-r3" x="0" y="386" textLength="97.6" clip-path="url(#terminal-3109612509-line-15)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="386" textLength="231.8" clip-path="url(#terminal-3109612509-line-15)">SSD-PORTAL-001&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="386" textLength="597.8" clip-path="url(#terminal-3109612509-line-15)">The&#160;portal&#160;frontend&#160;offers&#160;ScreenCast&#160;(version&#160;5)</text><text class="terminal-3109612509-r1" x="1268.8" y="386" textLength="12.2" clip-path="url(#terminal-3109612509-line-15)">
-</text><text class="terminal-3109612509-r4" x="0" y="410.4" textLength="97.6" clip-path="url(#terminal-3109612509-line-16)">FAIL&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="410.4" textLength="231.8" clip-path="url(#terminal-3109612509-line-16)">SSD-PORTAL-002&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="410.4" textLength="939.4" clip-path="url(#terminal-3109612509-line-16)">ScreenCast&#160;is&#160;disabled&#160;by&#160;a&#160;portals.conf&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="410.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-16)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="434.8" textLength="939.4" clip-path="url(#terminal-3109612509-line-17)">~/.config/xdg-desktop-portal/portals.conf&#160;sets&#160;it&#160;to&#160;none.&#160;The&#160;running&#160;portal</text><text class="terminal-3109612509-r1" x="1268.8" y="434.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-17)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="459.2" textLength="939.4" clip-path="url(#terminal-3109612509-line-18)">still&#160;offers&#160;ScreenCast:&#160;it&#160;reads&#160;its&#160;configuration&#160;only&#160;when&#160;it&#160;starts,&#160;so&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="459.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-18)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="483.6" textLength="939.4" clip-path="url(#terminal-3109612509-line-19)">it&#160;was&#160;started&#160;before&#160;this&#160;changed&#160;and&#160;keeps&#160;the&#160;old&#160;choice&#160;until&#160;it&#160;is&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="483.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-19)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="508" textLength="939.4" clip-path="url(#terminal-3109612509-line-20)">restarted.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="508" textLength="12.2" clip-path="url(#terminal-3109612509-line-20)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="532.4" textLength="939.4" clip-path="url(#terminal-3109612509-line-21)">Next:&#160;Remove&#160;the&#160;none&#160;entry&#160;from&#160;~/.config/xdg-desktop-portal/portals.conf&#160;if</text><text class="terminal-3109612509-r1" x="1268.8" y="532.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-21)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="556.8" textLength="939.4" clip-path="url(#terminal-3109612509-line-22)">it&#160;was&#160;not&#160;meant&#160;to&#160;disable&#160;screen&#160;sharing.&#160;Restart&#160;the&#160;portal&#160;afterwards:&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="556.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-22)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="581.2" textLength="939.4" clip-path="url(#terminal-3109612509-line-23)">systemctl&#160;--user&#160;restart&#160;xdg-desktop-portal.service&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="581.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-23)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="605.6" textLength="939.4" clip-path="url(#terminal-3109612509-line-24)">Check:&#160;screenshare-doctor&#160;routes&#160;explain&#160;ScreenCast&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="605.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-24)">
-</text><text class="terminal-3109612509-r3" x="0" y="630" textLength="97.6" clip-path="url(#terminal-3109612509-line-25)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="630" textLength="231.8" clip-path="url(#terminal-3109612509-line-25)">SSD-PORTAL-003&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="630" textLength="378.2" clip-path="url(#terminal-3109612509-line-25)">Every&#160;portal&#160;file&#160;found&#160;is&#160;read</text><text class="terminal-3109612509-r1" x="1268.8" y="630" textLength="12.2" clip-path="url(#terminal-3109612509-line-25)">
-</text><text class="terminal-3109612509-r4" x="0" y="654.4" textLength="97.6" clip-path="url(#terminal-3109612509-line-26)">FAIL&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="654.4" textLength="231.8" clip-path="url(#terminal-3109612509-line-26)">SSD-DESKTOP-001&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="654.4" textLength="939.4" clip-path="url(#terminal-3109612509-line-26)">The&#160;setup&#160;differs&#160;from&#160;GNOME&#x27;s&#160;defaults&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="654.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-26)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="678.8" textLength="939.4" clip-path="url(#terminal-3109612509-line-27)">ScreenCast&#160;is&#160;routed&#160;to&#160;the&#160;gnome&#160;backend&#160;-&#160;fail&#160;(ScreenCast&#160;is&#160;disabled&#160;by&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="678.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-27)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="703.2" textLength="939.4" clip-path="url(#terminal-3109612509-line-28)">~/.config/xdg-desktop-portal/portals.conf)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="703.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-28)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="727.6" textLength="939.4" clip-path="url(#terminal-3109612509-line-29)">Next:&#160;See&#160;why&#160;ScreenCast&#160;is&#160;not&#160;routed:&#160;screenshare-doctor&#160;routes&#160;explain&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="727.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-29)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="752" textLength="939.4" clip-path="url(#terminal-3109612509-line-30)">ScreenCast&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="752" textLength="12.2" clip-path="url(#terminal-3109612509-line-30)">
-</text><text class="terminal-3109612509-r1" x="329.4" y="776.4" textLength="939.4" clip-path="url(#terminal-3109612509-line-31)">Check:&#160;screenshare-doctor&#160;check&#160;desktop&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="776.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-31)">
-</text><text class="terminal-3109612509-r3" x="0" y="800.8" textLength="97.6" clip-path="url(#terminal-3109612509-line-32)">PASS&#160;&#160;&#160;&#160;</text><text class="terminal-3109612509-r2" x="97.6" y="800.8" textLength="231.8" clip-path="url(#terminal-3109612509-line-32)">SSD-COMPOSITOR-001&#160;</text><text class="terminal-3109612509-r1" x="329.4" y="800.8" textLength="463.6" clip-path="url(#terminal-3109612509-line-32)">org.gnome.Mutter.ScreenCast&#160;is&#160;running</text><text class="terminal-3109612509-r1" x="1268.8" y="800.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-32)">
-</text><text class="terminal-3109612509-r1" x="1268.8" y="825.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-33)">
-</text><text class="terminal-3109612509-r2" x="0" y="849.6" textLength="158.6" clip-path="url(#terminal-3109612509-line-34)">Most&#160;likely:&#160;</text><text class="terminal-3109612509-r1" x="158.6" y="849.6" textLength="683.2" clip-path="url(#terminal-3109612509-line-34)">SSD-PORTAL-002:&#160;ScreenCast&#160;is&#160;disabled&#160;by&#160;a&#160;portals.conf</text><text class="terminal-3109612509-r1" x="1268.8" y="849.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-34)">
-</text><text class="terminal-3109612509-r1" x="1268.8" y="874" textLength="12.2" clip-path="url(#terminal-3109612509-line-35)">
-</text><text class="terminal-3109612509-r2" x="0" y="898.4" textLength="878.4" clip-path="url(#terminal-3109612509-line-36)">About&#160;Electron&#160;apps&#160;(Discord,&#160;Slack,&#160;Teams&#160;for&#160;Linux,&#160;Signal,&#160;VS&#160;Code…):</text><text class="terminal-3109612509-r1" x="1268.8" y="898.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-36)">
-</text><text class="terminal-3109612509-r1" x="0" y="922.8" textLength="1268.8" clip-path="url(#terminal-3109612509-line-37)">&#160;&#160;-&#160;Electron&#160;38&#160;and&#160;later&#160;pick&#160;Wayland&#160;automatically&#160;when&#160;it&#160;is&#160;available&#160;(ELECTRON_OZONE_PLATFORM_HINT&#160;</text><text class="terminal-3109612509-r1" x="1268.8" y="922.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-37)">
-</text><text class="terminal-3109612509-r1" x="0" y="947.2" textLength="1024.8" clip-path="url(#terminal-3109612509-line-38)">is&#160;deprecated);&#160;older&#160;Electron&#160;apps&#160;need&#160;--ozone-platform-hint=auto&#160;to&#160;run&#160;natively.</text><text class="terminal-3109612509-r1" x="1268.8" y="947.2" textLength="12.2" clip-path="url(#terminal-3109612509-line-38)">
-</text><text class="terminal-3109612509-r5" x="0" y="971.6" textLength="963.8" clip-path="url(#terminal-3109612509-line-39)">&#160;&#160;&#160;&#160;Source&#160;(medium&#160;confidence):&#160;https://github.com/electron/electron/pull/48002</text><text class="terminal-3109612509-r1" x="1268.8" y="971.6" textLength="12.2" clip-path="url(#terminal-3109612509-line-39)">
-</text><text class="terminal-3109612509-r1" x="1268.8" y="996" textLength="12.2" clip-path="url(#terminal-3109612509-line-40)">
-</text><text class="terminal-3109612509-r5" x="0" y="1020.4" textLength="939.4" clip-path="url(#terminal-3109612509-line-41)">Nothing&#160;was&#160;started,&#160;changed&#160;or&#160;recorded;&#160;no&#160;screen-sharing&#160;request&#160;was&#160;made.</text><text class="terminal-3109612509-r1" x="1268.8" y="1020.4" textLength="12.2" clip-path="url(#terminal-3109612509-line-41)">
-</text><text class="terminal-3109612509-r5" x="0" y="1044.8" textLength="488" clip-path="url(#terminal-3109612509-line-42)">Redacted&#160;from&#160;this&#160;output:&#160;13&#160;home&#160;paths</text><text class="terminal-3109612509-r1" x="1268.8" y="1044.8" textLength="12.2" clip-path="url(#terminal-3109612509-line-42)">
+    <g class="terminal-1315368669-matrix">
+    <text class="terminal-1315368669-r1" x="0" y="20" textLength="963.8" clip-path="url(#terminal-1315368669-line-0)">$&#160;screenshare-doctor&#160;troubleshoot&#160;screenshare&#160;--app&#160;discord&#160;--symptom&#160;no-picker</text><text class="terminal-1315368669-r1" x="1268.8" y="20" textLength="12.2" clip-path="url(#terminal-1315368669-line-0)">
+</text><text class="terminal-1315368669-r2" x="0" y="44.4" textLength="1244.4" clip-path="url(#terminal-1315368669-line-1)">screenshare-doctor&#160;0.1.0:&#160;Electron&#160;apps&#160;(Discord,&#160;Slack,&#160;Teams&#160;for&#160;Linux,&#160;Signal,&#160;VS&#160;Code…):&#160;Clicking&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="44.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-1)">
+</text><text class="terminal-1315368669-r2" x="0" y="68.8" textLength="463.6" clip-path="url(#terminal-1315368669-line-2)">Share&#160;shows&#160;no&#160;screen&#160;or&#160;window&#160;picker</text><text class="terminal-1315368669-r1" x="1268.8" y="68.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-2)">
+</text><text class="terminal-1315368669-r1" x="0" y="93.2" textLength="780.8" clip-path="url(#terminal-1315368669-line-3)">Session:&#160;Wayland&#160;|&#160;Desktop:&#160;GNOME&#160;|&#160;Portal:&#160;1.21.1+ds-1ubuntu3.1</text><text class="terminal-1315368669-r1" x="1268.8" y="93.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-3)">
+</text><text class="terminal-1315368669-r1" x="1268.8" y="117.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-4)">
+</text><text class="terminal-1315368669-r1" x="0" y="142" textLength="1244.4" clip-path="url(#terminal-1315368669-line-5)">The&#160;picker&#160;is&#160;drawn&#160;by&#160;the&#160;portal&#160;backend,&#160;so&#160;when&#160;it&#160;never&#160;appears&#160;the&#160;request&#160;did&#160;not&#160;get&#160;that&#160;far:&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="142" textLength="12.2" clip-path="url(#terminal-1315368669-line-5)">
+</text><text class="terminal-1315368669-r1" x="0" y="166.4" textLength="1244.4" clip-path="url(#terminal-1315368669-line-6)">the&#160;portal&#160;is&#160;not&#160;reachable,&#160;cannot&#160;start,&#160;has&#160;no&#160;backend&#160;for&#160;ScreenCast,&#160;or&#160;the&#160;backend&#160;cannot&#160;reach&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="166.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-6)">
+</text><text class="terminal-1315368669-r1" x="0" y="190.8" textLength="183" clip-path="url(#terminal-1315368669-line-7)">the&#160;compositor.</text><text class="terminal-1315368669-r1" x="1268.8" y="190.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-7)">
+</text><text class="terminal-1315368669-r1" x="1268.8" y="215.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-8)">
+</text><text class="terminal-1315368669-r2" x="0" y="239.6" textLength="402.6" clip-path="url(#terminal-1315368669-line-9)">Checked,&#160;most&#160;likely&#160;cause&#160;first:</text><text class="terminal-1315368669-r1" x="1268.8" y="239.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-9)">
+</text><text class="terminal-1315368669-r3" x="0" y="264" textLength="134.2" clip-path="url(#terminal-1315368669-line-10)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="264" textLength="231.8" clip-path="url(#terminal-1315368669-line-10)">SSD-SESSION-004&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="264" textLength="488" clip-path="url(#terminal-1315368669-line-10)">Portals&#160;see&#160;the&#160;same&#160;desktop&#160;and&#160;display</text><text class="terminal-1315368669-r1" x="1268.8" y="264" textLength="12.2" clip-path="url(#terminal-1315368669-line-10)">
+</text><text class="terminal-1315368669-r3" x="0" y="288.4" textLength="134.2" clip-path="url(#terminal-1315368669-line-11)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="288.4" textLength="231.8" clip-path="url(#terminal-1315368669-line-11)">SSD-SESSION-003&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="288.4" textLength="585.6" clip-path="url(#terminal-1315368669-line-11)">The&#160;portal&#160;reads&#160;the&#160;desktop&#160;names&#160;ubuntu,&#160;gnome</text><text class="terminal-1315368669-r1" x="1268.8" y="288.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-11)">
+</text><text class="terminal-1315368669-r3" x="0" y="312.8" textLength="134.2" clip-path="url(#terminal-1315368669-line-12)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="312.8" textLength="231.8" clip-path="url(#terminal-1315368669-line-12)">SSD-DBUS-001&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="312.8" textLength="280.6" clip-path="url(#terminal-1315368669-line-12)">The&#160;session&#160;bus&#160;answers</text><text class="terminal-1315368669-r1" x="1268.8" y="312.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-12)">
+</text><text class="terminal-1315368669-r3" x="0" y="337.2" textLength="134.2" clip-path="url(#terminal-1315368669-line-13)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="337.2" textLength="231.8" clip-path="url(#terminal-1315368669-line-13)">SSD-PKG-001&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="337.2" textLength="634.4" clip-path="url(#terminal-1315368669-line-13)">xdg-desktop-portal&#160;1.21.1+ds-1ubuntu3.1&#160;is&#160;installed</text><text class="terminal-1315368669-r1" x="1268.8" y="337.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-13)">
+</text><text class="terminal-1315368669-r3" x="0" y="361.6" textLength="134.2" clip-path="url(#terminal-1315368669-line-14)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="361.6" textLength="231.8" clip-path="url(#terminal-1315368669-line-14)">SSD-SERVICE-001&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="361.6" textLength="439.2" clip-path="url(#terminal-1315368669-line-14)">xdg-desktop-portal.service&#160;is&#160;active</text><text class="terminal-1315368669-r1" x="1268.8" y="361.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-14)">
+</text><text class="terminal-1315368669-r3" x="0" y="386" textLength="134.2" clip-path="url(#terminal-1315368669-line-15)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="386" textLength="231.8" clip-path="url(#terminal-1315368669-line-15)">SSD-PORTAL-001&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="386" textLength="597.8" clip-path="url(#terminal-1315368669-line-15)">The&#160;portal&#160;frontend&#160;offers&#160;ScreenCast&#160;(version&#160;5)</text><text class="terminal-1315368669-r1" x="1268.8" y="386" textLength="12.2" clip-path="url(#terminal-1315368669-line-15)">
+</text><text class="terminal-1315368669-r4" x="0" y="410.4" textLength="134.2" clip-path="url(#terminal-1315368669-line-16)">FAIL&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="410.4" textLength="231.8" clip-path="url(#terminal-1315368669-line-16)">SSD-PORTAL-002&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="410.4" textLength="902.8" clip-path="url(#terminal-1315368669-line-16)">ScreenCast&#160;is&#160;disabled&#160;by&#160;a&#160;portals.conf&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="410.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-16)">
+</text><text class="terminal-1315368669-r1" x="366" y="434.8" textLength="902.8" clip-path="url(#terminal-1315368669-line-17)">~/.config/xdg-desktop-portal/portals.conf&#160;sets&#160;it&#160;to&#160;none.&#160;The&#160;running&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="434.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-17)">
+</text><text class="terminal-1315368669-r1" x="366" y="459.2" textLength="902.8" clip-path="url(#terminal-1315368669-line-18)">portal&#160;still&#160;offers&#160;ScreenCast:&#160;it&#160;reads&#160;its&#160;configuration&#160;only&#160;when&#160;it&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="459.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-18)">
+</text><text class="terminal-1315368669-r1" x="366" y="483.6" textLength="902.8" clip-path="url(#terminal-1315368669-line-19)">starts,&#160;so&#160;it&#160;was&#160;started&#160;before&#160;this&#160;changed&#160;and&#160;keeps&#160;the&#160;old&#160;choice&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="483.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-19)">
+</text><text class="terminal-1315368669-r1" x="366" y="508" textLength="902.8" clip-path="url(#terminal-1315368669-line-20)">until&#160;it&#160;is&#160;restarted.&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="508" textLength="12.2" clip-path="url(#terminal-1315368669-line-20)">
+</text><text class="terminal-1315368669-r1" x="366" y="532.4" textLength="902.8" clip-path="url(#terminal-1315368669-line-21)">Next:&#160;Remove&#160;the&#160;none&#160;entry&#160;from&#160;~/.config/xdg-desktop-portal/portals.conf</text><text class="terminal-1315368669-r1" x="1268.8" y="532.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-21)">
+</text><text class="terminal-1315368669-r1" x="366" y="556.8" textLength="902.8" clip-path="url(#terminal-1315368669-line-22)">if&#160;it&#160;was&#160;not&#160;meant&#160;to&#160;disable&#160;screen&#160;sharing.&#160;Restart&#160;the&#160;portal&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="556.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-22)">
+</text><text class="terminal-1315368669-r1" x="366" y="581.2" textLength="902.8" clip-path="url(#terminal-1315368669-line-23)">afterwards:&#160;systemctl&#160;--user&#160;restart&#160;xdg-desktop-portal.service&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="581.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-23)">
+</text><text class="terminal-1315368669-r1" x="366" y="605.6" textLength="902.8" clip-path="url(#terminal-1315368669-line-24)">Check:&#160;screenshare-doctor&#160;routes&#160;explain&#160;ScreenCast&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="605.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-24)">
+</text><text class="terminal-1315368669-r3" x="0" y="630" textLength="134.2" clip-path="url(#terminal-1315368669-line-25)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="630" textLength="231.8" clip-path="url(#terminal-1315368669-line-25)">SSD-PORTAL-003&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="630" textLength="378.2" clip-path="url(#terminal-1315368669-line-25)">Every&#160;portal&#160;file&#160;found&#160;is&#160;read</text><text class="terminal-1315368669-r1" x="1268.8" y="630" textLength="12.2" clip-path="url(#terminal-1315368669-line-25)">
+</text><text class="terminal-1315368669-r4" x="0" y="654.4" textLength="134.2" clip-path="url(#terminal-1315368669-line-26)">FAIL&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="654.4" textLength="231.8" clip-path="url(#terminal-1315368669-line-26)">SSD-DESKTOP-001&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="366" y="654.4" textLength="902.8" clip-path="url(#terminal-1315368669-line-26)">The&#160;setup&#160;differs&#160;from&#160;GNOME&#x27;s&#160;defaults&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="654.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-26)">
+</text><text class="terminal-1315368669-r1" x="366" y="678.8" textLength="902.8" clip-path="url(#terminal-1315368669-line-27)">ScreenCast&#160;is&#160;routed&#160;to&#160;the&#160;gnome&#160;backend&#160;-&#160;fail&#160;(ScreenCast&#160;is&#160;disabled&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="678.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-27)">
+</text><text class="terminal-1315368669-r1" x="366" y="703.2" textLength="902.8" clip-path="url(#terminal-1315368669-line-28)">by&#160;~/.config/xdg-desktop-portal/portals.conf)&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="703.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-28)">
+</text><text class="terminal-1315368669-r1" x="366" y="727.6" textLength="902.8" clip-path="url(#terminal-1315368669-line-29)">Next:&#160;See&#160;why&#160;ScreenCast&#160;is&#160;not&#160;routed:&#160;screenshare-doctor&#160;routes&#160;explain&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="727.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-29)">
+</text><text class="terminal-1315368669-r1" x="366" y="752" textLength="902.8" clip-path="url(#terminal-1315368669-line-30)">ScreenCast&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="752" textLength="12.2" clip-path="url(#terminal-1315368669-line-30)">
+</text><text class="terminal-1315368669-r1" x="366" y="776.4" textLength="902.8" clip-path="url(#terminal-1315368669-line-31)">Check:&#160;screenshare-doctor&#160;check&#160;desktop&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="776.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-31)">
+</text><text class="terminal-1315368669-r3" x="0" y="800.8" textLength="134.2" clip-path="url(#terminal-1315368669-line-32)">PASS&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text><text class="terminal-1315368669-r2" x="134.2" y="800.8" textLength="231.8" clip-path="url(#terminal-1315368669-line-32)">SSD-COMPOSITOR-001&#160;</text><text class="terminal-1315368669-r1" x="366" y="800.8" textLength="463.6" clip-path="url(#terminal-1315368669-line-32)">org.gnome.Mutter.ScreenCast&#160;is&#160;running</text><text class="terminal-1315368669-r1" x="1268.8" y="800.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-32)">
+</text><text class="terminal-1315368669-r1" x="1268.8" y="825.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-33)">
+</text><text class="terminal-1315368669-r2" x="0" y="849.6" textLength="158.6" clip-path="url(#terminal-1315368669-line-34)">Most&#160;likely:&#160;</text><text class="terminal-1315368669-r1" x="158.6" y="849.6" textLength="683.2" clip-path="url(#terminal-1315368669-line-34)">SSD-PORTAL-002:&#160;ScreenCast&#160;is&#160;disabled&#160;by&#160;a&#160;portals.conf</text><text class="terminal-1315368669-r1" x="1268.8" y="849.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-34)">
+</text><text class="terminal-1315368669-r1" x="1268.8" y="874" textLength="12.2" clip-path="url(#terminal-1315368669-line-35)">
+</text><text class="terminal-1315368669-r2" x="0" y="898.4" textLength="878.4" clip-path="url(#terminal-1315368669-line-36)">About&#160;Electron&#160;apps&#160;(Discord,&#160;Slack,&#160;Teams&#160;for&#160;Linux,&#160;Signal,&#160;VS&#160;Code…):</text><text class="terminal-1315368669-r1" x="1268.8" y="898.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-36)">
+</text><text class="terminal-1315368669-r1" x="0" y="922.8" textLength="1268.8" clip-path="url(#terminal-1315368669-line-37)">&#160;&#160;-&#160;Electron&#160;38&#160;and&#160;later&#160;pick&#160;Wayland&#160;automatically&#160;when&#160;it&#160;is&#160;available&#160;(ELECTRON_OZONE_PLATFORM_HINT&#160;</text><text class="terminal-1315368669-r1" x="1268.8" y="922.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-37)">
+</text><text class="terminal-1315368669-r1" x="0" y="947.2" textLength="1024.8" clip-path="url(#terminal-1315368669-line-38)">is&#160;deprecated);&#160;older&#160;Electron&#160;apps&#160;need&#160;--ozone-platform-hint=auto&#160;to&#160;run&#160;natively.</text><text class="terminal-1315368669-r1" x="1268.8" y="947.2" textLength="12.2" clip-path="url(#terminal-1315368669-line-38)">
+</text><text class="terminal-1315368669-r5" x="0" y="971.6" textLength="963.8" clip-path="url(#terminal-1315368669-line-39)">&#160;&#160;&#160;&#160;Source&#160;(medium&#160;confidence):&#160;https://github.com/electron/electron/pull/48002</text><text class="terminal-1315368669-r1" x="1268.8" y="971.6" textLength="12.2" clip-path="url(#terminal-1315368669-line-39)">
+</text><text class="terminal-1315368669-r1" x="1268.8" y="996" textLength="12.2" clip-path="url(#terminal-1315368669-line-40)">
+</text><text class="terminal-1315368669-r5" x="0" y="1020.4" textLength="939.4" clip-path="url(#terminal-1315368669-line-41)">Nothing&#160;was&#160;started,&#160;changed&#160;or&#160;recorded;&#160;no&#160;screen-sharing&#160;request&#160;was&#160;made.</text><text class="terminal-1315368669-r1" x="1268.8" y="1020.4" textLength="12.2" clip-path="url(#terminal-1315368669-line-41)">
+</text><text class="terminal-1315368669-r5" x="0" y="1044.8" textLength="488" clip-path="url(#terminal-1315368669-line-42)">Redacted&#160;from&#160;this&#160;output:&#160;13&#160;home&#160;paths</text><text class="terminal-1315368669-r1" x="1268.8" y="1044.8" textLength="12.2" clip-path="url(#terminal-1315368669-line-42)">
 </text>
     </g>
     </g>

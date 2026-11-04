@@ -45,7 +45,7 @@ def render_troubleshooting(
             rule = rules.get(finding.id)
             if rule is not None:
                 for paragraph in rule.explanation.split("\n\n"):
-                    console.print(Text(" " * 27 + " ".join(paragraph.split()), style="dim"))
+                    console.print(Text(" " * 30 + " ".join(paragraph.split()), style="dim"))
     console.print()
     if result.likely is not None:
         console.print(

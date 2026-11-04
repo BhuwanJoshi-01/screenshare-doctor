@@ -123,7 +123,7 @@ def render_finding(finding: Finding, console: Console, *, details: bool = False)
     if finding.caused_by:
         summary += f" (follows from {finding.caused_by})"
     grid = Table.grid(padding=(0, 0))
-    grid.add_column(width=8, no_wrap=True)
+    grid.add_column(width=11, no_wrap=True)
     grid.add_column(width=19, no_wrap=True)
     grid.add_column(ratio=1)
     grid.add_row(

@@ -40,8 +40,8 @@ def _render(snapshot: Snapshot, *, show_all: bool = False) -> str:
 def test_real_machine_report() -> None:
     out = _render(_real())
     assert "Session: Wayland | Desktop: GNOME | Portal: 1.21.1+ds-1ubuntu3.1" in out
-    assert "PASS    SSD-SESSION-001    Wayland session" in out
-    assert "PASS    SSD-WP-001         WirePlumber is connected to PipeWire" in out
+    assert "PASS       SSD-SESSION-001    Wayland session" in out
+    assert "PASS       SSD-WP-001         WirePlumber is connected to PipeWire" in out
     assert "Summary: 15 pass, 0 warn, 0 fail, 0 unknown" in out
     assert "Nothing was started, changed or recorded" in out
     assert "Next:" not in out  # passes get one line only
@@ -60,7 +60,7 @@ def test_failures_show_reason_next_step_and_check() -> None:
         limitations=("Only the newest rules were applied.",),
     )
     out = _render(Snapshot(tool_version="0.1.0", created_at="x", findings=(finding,)))
-    assert "FAIL    SSD-PORTAL-002     No installed backend implements ScreenCast" in out
+    assert "FAIL       SSD-PORTAL-002     No installed backend implements ScreenCast" in out
     assert "Nothing leads to a backend." in out
     assert "Next: Install your desktop's portal backend." in out
     assert "Check: screenshare-doctor routes explain" in out
@@ -71,7 +71,7 @@ def test_failures_show_reason_next_step_and_check() -> None:
 def test_cascade_is_folded_under_its_root_cause() -> None:
     snapshot = diagnose(dataclasses.replace(gnome_snapshot(), dbus=DbusFacts(reachable=False)))
     out = _render(snapshot)
-    assert "FAIL    SSD-DBUS-001       The session bus does not answer" in out
+    assert "FAIL       SSD-DBUS-001       The session bus does not answer" in out
     assert "SSD-PORTAL-001" not in out
     assert "follow from the ones above and are not shown (--all shows them)" in out
     everything = _render(snapshot, show_all=True)
@@ -97,7 +97,6 @@ def test_headline_without_facts_is_empty() -> None:
     assert headline(Snapshot(tool_version="0.1.0", created_at="x")) == ""
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-008")
 def test_not_tested_label_is_not_cut(capsys: pytest.CaptureFixture[str]) -> None:
     # Seen on Hyprland: "NOT TESTED" did not fit the 8-character status column.
     finding = Finding(
