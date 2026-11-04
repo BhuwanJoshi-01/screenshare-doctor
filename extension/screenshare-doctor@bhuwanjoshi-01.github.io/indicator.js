@@ -7,7 +7,7 @@ import St from 'gi://St';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import {findCli, runCli} from './cli.js';
+import {findCli, isCancelled, runCli} from './cli.js';
 import {IDLE_ICON, parseReport, summarize} from './report.js';
 
 const PROJECT_URI = 'https://github.com/BhuwanJoshi-01/screenshare-doctor';
@@ -18,8 +18,8 @@ function copyToClipboard(text) {
     St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, text);
 }
 
-function logFailure(e) {
-    console.error(`[screenshare-doctor] ${e.message}`);
+function openUri(uri) {
+    Gio.AppInfo.launch_default_for_uri_async(uri, null, null, null);
 }
 
 export const DoctorIndicator = GObject.registerClass(
@@ -28,7 +28,7 @@ class DoctorIndicator extends PanelMenu.Button {
         super._init(0.0, extension.metadata.name);
         this._settings = extension.getSettings();
         this._cancellable = new Gio.Cancellable();
-        this._running = false;
+        this._check = null;
 
         this._icon = new St.Icon({icon_name: IDLE_ICON, style_class: 'system-status-icon'});
         this.add_child(this._icon);
@@ -44,86 +44,79 @@ class DoctorIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._problems);
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        // Shown when the tool is installed.
-        this._actions = new PopupMenu.PopupMenuSection();
-        this._actions.addAction('Check again', () => this._refresh());
-        this._actions.addAction('Copy a report for a bug tracker', () => this._copyReport());
-        this.menu.addMenuItem(this._actions);
-        // Shown when it is not.
-        this._install = new PopupMenu.PopupMenuSection();
-        this._install.addAction(`Copy the install command (${INSTALL_COMMAND})`, () => {
-            copyToClipboard(INSTALL_COMMAND);
-        });
-        this._install.addAction('Open the project page', () => {
-            Gio.AppInfo.launch_default_for_uri_async(PROJECT_URI, null, null, null);
-        });
-        this._install.actor.visible = false;
-        this.menu.addMenuItem(this._install);
-        this.menu.addAction('Open the troubleshooting guide', () => {
-            Gio.AppInfo.launch_default_for_uri_async(GUIDE_URI, null, null, null);
-        });
+        this._toolActions = new PopupMenu.PopupMenuSection();
+        this._toolActions.addAction('Check again', () => this._refresh());
+        this._toolActions.addAction('Copy a report for a bug tracker', () => this._copyReport());
+        this.menu.addMenuItem(this._toolActions);
+        this._installActions = new PopupMenu.PopupMenuSection();
+        this._installActions.addAction(`Copy the install command (${INSTALL_COMMAND})`,
+            () => copyToClipboard(INSTALL_COMMAND));
+        this._installActions.addAction('Open the project page', () => openUri(PROJECT_URI));
+        this._installActions.actor.visible = false;
+        this.menu.addMenuItem(this._installActions);
+        this.menu.addAction('Open the troubleshooting guide', () => openUri(GUIDE_URI));
 
-        // The check runs only when someone opens the menu: never in the background.
-        this.menu.connect('open-state-changed', (_menu, open) => {
+        this.menu.connectObject('open-state-changed', (_menu, open) => {
             if (open)
                 this._refresh();
-        });
+        }, this);
     }
 
     destroy() {
         this._cancellable.cancel();
+        this._cancellable = null;
         this._settings = null;
         super.destroy();
     }
 
-    async _refresh() {
-        if (this._running)
-            return;
-        const cli = findCli(this._settings.get_string('cli-path'));
-        this._install.actor.visible = cli === null;
-        this._actions.actor.visible = cli !== null;
+    _cliPath() {
+        return findCli(this._settings.get_string('cli-path'));
+    }
+
+    _refresh() {
+        this._check ??= this._runCheck().finally(() => {
+            this._check = null;
+        });
+    }
+
+    async _runCheck() {
+        const cli = this._cliPath();
+        this._installActions.actor.visible = cli === null;
+        this._toolActions.actor.visible = cli !== null;
         if (cli === null) {
             this._showError('screenshare-doctor is not installed');
             this._context.label.text = 'The extension shows what the command-line tool finds.';
             return;
         }
-        this._running = true;
         this._header.label.text = 'Checking screen sharing…';
-        let view;
         try {
             const output = await runCli(cli, ['doctor', '--format', 'json'], this._cancellable);
-            view = summarize(parseReport(output));
+            this._show(summarize(parseReport(output)));
         } catch (e) {
-            if (!this._cancellable.is_cancelled()) {
-                this._showError(`The check failed: ${e.message}`);
-                logFailure(e);
-            }
-            return;
-        } finally {
-            this._running = false;
+            this._reportFailure('The check failed', e, message => this._showError(message));
         }
-        // the indicator may have been destroyed while the tool was running
-        if (this._cancellable.is_cancelled())
-            return;
-        this._show(view);
     }
 
-    // The Markdown report is redacted by the tool itself (home paths, names, secrets).
     async _copyReport() {
-        const cli = findCli(this._settings.get_string('cli-path'));
+        const cli = this._cliPath();
         if (cli === null)
             return;
         this._header.label.text = 'Writing the report…';
         try {
             copyToClipboard(await runCli(cli, ['report'], this._cancellable));
-            if (!this._cancellable.is_cancelled())
-                this._header.label.text = 'Report copied; read it before you share it';
+            this._header.label.text = 'Report copied; read it before you share it';
         } catch (e) {
-            if (!this._cancellable.is_cancelled()) {
-                this._header.label.text = `The report failed: ${e.message}`;
-                logFailure(e);
-            }
+            this._reportFailure('The report failed', e, message => {
+                this._header.label.text = message;
+            });
         }
+    }
+
+    _reportFailure(what, error, show) {
+        if (isCancelled(error))
+            return;
+        show(`${what}: ${error.message}`);
+        console.error(`[screenshare-doctor] ${error.message}`);
     }
 
     _show(view) {
@@ -132,21 +125,16 @@ class DoctorIndicator extends PanelMenu.Button {
         this._context.label.text = [view.context, view.counts].filter(Boolean).join(' — ');
         this._problems.removeAll();
         for (const problem of view.problems) {
-            const item = new PopupMenu.PopupMenuItem(`${problem.label}  ${problem.summary}`, {
-                reactive: false,
-                style_class: `ssd-problem ssd-${problem.status}`,
-            });
-            item.label.clutter_text.line_wrap = true;
-            this._problems.addMenuItem(item);
-            if (problem.next) {
-                const next = new PopupMenu.PopupMenuItem(problem.next, {
-                    reactive: false,
-                    style_class: 'ssd-next',
-                });
-                next.label.clutter_text.line_wrap = true;
-                this._problems.addMenuItem(next);
-            }
+            this._addProblemLine(`${problem.label}  ${problem.summary}`, `ssd-problem ssd-${problem.status}`);
+            if (problem.next)
+                this._addProblemLine(problem.next, 'ssd-next');
         }
+    }
+
+    _addProblemLine(text, styleClass) {
+        const item = new PopupMenu.PopupMenuItem(text, {reactive: false, style_class: styleClass});
+        item.label.clutter_text.line_wrap = true;
+        this._problems.addMenuItem(item);
     }
 
     _showError(message) {
