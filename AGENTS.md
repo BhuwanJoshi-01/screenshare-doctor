@@ -107,7 +107,9 @@ copy on purpose.
 - Redact before serializing (user names, home paths, window titles, app names nobody asked about).
 - Finding codes are `SSD-*`; requirement IDs are `WLD-0xx`.
 - Extension: no synchronous spawn, no polling, every main-loop source removed in disable(), clipboard
-  write-only and declared in metadata.json; Shexli must stay at the one known manual-review item.
+  write-only and declared in metadata.json; Shexli must stay at the one known manual-review item (CI fails
+  otherwise). Follow the EGO best-practices guide: no lifecycle flags, `connectObject`, cleanup in the class that
+  created the resource.
 - Tests first where possible: `@pytest.mark.xfail(strict=True, reason="WLD-0xx")`, then implement and drop the
   marker.
 

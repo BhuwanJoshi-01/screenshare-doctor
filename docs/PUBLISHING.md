@@ -58,7 +58,8 @@ by the maintainer, from their account. Each GitHub release also carries the zip.
 2. Check and pack:
 
    ```bash
-   scripts/test-extension-nested.sh     # enable, preferences, disable in a headless nested shell
+   scripts/test-extension-nested.sh     # headless nested shell: enable, preferences, a real check from
+                                        # the menu, disable during a running check (it must be killed)
    scripts/pack-extension.sh            # dist/screenshare-doctor@bhuwanjoshi-01.github.io.shell-extension.zip
    ```
 
@@ -74,8 +75,12 @@ by the maintainer, from their account. Each GitHub release also carries the zip.
   removes the only main-loop source (the 60-second kill timeout of a running check) at once and force-exits a running
   child.
 - **Clipboard.** Write only, on an explicit menu action (copy the report, copy the install command); declared in the
-  description. Never read.
+  description. Never read, never shared with anyone, and there are no keyboard shortcuts.
 - **No bundled binaries**, no network access, no telemetry. Settings: one GSettings key (`cli-path`).
 - **Session modes.** No `session-modes` key: the extension runs in the user session only and is disabled on the lock
   screen.
-- **Shexli** reports one manual-review item, EGO-A-005, for the declared clipboard use.
+- **Shexli** reports one manual-review item, EGO-A-005, for the declared clipboard use; CI fails on any other
+  finding.
+- **Best practices.** The code follows the [EGO best practices](https://gjs.guide/extensions/review-guidelines/best-practices.html):
+  no lifecycle flags (a cancelled run is recognised by its `Gio.IOErrorEnum.CANCELLED` error), `connectObject` for
+  the menu signal, `destroy()` cancels first and calls `super.destroy()` last, the schema ID only in `metadata.json`.
