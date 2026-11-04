@@ -303,3 +303,30 @@ def test_desktop_evidence_survives_redaction(real: Snapshot) -> None:
     assert not any(item.kind == "secret_value" for item in redacted.redactions)
     desktop = next(f for f in redacted.findings if f.id == "SSD-DESKTOP-001")
     assert desktop.evidence[4].value == "running (pass)"
+
+
+@pytest.mark.xfail(strict=True, reason="WLD-010")
+def test_wireplumber_that_starts_with_pipewire_passes() -> None:
+    # Arch with Hyprland: PipeWire is socket-activated and wireplumber.service is enabled
+    # (WantedBy=pipewire.service), so it starts together with PipeWire.
+    services = ServiceFacts(
+        services=(
+            UserService("pipewire.service", "loaded", "inactive", unit_file_state="disabled"),
+            UserService("pipewire.socket", "loaded", "active", unit_file_state="enabled"),
+            UserService("wireplumber.service", "loaded", "inactive", unit_file_state="enabled"),
+        )
+    )
+    finding = _pipewire_case(SKIPPED, services)["SSD-WP-001"]
+    assert finding.status is Status.PASS
+    assert finding.summary == "WirePlumber starts with PipeWire"
+    assert finding.limitations
+
+
+def test_wireplumber_that_is_not_enabled_stays_unknown() -> None:
+    services = ServiceFacts(
+        services=(
+            UserService("pipewire.socket", "loaded", "active", unit_file_state="enabled"),
+            UserService("wireplumber.service", "loaded", "inactive", unit_file_state="disabled"),
+        )
+    )
+    assert _pipewire_case(SKIPPED, services)["SSD-WP-001"].status is Status.UNKNOWN
