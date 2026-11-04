@@ -43,4 +43,5 @@ falls back to the deprecated `UseIn` key of the `.portal` files, then to gtk (se
 5. The backend is running or can be started on the session bus.
 6. The compositor service the backend needs is running (GNOME only).
 
-Only GNOME is tested on a real session so far; KDE Plasma and Hyprland follow (see the roadmap).
+GNOME, KDE Plasma and Hyprland are tested on real sessions ([support matrix](support-matrix.md)); wlroots
+compositors are not yet.

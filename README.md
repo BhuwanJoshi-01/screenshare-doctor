@@ -17,8 +17,8 @@ screenshare-doctor routes explain ScreenCast     # which portal backend handles 
 screenshare-doctor report --output screenshare-report.md   # redacted, safe to paste
 ```
 
-GNOME comes first, then KDE Plasma and Hyprland. A desktop is listed as supported only after a test on a real
-session.
+It is tested on real GNOME, KDE Plasma and Hyprland sessions. A desktop is listed as supported only after such a
+test.
 
 What works already (see the [command reference](docs/cli.md)):
 
@@ -58,8 +58,9 @@ A small top-bar indicator shows the result of `doctor` whenever you open its men
 
 ## Tested on
 
-GNOME 50.1 on Ubuntu 26.04 (Wayland). KDE Plasma and Hyprland are next; until then their checks rest on upstream
-sources and synthetic fixtures. See the [support matrix](docs/support-matrix.md) and [privacy](docs/privacy.md).
+Real Wayland sessions of GNOME 50.1 (Ubuntu 26.04), KDE Plasma 6.8.2 (Fedora 45, in a VM) and Hyprland 0.57.1 (Arch
+Linux, in a VM). wlroots compositors such as sway are covered by upstream defaults only. See the
+[support matrix](docs/support-matrix.md) and [privacy](docs/privacy.md).
 
 ## Alternatives
 
