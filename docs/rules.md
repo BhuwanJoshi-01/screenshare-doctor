@@ -20,11 +20,11 @@ check from an unreachable session bus); `doctor` then shows only the root cause 
 | `SSD-PORTAL-001` | portal-frontend | The frontend runs or can start, and offers ScreenCast |
 | `SSD-PORTAL-002` | portal-backend | The configured ScreenCast backend exists and the bus confirms it can answer |
 | `SSD-PORTAL-003` | portal-frontend | No `portals.conf` or `.portal` file is silently ignored |
-| `SSD-PORTAL-004` | portal-backend | The backend can share single windows (AvailableSourceTypes includes "window") |
+| `SSD-PORTAL-004` | portal-backend | The backend can share single windows (AvailableSourceTypes includes "window"); not tested while the portal is not running |
 | `SSD-DESKTOP-001` | portal-backend | The setup matches the desktop's defaults ([what they are](desktops.md)) |
 | `SSD-COMPOSITOR-001` | compositor | The compositor service the backend captures from runs (Mutter's on GNOME) |
 | `SSD-PW-001` | pipewire | PipeWire answers, or will start on demand through `pipewire.socket` |
-| `SSD-WP-001` | wireplumber | WirePlumber is running and connected to PipeWire |
+| `SSD-WP-001` | wireplumber | WirePlumber is running and connected to PipeWire, or enabled to start with it |
 
 Every finding names its evidence, the next step (only ever printed, never run) and a command to check the result
 afterwards. Codes are stable; a check that is removed keeps its code unused.
