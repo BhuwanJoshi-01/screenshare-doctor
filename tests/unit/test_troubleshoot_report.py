@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 from rich.console import Console
 
 from screenshare_doctor.models import Confidence, Finding, Severity, Snapshot, Status
@@ -43,7 +42,6 @@ PASSING = (
 )
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_checks_that_did_not_run_are_named_instead_of_blaming_the_app() -> None:
     not_run = _finding(
         "SSD-PORTAL-004",
