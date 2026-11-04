@@ -8,7 +8,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import System from 'system';
 
-import {findCli, runCli} from '../screenshare-doctor@bhuwanjoshi-01.github.io/cli.js';
+import {findCli, isCancelled, runCli} from '../screenshare-doctor@bhuwanjoshi-01.github.io/cli.js';
 
 const dir = GLib.dir_make_tmp('ssd-cli-XXXXXX');
 
@@ -64,10 +64,22 @@ async function main() {
             return GLib.SOURCE_REMOVE;
         });
         const start = GLib.get_monotonic_time();
-        let rejected = false;
-        await runCli(hangs, [], cancellable, 30).catch(() => (rejected = true));
-        assert(rejected, 'did not reject');
+        let error = null;
+        await runCli(hangs, [], cancellable, 30).catch(e => (error = e));
+        assert(error !== null, 'did not reject');
+        assert(isCancelled(error), `rejected with ${error} instead of the cancellation`);
         assert((GLib.get_monotonic_time() - start) / 1e6 < 5, 'was not killed');
+    });
+    await check('a program that cannot start rejects', async () => {
+        let error = null;
+        await runCli(GLib.build_filenamev([dir, 'missing']), [], new Gio.Cancellable()).catch(e => (error = e));
+        assert(error !== null, 'did not reject');
+        assert(!isCancelled(error), 'reported a failed start as a cancellation');
+    });
+    await check('a failure is not a cancellation', async () => {
+        let error = null;
+        await runCli(fails, [], new Gio.Cancellable()).catch(e => (error = e));
+        assert(error !== null && !isCancelled(error), 'a failed run looked cancelled');
     });
     await check('a missing configured path is not found', async () => {
         assert(findCli(GLib.build_filenamev([dir, 'missing'])) === null, 'found a missing file');
