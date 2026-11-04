@@ -58,12 +58,9 @@ def test_real_ubuntu_layout(ubuntu_root: Path) -> None:
         ("ubuntu", "gnome"), UBUNTU_DIRS, read=read, list_dir=list_dir
     )
     assert failures == ()
-    # /usr/share is both in XDG_DATA_DIRS and DATADIR: the portal reads the file twice.
-    assert [c.path for c in files.configs] == [
-        "/usr/share/xdg-desktop-portal/gnome-portals.conf",
-        "/usr/share/xdg-desktop-portal/gnome-portals.conf",
-    ]
-    assert [d.source for d in files.descriptors] == ["gnome-keyring", "gnome", "gtk"] * 2
+    # /usr/share is both in XDG_DATA_DIRS and DATADIR; a second search finds nothing new.
+    assert [c.path for c in files.configs] == ["/usr/share/xdg-desktop-portal/gnome-portals.conf"]
+    assert [d.source for d in files.descriptors] == ["gnome-keyring", "gnome", "gtk"]
     assert files.desktops == ("ubuntu", "gnome")
     assert files.unreadable == ()
 

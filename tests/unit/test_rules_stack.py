@@ -10,6 +10,7 @@ from screenshare_doctor.collectors.pipewire import collect_pipewire
 from screenshare_doctor.models import (
     BusName,
     DbusFacts,
+    FailureKind,
     Finding,
     PackageFacts,
     PackageInfo,
@@ -17,6 +18,7 @@ from screenshare_doctor.models import (
     PipeWireFacts,
     PortalDescriptor,
     PortalsConf,
+    ProbeFailure,
     ServiceFacts,
     SessionEnvironment,
     Snapshot,
@@ -151,7 +153,10 @@ def test_compositor_not_applicable_on_kde(real: Snapshot) -> None:
 
 
 def _pipewire_case(
-    pipewire: PipeWireFacts, services: ServiceFacts, packages: PackageFacts | None = None
+    pipewire: PipeWireFacts,
+    services: ServiceFacts,
+    packages: PackageFacts | None = None,
+    failures: tuple[ProbeFailure, ...] = (),
 ) -> dict[str, Finding]:
     return _findings(
         Snapshot(
@@ -160,6 +165,7 @@ def _pipewire_case(
             pipewire=pipewire,
             services=services,
             packages=packages,
+            probe_failures=failures,
         )
     )
 
@@ -204,6 +210,37 @@ def test_pipewire_not_installed() -> None:
 
 def test_pipewire_running_but_silent() -> None:
     findings = _pipewire_case(PipeWireFacts(), _units(("pipewire.service", "loaded", "active")))
+    assert findings["SSD-PW-001"].status is Status.FAIL
+
+
+def test_pipewire_running_without_pw_dump_is_unknown() -> None:
+    # Fedora 45 KDE: pw-dump is in pipewire-utils, which a minimal install leaves out.
+    # A missing tool says nothing about the daemon, so this must not fail.
+    failure = ProbeFailure("pw-dump", FailureKind.NOT_FOUND, "pw-dump was not found")
+    findings = _pipewire_case(
+        PipeWireFacts(), _units(("pipewire.service", "loaded", "active")), failures=(failure,)
+    )
+    finding = findings["SSD-PW-001"]
+    assert finding.status is Status.UNKNOWN
+    assert finding.summary == "PipeWire runs, but pw-dump is not installed to ask it"
+    assert finding.recommended_action is not None
+    assert "pipewire-utils" in finding.recommended_action
+
+
+@pytest.mark.parametrize("kind", [FailureKind.PERMISSION_DENIED, FailureKind.MALFORMED_OUTPUT])
+def test_pipewire_with_an_unusable_pw_dump_is_unknown(kind: FailureKind) -> None:
+    failure = ProbeFailure("pw-dump", kind, "detail")
+    findings = _pipewire_case(
+        PipeWireFacts(), _units(("pipewire.service", "loaded", "active")), failures=(failure,)
+    )
+    assert findings["SSD-PW-001"].status is Status.UNKNOWN
+
+
+def test_pipewire_that_times_out_still_fails() -> None:
+    failure = ProbeFailure("pw-dump", FailureKind.TIMEOUT, "timed out after 5 s")
+    findings = _pipewire_case(
+        PipeWireFacts(), _units(("pipewire.service", "loaded", "active")), failures=(failure,)
+    )
     assert findings["SSD-PW-001"].status is Status.FAIL
 
 

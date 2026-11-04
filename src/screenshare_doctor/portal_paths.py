@@ -37,6 +37,13 @@ def _user_dir(value: str | None, home: str | None, fallback: str) -> str | None:
     return join(home, fallback) if home else None
 
 
+def _once(directories: list[str]) -> tuple[str, ...]:
+    """Each directory at its first position. The portal stops at the first file it finds,
+    so searching a directory again (``/usr/share`` from ``XDG_DATA_DIRS`` and again as
+    ``DATADIR``) can never change the result."""
+    return tuple(dict.fromkeys(directories))
+
+
 def config_directories(dirs: XdgDirectories) -> tuple[str, ...]:
     """The directories searched for ``(DESKTOP-)portals.conf``, highest priority first."""
     if dirs.portal_dir:
@@ -52,7 +59,7 @@ def config_directories(dirs: XdgDirectories) -> tuple[str, ...]:
         found.append(join(user_data, SUBDIR))
     found += [join(entry, SUBDIR) for entry in _split(dirs.data_dirs, DEFAULT_DATA_DIRS)]
     found.append(join(DATADIR, SUBDIR))
-    return tuple(found)
+    return _once(found)
 
 
 def descriptor_directories(dirs: XdgDirectories) -> tuple[str, ...]:
@@ -65,7 +72,7 @@ def descriptor_directories(dirs: XdgDirectories) -> tuple[str, ...]:
         found.append(join(user_data, SUBDIR, "portals"))
     found += [join(entry, SUBDIR, "portals") for entry in _split(dirs.data_dirs, DEFAULT_DATA_DIRS)]
     found.append(join(DATADIR, SUBDIR, "portals"))
-    return tuple(found)
+    return _once(found)
 
 
 def config_candidates(directory: str, desktops: tuple[str, ...]) -> tuple[str, ...]:
