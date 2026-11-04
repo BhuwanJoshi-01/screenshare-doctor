@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -24,6 +25,7 @@ UBUNTU = XdgDirectories(
 )
 
 
+@pytest.mark.xfail(strict=True, reason="WLD-005")
 def test_real_ubuntu_config_search_order() -> None:
     assert config_directories(UBUNTU) == (
         "/home/u/.config/xdg-desktop-portal",
@@ -38,7 +40,6 @@ def test_real_ubuntu_config_search_order() -> None:
         "/usr/local/share/xdg-desktop-portal",
         "/usr/share/xdg-desktop-portal",
         "/var/lib/snapd/desktop/xdg-desktop-portal",
-        "/usr/share/xdg-desktop-portal",
     )
 
 
@@ -49,6 +50,7 @@ def test_real_ubuntu_descriptor_search_order() -> None:
     assert dirs[-1] == "/usr/share/xdg-desktop-portal/portals"
 
 
+@pytest.mark.xfail(strict=True, reason="WLD-005")
 def test_glib_defaults_for_unset_variables() -> None:
     assert config_directories(XdgDirectories(home="/home/u")) == (
         "/home/u/.config/xdg-desktop-portal",
@@ -57,8 +59,26 @@ def test_glib_defaults_for_unset_variables() -> None:
         "/home/u/.local/share/xdg-desktop-portal",
         "/usr/local/share/xdg-desktop-portal",
         "/usr/share/xdg-desktop-portal",
-        "/usr/share/xdg-desktop-portal",
     )
+
+
+# Fedora 45 KDE Plasma's user manager: /usr/share comes from XDG_DATA_DIRS and again
+# as the portal's built-in DATADIR (home shortened to /home/u).
+FEDORA_KDE = XdgDirectories(
+    home="/home/u",
+    config_dirs="/home/u/.config/kdedefaults:/etc/xdg:/usr/share/kde-settings/kde-profile/default/xdg",
+    data_dirs="/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share",
+)
+
+
+@pytest.mark.xfail(strict=True, reason="WLD-005")
+def test_a_directory_searched_twice_is_listed_once() -> None:
+    # The portal stops at the first file found, so the second search of a directory can
+    # never change the outcome; listing it twice only confused the explanation.
+    for found in (config_directories(FEDORA_KDE), descriptor_directories(FEDORA_KDE)):
+        assert len(found) == len(set(found))
+    assert config_directories(FEDORA_KDE)[-1] == "/usr/share/xdg-desktop-portal"
+    assert descriptor_directories(FEDORA_KDE)[-1] == "/usr/share/xdg-desktop-portal/portals"
 
 
 def test_explicit_user_directories() -> None:
