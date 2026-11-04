@@ -9,10 +9,35 @@ authors = [
     { name = "BhuwanJoshi-01", email = "bhuwanj779@gmail.com" }
 ]
 requires-python = ">=3.11"
+keywords = ["wayland", "screen-sharing", "xdg-desktop-portal", "pipewire", "gnome", "kde", "hyprland", "diagnostics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Desktop Environment",
+    "Topic :: Multimedia :: Video :: Capture",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 dependencies = [
     "rich>=15.0.0",
     "typer>=0.27.3",
 ]
+
+[project.urls]
+Homepage = "https://bhuwanjoshi-01.github.io/screenshare-doctor/"
+Documentation = "https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/docs/troubleshooting.md"
+Source = "https://github.com/BhuwanJoshi-01/screenshare-doctor"
+Issues = "https://github.com/BhuwanJoshi-01/screenshare-doctor/issues"
+Changelog = "https://github.com/BhuwanJoshi-01/screenshare-doctor/blob/main/CHANGELOG.md"
 
 [project.scripts]
 screenshare-doctor = "screenshare_doctor.cli:main"

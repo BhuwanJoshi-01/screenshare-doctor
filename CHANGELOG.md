@@ -4,10 +4,11 @@ All notable changes to this project are listed here. Versions follow
 [Semantic Versioning](https://semver.org/); the JSON report format has its own
 `schema_version` and changes only with a new major version of the schema.
 
-## Unreleased
+## 0.1.0 (2026-11-04)
 
-Nothing released yet. The first release (0.1.0) will diagnose screen sharing
-read-only, on GNOME first, then KDE Plasma and Hyprland.
+The first release: diagnose screen sharing read-only, tested on real GNOME
+50.1, KDE Plasma 6.8.2 and Hyprland 0.57.1 sessions, with a GNOME Shell
+extension. Website: https://bhuwanjoshi-01.github.io/screenshare-doctor/
 
 - `screenshare-doctor --help` and `--version`. Exit codes: 0 when the
   diagnosis ran (whatever it found), 1 for `--strict` failures, 2 for usage
@@ -68,3 +69,11 @@ read-only, on GNOME first, then KDE Plasma and Hyprland.
   opened and shows the result, with the worst status as its icon, "Copy a
   report for a bug tracker", and a preferences page for the tool's path.
   Nothing runs while the menu is closed. Release zips carry it.
+- Validated on real KDE Plasma 6.8.2 (Fedora 45) and Hyprland 0.57.1 (Arch)
+  sessions, which led to: SSD-PW-001 is unknown, not failed, when `pw-dump`
+  is missing (it is in `pipewire-utils` on Fedora); SSD-PORTAL-004 is
+  reported as not tested while the portal waits to be started instead of
+  disappearing; WirePlumber enabled to start with on-demand PipeWire passes;
+  `troubleshoot` names the checks that could not run instead of blaming the
+  app; each portal search directory is listed once; the status column fits
+  "NOT TESTED". Real `rpm` and `pacman` captures back the package parsers.
