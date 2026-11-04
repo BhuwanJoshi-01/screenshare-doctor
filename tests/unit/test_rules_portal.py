@@ -247,7 +247,6 @@ def test_no_restart_advice_when_the_portal_agrees(real: Snapshot) -> None:
 
 # Hyprland 0.57 on Arch: the portal starts on demand and was not running during doctor.
 # The check that matters most for "the window I want is missing" must not vanish then.
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_window_sharing_not_tested_while_the_portal_is_stopped(real: Snapshot) -> None:
     dbus = _dbus(BusName(FRONTEND, running=False, activatable=True))
     finding = _findings(dataclasses.replace(real, dbus=dbus))["SSD-PORTAL-004"]
@@ -256,7 +255,6 @@ def test_window_sharing_not_tested_while_the_portal_is_stopped(real: Snapshot) -
     assert finding.verify_command == "screenshare-doctor check dbus"
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_window_sharing_follows_a_frontend_without_screencast(real: Snapshot) -> None:
     dbus = _dbus(
         BusName(FRONTEND, True, True),
@@ -267,7 +265,6 @@ def test_window_sharing_follows_a_frontend_without_screencast(real: Snapshot) ->
     assert finding.caused_by == "SSD-PORTAL-001"
 
 
-@pytest.mark.xfail(strict=True, reason="WLD-010")
 def test_window_sharing_unknown_without_the_property(real: Snapshot) -> None:
     dbus = _dbus(
         BusName(FRONTEND, True, True),

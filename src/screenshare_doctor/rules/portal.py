@@ -12,6 +12,7 @@ from screenshare_doctor.models import (
     Layer,
     PackageState,
     PortalFiles,
+    PortalObject,
     Severity,
     Snapshot,
     Status,
@@ -523,8 +524,11 @@ def window_sharing(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding
     offer whole screens, which looks like "the window I want is missing".
     """
     dbus = snapshot.dbus
-    portal = next((o for o in dbus.objects if o.name == FRONTEND), None) if dbus else None
+    if dbus is None or dbus.reachable is not True:
+        return
+    portal = next((o for o in dbus.objects if o.name == FRONTEND), None)
     if portal is None or portal.screencast is None or portal.screencast.source_types is None:
+        yield _window_sharing_unchecked(snapshot, portal)
         return
     sources = source_type_names(portal.screencast.source_types)
     evidence = (Evidence("busctl", "AvailableSourceTypes", str(portal.screencast.source_types)),)
@@ -554,3 +558,45 @@ def window_sharing(snapshot: Snapshot, context: RuleContext) -> Iterator[Finding
                 "Share the whole screen, or use a backend that supports windows for your desktop."
             ),
         )
+
+
+def _window_sharing_unchecked(snapshot: Snapshot, portal: PortalObject | None) -> Finding:
+    """SSD-PORTAL-004 when the running frontend did not tell which sources it offers."""
+    names = snapshot.dbus.names if snapshot.dbus else ()
+    frontend = next((n for n in names if n.name == FRONTEND), None)
+    if portal is None and (frontend is None or frontend.running is not True):
+        return Finding(
+            id="SSD-PORTAL-004",
+            status=Status.NOT_TESTED,
+            severity=Severity.LOW,
+            confidence=Confidence.HIGH,
+            summary="Window sharing was not checked: the portal is not running",
+            reason=(
+                "Which sources ScreenCast offers is only known from the running portal, and "
+                "asking a portal that is not running would start it."
+            ),
+            recommended_action=(
+                "Open the screen-sharing picker in any app once and cancel it; the portal then "
+                "keeps running, and the check can read what it offers."
+            ),
+            verify_command="screenshare-doctor check dbus",
+        )
+    if portal is not None and portal.interfaces is not None and SCREENCAST not in portal.interfaces:
+        return Finding(
+            id="SSD-PORTAL-004",
+            status=Status.NOT_TESTED,
+            severity=Severity.LOW,
+            confidence=Confidence.HIGH,
+            summary="Window sharing was not checked: the portal offers no ScreenCast",
+            reason="Without the ScreenCast interface there are no source types to read.",
+            caused_by="SSD-PORTAL-001",
+        )
+    return Finding(
+        id="SSD-PORTAL-004",
+        status=Status.UNKNOWN,
+        severity=Severity.MEDIUM,
+        confidence=Confidence.LOW,
+        summary="The portal did not say which sources ScreenCast offers",
+        reason="Its AvailableSourceTypes property could not be read (see the probe failures).",
+        verify_command="screenshare-doctor check dbus",
+    )
